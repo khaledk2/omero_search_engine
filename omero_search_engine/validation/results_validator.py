@@ -63,7 +63,7 @@ class Validator(object):
         """
         self.resource = resource
         self.type = type
-        self.name = name
+        self.key = name
         self.value = value
         self.postgres_results = []
         self.sql_statement = query_methods[resource]
@@ -75,7 +75,7 @@ class Validator(object):
         """
         self.resource = resource
         self.clauses = clauses
-        self.name = name
+        self.key = name
         self.value = clauses
         self.type = type
         self.postgres_results = []
@@ -126,9 +126,9 @@ class Validator(object):
         """
         search_omero_app.logger.info("Getting results from postgres")
         if self.type == "complex":
-            if self.name == "query_image_or":
+            if self.key == "query_image_or":
                 self.postgres_results = self.get_or_sql(self.clauses)
-            elif self.name == "query_image_and":
+            elif self.key == "query_image_and":
                 self.postgres_results = self.get_and_sql(self.clauses)
             else:
                 for name, clauses in self.clauses.items():
@@ -141,9 +141,9 @@ class Validator(object):
                 )
             return
         else:
-            if self.name != "name":
+            if self.key != "name":
                 sql = self.sql_statement.substitute(
-                    name=self.name.lower(), value=self.value.lower()
+                    name=self.key.lower(), value=self.value.lower()
                 )
             else:
                 sql = self.sql_statement.substitute(name=self.value)
@@ -161,19 +161,19 @@ class Validator(object):
         """
         if self.type == "complex":
             filters = []
-            if self.name != "query_image_and_or":
+            if self.key != "query_image_and_or":
                 for claus in self.clauses:
                     filters.append(
                         {
-                            "name": claus[0],
+                            "key": claus[0],
                             "value": claus[1],
                             "operator": "equals",
                             "resource": self.resource,
                         }
                     )
-                if self.name == "query_image_or":
+                if self.key == "query_image_or":
                     query = {"and_filters": [], "or_filters": [filters]}
-                elif self.name == "query_image_and":
+                elif self.key == "query_image_and":
                     query = {"and_filters": filters, "or_filters": []}
             else:
                 query = {}
@@ -188,7 +188,7 @@ class Validator(object):
                     for claus in clauses:
                         filters.append(
                             {
-                                "name": claus[0],
+                                "key": claus[0],
                                 "value": claus[1],
                                 "operator": "equals",
                                 "resource": self.resource,
@@ -196,10 +196,10 @@ class Validator(object):
                         )
 
         else:
-            if self.name != "name":
+            if self.key != "name":
                 and_filters = [
                     {
-                        "name": self.name.lower(),
+                        "key": self.key.lower(),
                         "value": self.value.lower(),
                         "operator": "equals",
                         "resource": self.resource,
@@ -208,7 +208,7 @@ class Validator(object):
             else:
                 and_filters = [
                     {
-                        "name": "Name (IDR number)",
+                        "key": "Name (IDR number)",
                         "value": self.value,
                         "resource": "project",
                         "operator": "equals",
@@ -263,16 +263,16 @@ class Validator(object):
         """
         mess = []
         mes = "Checking the results containers for name '%s' and value '%s'" % (
-            self.name,
+            self.key,
             self.value,
         )
         mess.append(mes)
         search_omero_app.logger.info(mes)
         screens_count_sql = query_methods["screens_count"].substitute(
-            key=self.name, value=self.value
+            key=self.key, value=self.value
         )
         projects_count_sql = query_methods["projects_count"].substitute(
-            key=self.name, value=self.value
+            key=self.key, value=self.value
         )
         conn = search_omero_app.config["database_connector"]
         screens_results = conn.execute_query(screens_count_sql)
@@ -280,7 +280,7 @@ class Validator(object):
         screens_results_idr = [item["name"] for item in screens_results]
         projects_results_idr = [item["name"] for item in projects_results]
         search_engine_results = simple_search(
-            self.name,
+            self.key,
             self.value,
             "equals",
             False,
@@ -434,7 +434,7 @@ def validate_queries(json_file, deep_check):
             messages.append(
                 "Results from PostgreSQL and search engine for "
                 "name '%s', value '%s', are: %s"
-                % (validator.name, validator.value, res)
+                % (validator.key, validator.value, res)
             )
             search_omero_app.logger.info("Total time=%s" % elabsed_time)
 

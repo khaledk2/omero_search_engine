@@ -61,7 +61,7 @@ class QueryItem(object):
             operator:
         """
         self.resource = filter.get("resource")
-        self.name = filter.get("name")
+        self.key = filter.get("key")
         self.value = filter.get("value")
         self.operator = filter.get("operator")
         if filter.get("set_query_type") and filter.get("query_type"):
@@ -79,20 +79,20 @@ class QueryItem(object):
         # if so, it will check if its attribute name is inside the dict
         # to use the actual attribute name
         if mapping_names.get(self.resource):
-            if mapping_names[self.resource].get(self.name):
+            if mapping_names[self.resource].get(self.key):
                 ac_value, act_res = check_get_names(self.value)
                 if len(ac_value) == 1:
                     self.value = ac_value[0]
                 elif len(ac_value) > 1:
                     self.value = ac_value
                 self.resource = act_res
-                self.name = "name"
+                self.key = "name"
                 """
                 pr_names = get_resource_names(self.resource)
                 if not self.value in pr_names:
                     # Assuming that the resource is either project or screen
                     self.resource="screen"
-                self.name=mapping_names[self.resource].get(self.name)
+                self.key=mapping_names[self.resource].get(self.key)
                 """
                 self.query_type = "main_attribute"
 
@@ -578,7 +578,7 @@ def determine_search_results_(query_, return_columns=False, return_containers=Fa
                 for val in q_item.value:
                     new_fil = {}
                     new_fil["value"] = val
-                    new_fil["name"] = q_item.name
+                    new_fil["key"] = q_item.key
                     new_fil["resource"] = q_item.resource
                     new_fil["operator"] = filter["operator"]
                     new_fil["set_query_type"] = True
@@ -627,7 +627,7 @@ def simple_search(
     if not operator:
         operator = "equals"
     and_filters = [
-        {"name": key, "value": value, "operator": operator, "resource": resource}
+        {"key": key, "value": value, "operator": operator, "resource": resource}
     ]
     query_details = {"and_filters": and_filters}
     if bookmark:
@@ -644,7 +644,7 @@ def simple_search(
     else:
         and_filters.append(
             {
-                "name": "Name (IDR number)",
+                "key": "Name (IDR number)",
                 "value": study,
                 "operator": "equals",
                 "resource": "project",

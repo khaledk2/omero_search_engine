@@ -183,16 +183,16 @@ def elasticsearch_query_builder(
             for clause in main_attributes.get("and_main_attributes"):
                 if isinstance(clause, list):
                     for attribute in clause:
-                        if attribute["name"].endswith("_id"):
+                        if attribute["key"].endswith("_id"):
                             main_dd = (
                                 main_attribute_query_template_id.substitute(  # noqa
-                                    attribute=attribute["name"].strip(),
+                                    attribute=attribute["key"].strip(),
                                     value=str(attribute["value"]).strip(),
                                 )
                             )
                         else:
                             main_dd = main_attribute_query_template.substitute(
-                                attribute=attribute["name"].strip(),
+                                attribute=attribute["key"].strip(),
                                 value=str(attribute["value"]).strip(),
                             )
                         if attribute["operator"].strip() == "equals":
@@ -201,14 +201,14 @@ def elasticsearch_query_builder(
                             nested_must_not_part.append(main_dd)
                 else:
                     attribute = clause
-                    if attribute["name"].endswith("_id"):
+                    if attribute["key"].endswith("_id"):
                         main_dd = main_attribute_query_template_id.substitute(
-                            attribute=attribute["name"].strip(),
+                            attribute=attribute["key"].strip(),
                             value=str(attribute["value"]).strip(),
                         )
                     else:
                         main_dd = main_attribute_query_template.substitute(
-                            attribute=attribute["name"].strip(),
+                            attribute=attribute["key"].strip(),
                             value=str(attribute["value"]).strip(),
                         )
                     if attribute["operator"].strip() == "equals":
@@ -227,16 +227,16 @@ def elasticsearch_query_builder(
                 if isinstance(attributes, list):
                     for attribute in attributes:
                         # search using id, e.g. project id
-                        if attribute["name"].endswith("_id"):
+                        if attribute["key"].endswith("_id"):
                             main_dd = (
                                 main_attribute_query_template_id.substitute(  # noqa
-                                    attribute=attribute["name"].strip(),
+                                    attribute=attribute["key"].strip(),
                                     value=str(attribute["value"]).strip(),
                                 )
                             )
                         else:
                             main_dd = main_attribute_query_template.substitute(
-                                attribute=attribute["name"].strip(),
+                                attribute=attribute["key"].strip(),
                                 value=str(attribute["value"]).strip(),
                             )
 
@@ -249,12 +249,12 @@ def elasticsearch_query_builder(
                     # search using id, e.g. project id
                     if attribute["name"].endswith("_id"):
                         main_dd = main_attribute_query_template_id.substitute(
-                            attribute=attribute["name"].strip(),
+                            attribute=attribute["key"].strip(),
                             value=str(attribute["value"]).strip(),
                         )
                     else:
                         main_dd = main_attribute_query_template.substitute(
-                            attribute=attribute["name"].strip(),
+                            attribute=attribute["key"].strip(),
                             value=str(attribute["value"]).strip(),
                         )
 
@@ -270,7 +270,7 @@ def elasticsearch_query_builder(
         for filter in and_filter:
             search_omero_app.logger.info("FILTER %s" % filter)
             try:
-                key = filter["name"].strip()
+                key = filter["key"].strip()
                 value = filter["value"].strip()
                 operator = filter["operator"].strip()
             except Exception as e:
@@ -640,14 +640,14 @@ def elasticsearch_query_builder(
 
 
 def check_single_filter(res_table, filter, names, organism_converter):
-    key = filter["name"]
+    key = filter["key"]
     value = filter["value"]
     operator = filter["operator"]
     if operator != "contains" and operator != "not_contains":
         key_ = [name for name in names if name.casefold() == key.casefold()]
         if len(key_) == 1:
-            filter["name"] = key_[0]
-            if filter["name"] == "Organism":
+            filter["key"] = key_[0]
+            if filter["key"] == "Organism":
                 vv = [
                     value_
                     for key, value_ in organism_converter.items()

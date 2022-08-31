@@ -5,10 +5,10 @@
   "description": "filter_schema",
   "type": "object",
   "additionalProperties": true,
-  "required": ["name","value","operator"],
+  "required": ["key","value","operator"],
   "properties": {
     "name": {
-      "name": "name",
+      "name": "key",
       "type": "string"
     },
      "value": {
@@ -27,4 +27,3 @@
     }
     }
   }
-
