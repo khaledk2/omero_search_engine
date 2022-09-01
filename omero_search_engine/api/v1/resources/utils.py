@@ -247,7 +247,7 @@ def elasticsearch_query_builder(
                 else:
                     attribute = attributes
                     # search using id, e.g. project id
-                    if attribute["name"].endswith("_id"):
+                    if attribute["key"].endswith("_id"):
                         main_dd = main_attribute_query_template_id.substitute(
                             attribute=attribute["key"].strip(),
                             value=str(attribute["value"]).strip(),
@@ -459,7 +459,7 @@ def elasticsearch_query_builder(
                 shoud_not_value = []
                 # should_names = []
                 try:
-                    key = or_filter["name"].strip()
+                    key = or_filter["key"].strip()
                     value = or_filter["value"].strip()
                     operator = or_filter["operator"].strip()
                 except Exception:
@@ -657,7 +657,7 @@ def check_single_filter(res_table, filter, names, organism_converter):
                     filter["value"] = vv[0]
         else:
             if len(key_) == 0:
-                search_omero_app.logger.info("Name Error %s" % str(key))
+                search_omero_app.logger.info("Key Error %s" % str(key))
                 return
         from omero_search_engine.api.v1.resources.resource_analyser import (
             get_resource_attribute_values,

@@ -433,7 +433,7 @@ def get_ids(results, resource):
         for item in results["results"]["results"]:
             qur_item = {}
             # ids.append(qur_item)
-            qur_item["name"] = "{resource}_id".format(resource=resource)
+            qur_item["key"] = "{resource}_id".format(resource=resource)
             qur_item["value"] = item["id"]
             qur_item["operator"] = "equals"
             qur_item["resource"] = resource
