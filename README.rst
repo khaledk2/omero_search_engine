@@ -10,7 +10,7 @@ OMERO Search Engine
 
   * The **first part** is ``and_filter``, it is a list. Each item in the list is a dict that has three keys:
 
-    * name: attribute name (name in annotation_mapvalue table)
+    * key: attribute name (name in annotation_mapvalue table)
     * value: attribute value (value in annotation_mapvalue table)
     * operator: the operator, which is used to search the data, e.g. ``equals``, ``no_equals``, ``contains``, etc.
   * The **second part** of the query is ``or_filters``; it has alternatives to search the database; it answers a question like finding the images which can satisfy one or more of conditions inside a list. It is a list of dicts and has the same format as the dict inside the ``and_filter``.
@@ -118,11 +118,11 @@ OMERO Search Engine
         return received_results_data
 
 
-    query_1 = {"and_filters": [{"name": "Organism", "value": "Homo sapiens", "operator": "equals"},
-                               {"name": "Antibody Identifier", "value": "CAB034889", "operator": "equals"}],
-               "or_filters": [[{"name": "Organism Part", "value": "Prostate", "operator": "equals"},
-                              {"name": "Organism Part Identifier", "value": "T-77100", "operator": "equals"}]]}
-    query_2 = {"and_filters": [{"name": "Organism", "value": "Mus musculus", 'operator': 'equals'}]}
+    query_1 = {"and_filters": [{"key": "Organism", "value": "Homo sapiens", "operator": "equals"},
+                               {"key": "Antibody Identifier", "value": "CAB034889", "operator": "equals"}],
+               "or_filters": [[{"key": "Organism Part", "value": "Prostate", "operator": "equals"},
+                              {"key": "Organism Part Identifier", "value": "T-77100", "operator": "equals"}]]}
+    query_2 = {"and_filters": [{"key": "Organism", "value": "Mus musculus", 'operator': 'equals'}]}
     main_attributes=[]
     logging.info("Sending the first query:")
     results_1 = query_the_search_ending(query_1,main_attributes)
@@ -133,10 +133,10 @@ OMERO Search Engine
     #[101, 301, 351, 352, 353, 405, 502, 504, 801, 851, 852, 853, 1151, 1158, 1159, 1201, 1202, 1451, 1605, 1606, 1701, 1902, 1903]
     #It is possible to get the results in one project, e.g. 101 by using the main_attributes filter
     main_attributes_2={ "and_main_attributes": [{
-        "name":"project_id","value": 101, "operator":"equals"}]}
+        "key":"project_id","value": 101, "operator":"equals"}]}
     results_3=query_the_search_ending(query_2,main_attributes_2)
     #It is possible to get the results and exculde one project, e.g. 101
-    main_attributes_3={"and_main_attributes":[{"name":"project_id","value": 101, "operator":"not_equals"}]}
+    main_attributes_3={"and_main_attributes":[{"key":"project_id","value": 101, "operator":"not_equals"}]}
     results_4=query_the_search_ending(query_2,main_attributes_3)
 
 * There is a `simple GUI <https://github.com/ome/omero_search_engine_client/tree/elastic_search>`_ to build the query and send it to the search engine
