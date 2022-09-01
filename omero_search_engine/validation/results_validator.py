@@ -433,8 +433,7 @@ def validate_queries(json_file, deep_check):
             elabsed_time = str(datetime.now() - start_time)
             messages.append(
                 "Results from PostgreSQL and search engine for "
-                "name '%s', value '%s', are: %s"
-                % (validator.key, validator.value, res)
+                "name '%s', value '%s', are: %s" % (validator.key, validator.value, res)
             )
             search_omero_app.logger.info("Total time=%s" % elabsed_time)
 
@@ -447,7 +446,7 @@ def validate_queries(json_file, deep_check):
             messages.append(
                 "Results from PostgreSQL and search engine for %s name"
                 "'%s' and value '%s' are %s"
-                % (name, validator_c.name, validator_c.value, res)
+                % (name, validator_c.key, validator_c.value, res)
             )
             search_omero_app.logger.info(
                 "Total time=%s" % str(datetime.now() - start_time)
