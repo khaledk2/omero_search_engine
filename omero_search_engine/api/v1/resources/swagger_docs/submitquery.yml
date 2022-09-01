@@ -6,13 +6,13 @@ Example:
      "query_details": {
        "and_filters": [
          {
-           "name": "Cell Line",
+           "key": "Cell Line",
            "value": "hela",
            "operator": "equals",
            "resource": "image"
          },
          {
-           "name": "Name (IDR number)",
+           "key": "Name (IDR number)",
            "value": "idr0008-rohn-actinome/screenB",
            "operator": "equals",
            "resource": "project"
@@ -34,7 +34,7 @@ Example of using bookmark:
      "query_details":{
         "and_filters":[
            {
-              "name":"Cell Line",
+              "key":"Cell Line",
               "operator":"equals",
               "query_type":"keyvalue",
               "resource":"image",

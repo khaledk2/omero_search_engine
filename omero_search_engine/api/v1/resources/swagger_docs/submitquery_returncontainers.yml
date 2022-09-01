@@ -8,7 +8,7 @@ Example:
      "query_details": {
         "and_filters": [
            {
-              "name":"Cell Line",
+              "key":"Cell Line",
               "operator":"equals",
               "query_type":"keyvalue",
               "resource":"image",
@@ -29,13 +29,13 @@ Another example:
     "query_details": {
       "and_filters": [
         {
-          "name": "Organism",
+          "key": "Organism",
           "value": "mus musculus",
           "operator": "equals",
           "resource": "image"
         },
         {
-          "name": "Imaging Method",
+          "key": "Imaging Method",
           "value": "light sheet fluorescence microscopy, spim",
           "operator": "equals",
           "resource": "project"
