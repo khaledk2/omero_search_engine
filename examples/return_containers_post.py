@@ -25,7 +25,7 @@ import sys
 # url to send the query
 # search engine url
 submit_query_url = (
-    "http://127.0.0.1:5577/api/v1/resources/submitquery_returnstudies/"  # noqa
+    "http://127.0.0.1:5577/api/v1/resources/submitquery/containers/"  # noqa
 )
 
 # base_url ="https://idr-testing.openmicroscopy.org/searchengineapi/api/v1/"
@@ -61,13 +61,13 @@ data = {
     "query_details": {
         "and_filters": [
             {
-                "name": "Organism",
+                "key": "Organism",
                 "value": "mus musculus",
                 "operator": "equals",
                 "resource": "image",
             },
             {
-                "name": "Imaging Method",
+                "key": "Imaging Method",
                 "value": "light sheet fluorescence microscopy, spim",
                 "operator": "equals",
                 "resource": "project",
@@ -84,4 +84,7 @@ if returned_results.get("results"):
     if len(returned_results.get("results").get("results")) == 0:
         logging.info("No results is found")
     for item in returned_results.get("results").get("results"):
-        logging.info("Study: %s" % item.get("Name (IDR number)"))
+        logging.info(
+            "%s: %s contains %s images"
+            % (item.get("type"), item.get("name"), item.get("image count"))
+        )

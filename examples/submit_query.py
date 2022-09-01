@@ -25,14 +25,14 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 query_1 = {
     "and_filters": [
-        {"name": "Organism", "value": "Homo sapiens", "operator": "equals"},
-        {"name": "Antibody Identifier", "value": "CAB034889", "operator": "equals"},
+        {"key": "Organism", "value": "Homo sapiens", "operator": "equals"},
+        {"key": "Antibody Identifier", "value": "CAB034889", "operator": "equals"},
     ],
     "or_filters": [
         [
-            {"name": "Organism Part", "value": "Prostate", "operator": "equals"},
+            {"key": "Organism Part", "value": "Prostate", "operator": "equals"},
             {
-                "name": "Organism Part Identifier",
+                "key": "Organism Part Identifier",
                 "value": "T-77100",
                 "operator": "equals",
             },
@@ -40,7 +40,7 @@ query_1 = {
     ],
 }
 query_2 = {
-    "and_filters": [{"name": "Organism", "value": "Mus musculus", "operator": "equals"}]
+    "and_filters": [{"key": "Organism", "value": "Mus musculus", "operator": "equals"}]
 }
 main_attributes = []
 logging.info("Sending the first query:")
@@ -51,6 +51,6 @@ logging.info("Sending the second query:")
 # owner_id': 2
 
 main_attributes_3 = {
-    "and_main_attributes": [{"name": "project_id", "value": 101, "operator": "equals"}]
+    "and_main_attributes": [{"key": "project_id", "value": 101, "operator": "equals"}]
 }
 results_4 = query_the_search_ending(query_2, main_attributes_3)

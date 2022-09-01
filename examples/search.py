@@ -26,8 +26,8 @@ import sys
 # url to send the query
 image_search = "/resources/image/search/"
 # search engine url
-# base_url = "http://127.0.0.1:5577/api/v1/"
-base_url = "https://idr-testing.openmicroscopy.org/searchengineapi/api/v1/"  # noqa
+base_url = "http://127.0.0.1:5577/api/v1/"
+# base_url = "https://idr-testing.openmicroscopy.org/searchengineapi/api/v1/"  # noqa
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -75,6 +75,7 @@ def call_omero_return_results(url, data=None, method="post"):
 
 
 url = "%s%s?key=Organism&value=Homo sapiens" % (base_url, image_search)
+
 bookmark, total_results, total_pages = call_omero_return_results(
     url, method="get"
 )  # noqa

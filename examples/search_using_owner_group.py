@@ -31,13 +31,13 @@ The "and" query clauses should be as follows:
 received_results_data = []
 and_filters = [
     {
-        "name": "Cell Type",
+        "key": "Cell Type",
         "value": "induced pluripotent stem cell",
         "operator": "equals",
         "resource": "image",
     },
     {
-        "name": "Compound Name",
+        "key": "Compound Name",
         "value": "fibronectin",
         "operator": "equals",
         "resource": "image",
@@ -52,8 +52,8 @@ to the search terms like owner id, group id etc.
 """
 main_attributes = {
     "and_main_attributes": [
-        {"name": "group_id", "value": 3, "operator": "equals"},
-        {"name": "owner_id", "value": 2, "operator": "equals"},
+        {"key": "group_id", "value": 3, "operator": "equals"},
+        {"key": "owner_id", "value": 2, "operator": "equals"},
     ]
 }
 

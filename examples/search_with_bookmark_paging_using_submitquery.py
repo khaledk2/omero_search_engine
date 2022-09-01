@@ -89,20 +89,20 @@ In terms of clauses we only have and_filters which contains 4 clauses
 start = datetime.datetime.now()
 and_filters = [
     {
-        "name": "Organism",
+        "key": "Organism",
         "value": "Homo sapiens",
         "operator": "equals",
         "resource": "image",
     },
     {
-        "name": "Organism Part",
+        "key": "Organism Part",
         "value": "Breast",
         "operator": "equals",
         "resource": "image",
     },
-    {"name": "Sex", "value": "Female", "operator": "equals", "resource": "image"},
+    {"key": "Sex", "value": "Female", "operator": "equals", "resource": "image"},
     {
-        "name": "Pathology",
+        "key": "Pathology",
         "value": "Normal tissue, NOS",
         "operator": "not_equals",
         "resource": "image",
