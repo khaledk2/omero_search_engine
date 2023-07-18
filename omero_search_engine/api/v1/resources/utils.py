@@ -518,7 +518,6 @@ def elasticsearch_query_builder(
                     elif or_filter["operator"].strip() == "not_equals":
                         main_shoud_not_value.append(main_clause)
                 else:
-
                     if key and key not in added_keys:
                         added_keys.append(key)
 
@@ -672,7 +671,6 @@ def elasticsearch_query_builder(
             should_part_list = should_part_list_
 
         if len(should_part_list) > 0:
-
             should_part_ = ",".join(should_part_list)
             should_part_ = should_term_template.substitute(
                 should_term=should_part_, minimum_should_match=1
@@ -691,7 +689,6 @@ def elasticsearch_query_builder(
             all_terms = nested_must_part_
 
     if len(nested_must_not_part) > 0:
-
         nested_must_not_part_ = ",".join(nested_must_not_part)
         nested_must_not_part_ = must_not_term_template.substitute(
             must_not_term=nested_must_not_part_
@@ -974,7 +971,7 @@ def search_resource_annotation(
     @query: the a dict contains the three filters (or, and and  not) items
     @raw_elasticsearch_query: raw query sending directly to elasticsearch
     """
-    #try:
+    # try:
     res_index = resource_elasticsearchindex.get(table_)
     if not res_index:
         return build_error_message(
@@ -1062,7 +1059,7 @@ def search_resource_annotation(
         "raw_elasticsearch_query": raw_query_to_send_back,
         "notice": notice,
     }
-    #except Exception as e:
+    # except Exception as e:
     #    search_omero_app.logger.info("Query %s" % str(query))
     #    search_omero_app.logger.info("==>>>Error: %s" % str(e))
     #    return build_error_message(
@@ -1104,6 +1101,7 @@ def get_filter_list(filter):
     f2["resource"] = "screen"
     new_or_filter.append(f2)
     return new_or_filter
+
 
 def adjust_query_for_container(query):
     query_details = query.get("query_details")

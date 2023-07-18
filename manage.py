@@ -193,6 +193,15 @@ def set_elasticsearch_configuration(elasticsearch_url=None):
 
 
 @manager.command
+@manager.option("-e", "--elasticsearch_password", help="set elasticsearch password")
+def set_elasticsearch_password(elasticsearch_password=None):
+    if elasticsearch_password:
+        update_config_file({"ELASTIC_PASSWORD": elasticsearch_password})
+    else:
+        search_omero_app.logger.info("No attribute is provided")
+
+
+@manager.command
 @manager.option("-c", "--cache_folder", help="cache folder path")
 def set_cache_folder(cache_folder=None):
     if cache_folder:
