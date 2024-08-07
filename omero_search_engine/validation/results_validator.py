@@ -73,8 +73,9 @@ class Validator(object):
     and from the searchengine
     """
 
-    def __init__(self, deep_check=False):
+    def __init__(self, data_source, deep_check=False):
         self.deep_check = deep_check
+        self.data_source=data_source
         self.identical = True
 
     def set_simple_query(self, resource, name, value, type="keyvalue"):
@@ -138,7 +139,8 @@ class Validator(object):
                 names=names, values=values, operator="not in"
             )
         # sql = query_methods[name].substitute(names=names, values=values)
-        conn = search_omero_app.config["database_connector"]
+        #conn = search_omero_app.config["database_connector"]
+        conn = search_omero_app.config.database_connectors[self.data_source]
         postgres_results = conn.execute_query(sql)
         results = [item["id"] for item in postgres_results]
         search_omero_app.logger.info(
@@ -158,7 +160,8 @@ class Validator(object):
                 values = "'%s'" % claus[1].lower()
         # sql = query_methods[name].substitute(names=names, values=values)
         sql = query_methods[name].substitute(names=names, values=values, operator="in")
-        conn = search_omero_app.config["database_connector"]
+        #conn = search_omero_app.config["database_connector"]
+        conn = search_omero_app.config.database_connectors[self.data_source]
         postgres_results = conn.execute_query(sql)
         results = [item["id"] for item in postgres_results]
         search_omero_app.logger.info(
@@ -171,7 +174,8 @@ class Validator(object):
             operator = "or"
         else:
             operator = "and"
-        conn = search_omero_app.config["database_connector"]
+        conn = search_omero_app.config.database_connectors[self.data_source]
+        #conn = search_omero_app.config["database_connector"]
         all_res = []
         for val in clauses:
             sql = query_methods["image_value_only"].substitute(value=val)
@@ -196,7 +200,8 @@ class Validator(object):
                 name=claus[0].lower(),
                 value=claus[1].lower(),
             )
-            conn = search_omero_app.config["database_connector"]
+            conn = search_omero_app.config.database_connectors[self.data_source]
+            #conn = search_omero_app.config["database_connector"]
             postgres_results = conn.execute_query(sql)
             res = [item["id"] for item in postgres_results]
             search_omero_app.logger.info("results for 'and' received %s" % len(res))
@@ -217,11 +222,13 @@ class Validator(object):
                 sql = query_methods["available_values_for_key"].substitute(
                     name=self.name
                 )
-                conn = search_omero_app.config["database_connector"]
+                conn = search_omero_app.config.database_connectors[self.data_source]
+                #conn = search_omero_app.config["database_connector"]
                 self.postgres_results = conn.execute_query(sql)
             elif self.value:
                 sql = query_methods["search_any_value"].substitute(val_part=self.value)
-                conn = search_omero_app.config["database_connector"]
+                conn = search_omero_app.config.database_connectors[self.data_source]
+                #conn = search_omero_app.config["database_connector"]
                 self.postgres_results = conn.execute_query(sql)
             return
         if self.type == "in_clause":
@@ -273,7 +280,8 @@ class Validator(object):
                 sql = sql + " and %s.group_id=%s" % (self.resource, self.group_id)
                 print(sql)
         # search_omero_app.logger.info ("sql: %s"%sql)
-        conn = search_omero_app.config["database_connector"]
+        #conn = search_omero_app.config["database_connector"]
+        conn = search_omero_app.config.database_connectors[self.data_source]
         postgres_results = conn.execute_query(sql)
         self.postgres_results = [item["id"] for item in postgres_results]
         search_omero_app.logger.info(
@@ -491,7 +499,8 @@ class Validator(object):
         projects_count_sql = query_methods["projects_count"].substitute(
             key=self.name, value=self.value
         )
-        conn = search_omero_app.config["database_connector"]
+        #conn = search_omero_app.config["database_connector"]
+        conn = search_omero_app.config.database_connectors[self.data_source]
         screens_results = conn.execute_query(screens_count_sql)
         projects_results = conn.execute_query(projects_count_sql)
         screens_results_idr = [item["name"] for item in screens_results]
@@ -624,7 +633,7 @@ class Validator(object):
         )
 
 
-def validate_queries(json_file, deep_check):
+def validate_queries(json_file, data_source, deep_check):
     import json
     import os
 
@@ -651,7 +660,7 @@ def validate_queries(json_file, deep_check):
             search_omero_app.logger.info(
                 "Testing (equals) %s for name: %s, key: %s" % (resource, name, value)
             )
-            validator = Validator(deep_check)
+            validator = Validator(data_source, deep_check)
             validator.set_simple_query(resource, name, value)
             if resource == "image":
                 mess = validator.get_containers_test_cases()
@@ -672,7 +681,7 @@ def validate_queries(json_file, deep_check):
                 % (resource, name, value)
             )
             if resource == "image":
-                not_equals_validator = Validator(deep_check)
+                not_equals_validator = Validator(data_source, deep_check)
                 not_equals_validator.set_simple_query(resource, name, value)
                 res = not_equals_validator.compare_results("not_equals")
                 elabsed_time = str(datetime.now() - start_time)
@@ -686,7 +695,7 @@ def validate_queries(json_file, deep_check):
     for name, cases_ in complex_test_cases.items():
         for cases in cases_:
             start_time = datetime.now()
-            validator_c = Validator(deep_check)
+            validator_c = Validator(data_source, deep_check)
             validator_c.set_complex_query(name, cases)
             res = validator_c.compare_results()
             messages.append(
@@ -701,7 +710,7 @@ def validate_queries(json_file, deep_check):
     for resource, cases in query_in.items():
         for case in cases:
             start_time = datetime.now()
-            validator_in = Validator(deep_check)
+            validator_in = Validator(data_source, deep_check)
             validator_in.set_in_query(case, resource)
             res = validator_in.compare_results()
             messages.append(
@@ -718,7 +727,7 @@ def validate_queries(json_file, deep_check):
             search_omero_app.logger.info("Total time=%s" % str(end_in - start_time))
             # test the same but change the operator to not in
             search_omero_app.logger.info("Total time=%s" % str(end_in - start_time))
-            validator_not_in = Validator(deep_check)
+            validator_not_in = Validator(data_source,deep_check)
             validator_not_in.set_in_query(case, resource, type="not_in_clause")
             res = validator_not_in.compare_results()
             messages.append(
@@ -903,7 +912,7 @@ def get_omero_stats():
         f.write(report)
 
 
-def check_number_images_sql_containers_using_ids():
+def check_number_images_sql_containers_using_ids(data_source):
     """
     This method tests the number of images inside each container
      (project or screen) in the searchengine index data
@@ -921,7 +930,8 @@ def check_number_images_sql_containers_using_ids():
 
     dd = True
 
-    conn = search_omero_app.config["database_connector"]
+    #conn = search_omero_app.config["database_connector"]
+    conn = search_omero_app.config.database_connectors[data_source]
     all_names = get_resource_names("all")
     for resource in all_names:
         search_omero_app.logger.info(
@@ -998,7 +1008,7 @@ def check_number_images_sql_containers_using_ids():
     return dd
 
 
-def get_no_images_sql_containers(write_report=True):
+def get_no_images_sql_containers(data_source, write_report=True):
     """
     This method tests the number of images inside each container
      (project or screen) in the searchengine index data
@@ -1010,7 +1020,9 @@ def get_no_images_sql_containers(write_report=True):
     )
     from omero_search_engine.api.v1.resources.utils import adjust_query_for_container
 
-    conn = search_omero_app.config["database_connector"]
+    #conn = search_omero_app.config["database_connector"]
+    conn = search_omero_app.config.database_connectors[data_source]
+
 
     all_names = get_resource_names("all")
     messages = []

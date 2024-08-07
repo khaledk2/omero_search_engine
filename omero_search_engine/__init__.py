@@ -62,16 +62,16 @@ def create_app(config_name="development"):
     app_config = configLooader.get(config_name)
     load_configuration_variables_from_file(app_config)
     set_database_connection_variables(app_config)
-    database_connector = DatabaseConnector(
-        app_config.DATABASE_NAME, app_config.DATABASE_URI
-    )
+    print ("config.database_connectors::::::", app_config.database_connectors)
+    #atabase_connector = DatabaseConnector(
+    #   app_config.DATABASE_NAME, app_config.DATABASE_URI
+    #
     search_omero_app.config.from_object(app_config)
     search_omero_app.app_context()
     search_omero_app.app_context().push()
     search_omero_app.app_context()
     search_omero_app.app_context().push()
     ELASTIC_PASSWORD = app_config.ELASTIC_PASSWORD
-
     es_connector = Elasticsearch(
         app_config.ELASTICSEARCH_URL.split(","),
         verify_certs=app_config.verify_certs,
@@ -82,8 +82,8 @@ def create_app(config_name="development"):
         scheme="https",
         http_auth=("elastic", ELASTIC_PASSWORD),
     )
-
-    search_omero_app.config["database_connector"] = database_connector
+    search_omero_app.config.database_connectors= app_config.database_connectors
+    print(search_omero_app.config.database_connectors)
     search_omero_app.config["es_connector"] = es_connector
     log_folder = os.path.join(os.path.expanduser("~"), "logs")
     if not os.path.exists(log_folder):
@@ -116,7 +116,6 @@ from omero_search_engine.api.v1.resources import (  # noqa
 search_omero_app.register_blueprint(
     resources_routers_blueprint_v1, url_prefix="/api/v1/resources"
 )
-
 
 # add it to account for CORS
 @search_omero_app.after_request

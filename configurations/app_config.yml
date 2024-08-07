@@ -15,3 +15,11 @@ ELASTICSEARCH_BACKUP_FOLDER: "path/to/elasticsearch/backup/folder"
 verify_certs: False
 ELASTIC_PASSWORD: elasticsearch_user_password
 BASE_FOLDER: /etc/searchengine/
+DATA_SOURCES:
+    - name: omero1
+      DATABASE:
+          DATABASE_NAME: omero
+          DATABSE_USER: khaledk
+          DATABASE_PASSWORD: khaled
+          DATABASE_SERVER_URI: 192.168.0.190
+          DATABASE_PORT: 5432

@@ -790,8 +790,13 @@ def get_the_results(resource, name, description, es_index="key_values_resource_c
                     and name.lower() in item.get("description").lower()
                 )
             ]
-        else:
+        elif "resourcename" in hits[0]["_source"]:
+            print("==================================")
+            print ("========>>>>",hits[0]["_source"])
+            print ("==================================")
             returned_results = [item for item in hits[0]["_source"]["resourcename"]]
+        else:
+            return returned_results
 
     # remove container description from the results,
     # should be added again later after cleaning up the description

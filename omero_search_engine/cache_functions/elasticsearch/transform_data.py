@@ -435,7 +435,7 @@ def insert_resource_data(folder, resource, from_json):
 total_process = 0
 
 
-def get_insert_data_to_index(sql_st, resource):
+def get_insert_data_to_index(sql_st, resource, data_source):
     """
     - Query the postgreSQL database server and get metadata (key-value pair)
     - Process the results data
@@ -449,15 +449,18 @@ def get_insert_data_to_index(sql_st, resource):
     delete_index(resource)
     create_omero_indexes(resource)
     sql_ = "select max (id) from %s" % resource
-    res2 = search_omero_app.config["database_connector"].execute_query(sql_)
+    res2 = search_omero_app.config.database_connectors[data_source].execute_query(sql_)
+    #res2 = search_omero_app.config["database_connector"].execute_query(sql_)
     max_id = res2[0]["max"]
+    if not max_id:
+        return
     page_size = search_omero_app.config["CACHE_ROWS"]
     start_time = datetime.now()
     cur_max_id = page_size
     vals = []
     # Prepare the multiprocessing data
     while True:
-        vals.append((cur_max_id, (cur_max_id - page_size), resource))
+        vals.append((cur_max_id, (cur_max_id - page_size), resource, data_source))
         if cur_max_id > max_id:
             break
         cur_max_id += page_size
@@ -488,7 +491,7 @@ def get_insert_data_to_index(sql_st, resource):
         search_omero_app.logger.info(cur_max_id)
         delta = str(datetime.now() - start_time)
         search_omero_app.logger.info("Total time=%s" % delta)
-        print(res)
+        #print(res)
     finally:
         pool.close()
 
@@ -500,6 +503,7 @@ def processor_work(lock, global_counter, val):
     cur_max_id = val[0]
     range = val[1]
     resource = val[2]
+    data_source = val[3]
     search_omero_app.logger.info("%s, %s, %s" % (cur_max_id, range, resource))
     from omero_search_engine.cache_functions.elasticsearch.sql_to_csv import (
         sqls_resources,
@@ -522,7 +526,7 @@ def processor_work(lock, global_counter, val):
     search_omero_app.logger.info(
         "Calling the databas for %s/%s" % (global_counter.value, total_process)
     )
-    conn = search_omero_app.config["database_connector"]
+    conn = search_omero_app.config.database_connectors[data_source]
     results = conn.execute_query(mod_sql)
     search_omero_app.logger.info("Processing the results...")
     process_results(results, resource, lock)
@@ -632,7 +636,7 @@ def insert_plate_data(folder, plate_file):
 
 
 def save_key_value_buckets(
-    resource_table_=None, re_create_index=False, only_values=False
+    resource_table_=None, data_source=None, re_create_index=False, only_values=False
 ):
     """
     Query the database and get all available keys and values for
@@ -641,6 +645,8 @@ def save_key_value_buckets(
     It will use multiprocessing pool to use parallel processing
 
     """
+    if data_source==None:
+        return
     es_index = "key_value_buckets_information"
     es_index_2 = "key_values_resource_cach"
 
@@ -671,13 +677,13 @@ def save_key_value_buckets(
             %s ......."
             % resource_table
         )
-        resource_keys = get_keys(resource_table)
+        resource_keys = get_keys(resource_table, data_source)
         name_results = None
         if resource_table in ["project", "screen"]:
             sql = "select id, name,description  from {resource}".format(
                 resource=resource_table
             )
-            conn = search_omero_app.config["database_connector"]
+            conn = search_omero_app.config.database_connectors[data_source]
             name_result = conn.execute_query(sql)
             # name_results = [res["name"] for res in name_results]
             # Determine the number of images for each container
@@ -785,14 +791,15 @@ def save_key_value_buckets_process(lock, global_counter, vals):
             wrong_keys[resource_table] = [key]
 
 
-def get_keys(res_table):
+def get_keys(res_table, data_source):
     sql = "select  distinct (name) from annotation_mapvalue\
            inner join {res_table}annotationlink on\
            {res_table}annotationlink.child=\
            annotation_mapvalue.annotation_id".format(
         res_table=res_table
     )
-    results = search_omero_app.config["database_connector"].execute_query(sql)
+    results = search_omero_app.config.database_connectors[data_source].execute_query(sql)
+    #results = search_omero_app.config["database_connector"].execute_query(sql)
     results = [res["name"] for res in results]
     return results
 
