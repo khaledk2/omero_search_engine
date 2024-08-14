@@ -69,7 +69,7 @@ create_app("testing")
 # deep_check should be a configuration item
 deep_check = True
 
-#for data_source in search_omero_app.config.database_connectors.keys():
+# for data_source in search_omero_app.config.database_connectors.keys():
 
 
 class BasicTestCase(unittest.TestCase):
@@ -110,7 +110,9 @@ class BasicTestCase(unittest.TestCase):
         test connection with postgresql database
         """
         for data_source in search_omero_app.config.database_connectors.keys():
-            res = search_omero_app.config.database_connectors[data_source].execute_query(sql)
+            res = search_omero_app.config.database_connectors[
+                data_source
+            ].execute_query(sql)
             self.assertIsNotNone(res)
             self.assertEqual(res[0]["current_database"], "omero")
 

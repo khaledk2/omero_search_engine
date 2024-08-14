@@ -30,7 +30,7 @@ from omero_search_engine.api.v1.resources.utils import (
 import math
 from flask import jsonify, Response
 
-key_number_search_template = Template(
+key_number_search_template_ = Template(
     """
 {"size":0,"aggs":{"value_search":{"nested":{"path":"key_values"},
 "aggs":{"value_filter":{"filter":{"terms":
@@ -38,6 +38,46 @@ key_number_search_template = Template(
 "aggs":{"required_values":{"cardinality":
 {"field":"key_values.value.keyvalue","precision_threshold":4000
 }}}}}}}}"""
+)
+key_number_search_template = Template(
+    """
+{
+   "size":0,
+    "query":{ "bool" : {"must": {
+               "match":{
+                  "data_source.keyvalue":"$data_source"
+               }
+               }
+               }
+   },
+   "aggs":{
+      "value_search":{
+         "nested":{
+            "path":"key_values"
+         },
+         "aggs":{
+            "value_filter":{
+               "filter":{
+                  "terms":{
+                     "key_values.name.keyword":[
+                        "$key"
+                     ]
+                  }
+               },
+               "aggs":{
+                  "required_values":{
+                     "cardinality":{
+                        "field":"key_values.value.keyvalue",
+                        "precision_threshold":4000
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+"""
 )
 
 search_by_value_only = Template(
@@ -87,6 +127,13 @@ key_search_template = Template(
 values_for_key_template = Template(
     """
 {"size":0,
+ "query":{ "bool" : {"must": {
+               "match":{
+                  "data_source.keyvalue":"$data_source"
+               }
+               }
+               }
+   },
 "aggs":{"name_search":{"nested":{ "path":"key_values"},
 "aggs":{"value_filter":{"filter":{
 "terms":{"key_values.name.keyword":["$key"]}},"aggs":{"required_values":{
@@ -193,8 +240,8 @@ def search_value_for_resource_(table_, value):
     return {"data": returned_results, "total_number": total_number}
 
 
-def get_number_of_buckets(key, res_index):
-    query = key_number_search_template.substitute(key=key)
+def get_number_of_buckets(key, data_source, res_index):
+    query = key_number_search_template.substitute(key=key, data_source=data_source)
     res = search_index_for_value(res_index, query)
     number_of_buckets = (
         res.get("aggregations")
@@ -210,9 +257,9 @@ def get_number_of_buckets(key, res_index):
     return number_of_buckets, number_of_images
 
 
-def get_all_values_for_a_key(table_, key):
+def get_all_values_for_a_key(table_, data_source, key):
     res_index = resource_elasticsearchindex.get(table_)
-    query = key_number_search_template.substitute(key=key)
+    query = key_number_search_template.substitute(key=key, data_source=data_source)
     res = search_index_for_value(res_index, query)
     number_of_buckets = (
         res.get("aggregations")
@@ -232,7 +279,9 @@ def get_all_values_for_a_key(table_, key):
     total_ret = 0
     while co < total:
         search_omero_app.logger.info("processing: %s / %s" % ((co + 1), total))
-        query = values_for_key_template.substitute(key=key, total=total, cur=co)
+        query = values_for_key_template.substitute(
+            key=key, total=total, cur=co, data_source=data_source
+        )
         res = search_index_for_value(res_index, query)
         results.append(res)
         total_ret += len(
@@ -269,14 +318,16 @@ def get_all_values_for_a_key(table_, key):
     }
 
 
-def get_values_for_a_key(table_, key):
+def get_values_for_a_key(table_, key, data_source):
     """
     search the index to get the available values for a key
     and get values number for the key
     """
     total_number = 0
     res_index = resource_elasticsearchindex.get(table_)
-    number_of_buckets, number_of_images = get_number_of_buckets(key, res_index)
+    number_of_buckets, number_of_images = get_number_of_buckets(
+        key, data_source, res_index
+    )
     query = key_search_template.substitute(key=key)
     start_time = time.time()
     res = search_index_for_value(res_index, query)
@@ -298,6 +349,7 @@ def get_values_for_a_key(table_, key):
             returned_results.append(singe_row)
             singe_row["Key"] = key
             singe_row["Value"] = value
+            singe_row["data_source"] = data_source
             singe_row["Number of %ss" % table_] = value_no
     return {
         "data": returned_results,
@@ -364,6 +416,7 @@ def prepare_search_results_buckets(results_):
             res = hit["_source"]
             row["Key"] = res["Attribute"]
             row["Value"] = res["Value"]
+            row["data_resource"] = res["data_source"]
             resource = res.get("resource")
             row["Number of %ss" % resource] = res.get("items_in_the_bucket")
             total_number += res["items_in_the_bucket"]
@@ -761,6 +814,9 @@ def get_resource_names(resource, name=None, description=False):
         for res in ress:
             returned_results[res] = get_the_results(res, name, description)
 
+    print("#############################################")
+    print(returned_results)
+    print("#############################################")
     return returned_results
 
 
@@ -773,68 +829,82 @@ def get_the_results(resource, name, description, es_index="key_values_resource_c
     hits = results_["hits"]["hits"]
 
     if len(hits) > 0:
-        # print (hits[0]["_source"])
-        if name and not description:
-            returned_results = [
-                item
-                for item in hits[0]["_source"]["resourcename"]
-                if item.get("name") and name.lower() in item.get("name").lower()
-            ]
-        elif name and description:
-            returned_results = [
-                item
-                for item in hits[0]["_source"]["resourcename"]
-                if (item.get("name") and name.lower() in item.get("name").lower())
-                or (
-                    item.get("description")
-                    and name.lower() in item.get("description").lower()
-                )
-            ]
-        elif "resourcename" in hits[0]["_source"]:
-            print("==================================")
-            print ("========>>>>",hits[0]["_source"])
-            print ("==================================")
-            returned_results = [item for item in hits[0]["_source"]["resourcename"]]
-        else:
-            return returned_results
+        for hit in hits:
+            if len(hits) > 0:
+                if name and not description:
+                    returned_results[hit["_source"]["data_source"]] = [
+                        item
+                        for item in hit["_source"]["resourcename"]
+                        if item.get("name") and name.lower() in item.get("name").lower()
+                    ]
+                elif name and description:
+                    returned_results[hit["_source"]["data_resource"]] = [
+                        item
+                        for item in hit["_source"]["resourcename"]
+                        if (
+                            item.get("name")
+                            and name.lower() in item.get("name").lower()
+                        )
+                        or (
+                            item.get("description")
+                            and name.lower() in item.get("description").lower()
+                        )
+                    ]
+                elif "resourcename" in hit["_source"]:
+                    returned_results[hit["_source"]["data_resource"]] = [
+                        item for item in hit["_source"]["resourcename"]
+                    ]
+                else:
+                    return returned_results
 
     # remove container description from the results,
     # should be added again later after cleaning up the description
 
-    for item in returned_results:
-        del item["description"]
-
+    for k, item in returned_results.items():
+        del item[0]["description"]
     return returned_results
 
 
 def get_container_values_for_key(table_, container_name, csv, key=None):
     returned_results = []
     pr_names = get_resource_names("all")
-    for resourse, names in pr_names.items():
-        act_name = [
-            {"id": name["id"], "name": name["name"]}
-            for name in names
-            if name["name"] and container_name.lower() in name["name"].lower()
-        ]
-        if len(act_name) > 0:
-            for id in act_name:
-                if resourse != table_:
-                    res = process_container_query(
-                        table_, resourse + "_id", id["id"], key, table_
-                    )
-                else:
-                    res = process_container_query(table_, "id", id["id"], key, table_)
-                if len(res) > 0:
-                    returned_results.append(
-                        {"name": id["name"], "type": resourse, "results": res}
-                    )
+    for resourse, names_ in pr_names.items():
+        for data_source, names in names_.items():
+            act_name = [
+                {"id": name["id"], "name": name["name"]}
+                for name in names
+                if name["name"] and container_name.lower() in name["name"].lower()
+            ]
+            if len(act_name) > 0:
+                for id in act_name:
+                    if resourse != table_:
+                        res = process_container_query(
+                            table_, resourse + "_id", id["id"], key, table_
+                        )
+                    else:
+                        res = process_container_query(
+                            table_, "id", id["id"], key, table_
+                        )
+                    if len(res) > 0:
+                        returned_results.append(
+                            {
+                                "name": id["name"],
+                                "type": resourse,
+                                "data_source": data_source,
+                                "results": res,
+                            }
+                        )
     if csv:
         if key:
             containers = [
                 ",".join(["Container", "Type", "Key", "Value", "No of %s" % table_])
             ]
         else:
-            containers = [",".join(["Container", "Type", "Key", "No of %s" % table_])]
+            containers = [
+                ",".join(
+                    ["Container", "Type", "data_source", "Key", "No of %s" % table_]
+                )
+            ]
         for r_results in returned_results:
             reso = r_results.get("name")
             type = r_results.get("type")
@@ -845,6 +915,7 @@ def get_container_values_for_key(table_, container_name, csv, key=None):
                             [
                                 reso,
                                 type,
+                                data_source,
                                 res.get("key"),
                                 res.get("value"),
                                 str(res.get("no_%s" % table_)),

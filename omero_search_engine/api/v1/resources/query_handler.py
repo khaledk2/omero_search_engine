@@ -110,7 +110,7 @@ class QueryItem(object):
                     )
                     if ac_value and len(ac_value) == 1:
                         self.value = ac_value[0]
-                    elif not ac_value  or len(ac_value) == 0:
+                    elif not ac_value or len(ac_value) == 0:
                         self.value = -1
                     else:
                         self.value = ac_value

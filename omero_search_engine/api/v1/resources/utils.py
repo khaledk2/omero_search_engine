@@ -1026,6 +1026,7 @@ def search_index_using_search_after(
         bookmark_ = get_bookmark(pagination_dict)
     if not bookmark_:
         result = es.search(index=e_index, body=query)
+        # print (result)
         if len(result["hits"]["hits"]) == 0:
             search_omero_app.logger.info("No result is found")
             return returned_results

@@ -22,7 +22,8 @@ import os
 import logging
 from elasticsearch import Elasticsearch
 from flasgger import Swagger, LazyString, LazyJSONEncoder
-from omero_search_engine.database.database_connector import DatabaseConnector
+
+# from omero_search_engine.database.database_connector import DatabaseConnector
 from configurations.configuration import (
     configLooader,
     load_configuration_variables_from_file,
@@ -62,8 +63,7 @@ def create_app(config_name="development"):
     app_config = configLooader.get(config_name)
     load_configuration_variables_from_file(app_config)
     set_database_connection_variables(app_config)
-    print ("config.database_connectors::::::", app_config.database_connectors)
-    #atabase_connector = DatabaseConnector(
+    # atabase_connector = DatabaseConnector(
     #   app_config.DATABASE_NAME, app_config.DATABASE_URI
     #
     search_omero_app.config.from_object(app_config)
@@ -82,7 +82,7 @@ def create_app(config_name="development"):
         scheme="https",
         http_auth=("elastic", ELASTIC_PASSWORD),
     )
-    search_omero_app.config.database_connectors= app_config.database_connectors
+    search_omero_app.config.database_connectors = app_config.database_connectors
     print(search_omero_app.config.database_connectors)
     search_omero_app.config["es_connector"] = es_connector
     log_folder = os.path.join(os.path.expanduser("~"), "logs")
@@ -116,6 +116,7 @@ from omero_search_engine.api.v1.resources import (  # noqa
 search_omero_app.register_blueprint(
     resources_routers_blueprint_v1, url_prefix="/api/v1/resources"
 )
+
 
 # add it to account for CORS
 @search_omero_app.after_request

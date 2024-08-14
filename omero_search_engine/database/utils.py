@@ -28,10 +28,16 @@ def restore_database():
     """
     from omero_search_engine import search_omero_app
 
+    print("1111111111")
     main_dir = os.path.abspath(os.path.dirname(__file__))
+    print(main_dir)
     mm = main_dir.replace("omero_search_engine/database", "")
+    print(mm)
     sys.path.append(mm)
+    print("3333333333333")
+
     dat_file_name = os.path.join(mm, "app_data/omero.pgdump")
+    print(dat_file_name)
     restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
         search_omero_app.config.get("DATABASE_USER"),
         search_omero_app.config.get("DATABASE_SERVER_URI"),
@@ -39,6 +45,7 @@ def restore_database():
         search_omero_app.config.get("DATABASE_NAME"),
         dat_file_name,
     )
+    print(restore_command)
     try:
         proc = subprocess.Popen(
             restore_command,

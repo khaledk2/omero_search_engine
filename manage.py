@@ -32,9 +32,7 @@ def show_saved_indices():
     )
 
     all_indexes = get_all_indexes()
-    for index in all_indexes:
-        print("Index: ==>>>", index)
-    # return (all_indexes)
+    return all_indexes
 
 
 @manager.command
@@ -118,6 +116,8 @@ def sql_results_to_panda():
 def restore_postgresql_database():
     from omero_search_engine.database.utils import restore_database
 
+    print("HI")
+
     restore_database()
 
 
@@ -150,31 +150,47 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         save_key_value_buckets,
     )
     import json
+
     backup = json.loads(backup.lower())
+    if not source:
+        print("Data source is required to process")
+        return
+    elif source == "all":
+        clean_index = True
+
+    else:
+        clean_index = False
+
     for data_source in search_omero_app.config.database_connectors.keys():
-        if source.lower()!="all" and data_source.lower() != source.lower():
+        if source.lower() != "all" and data_source.lower() != source.lower():
             continue
-        #if resource != "all":
+        # if resource != "all":
         #    sql_st = sqls_resources.get(resource)
         #    if not sql_st:
         #        return
-       #     get_insert_data_to_index(sql_st, resource)
-       # else:
+        #     get_insert_data_to_index(sql_st, resource)
+        # else:
         for res, sql_st in sqls_resources.items():
-            if resource.lower()!="all" and resource.lower() != res.lower():
+            if resource.lower() != "all" and resource.lower() != res.lower():
                 continue
-            get_insert_data_to_index(sql_st, res, data_source)
-
+            get_insert_data_to_index(sql_st, res, data_source, clean_index)
 
         save_key_value_buckets(
-            resource_table_=None, data_source=data_source, re_create_index=True ,only_values=False
+            resource_table_=None,
+            data_source=data_source,
+            clean_index=clean_index,
+            only_values=False,
         )
+
+        if clean_index:
+            clean_index = False
         # validat ethe indexing
-        test_indexing_search_query(source=data_source, deep_check=False, check_studies=True)
+        # test_indexing_search_query(source=data_source, deep_check=False,
+        # check_studies=True)
 
     # backup the index data
-    if backup:
-        backup_elasticsearch_data()
+    # if backup:
+    #    backup_elasticsearch_data()
 
 
 # set configurations
@@ -186,14 +202,19 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
 @manager.option("-p", "--password", help="database username password")
 @manager.option("-w", "--working_data_source", help="data source")
 def set_database_configuration(
-    working_data_source=None,url=None, server_port_number=None, database=None, name=None, password=None
+    working_data_source=None,
+    url=None,
+    server_port_number=None,
+    database=None,
+    name=None,
+    password=None,
 ):
-    if not  working_data_source:
-        print ("Data source is required to process")
+    if not working_data_source:
+        print("Data source is required to process")
     database_attrs = {}
-    databse_config={}
-    databse_config["name"]=working_data_source
-    databse_config["DATABASE"]=database_attrs
+    databse_config = {}
+    databse_config["name"] = working_data_source
+    databse_config["DATABASE"] = database_attrs
     if database:
         database_attrs["DATABASE_NAME"] = database
     if url:
@@ -342,7 +363,10 @@ def cache_key_value_index(resource=None, create_index=None, only_values=None):
     help="data source name, ndexeing all the data sources is the default",  # noqa
 )
 def test_indexing_search_query(
-    json_file="app_data/test_index_data.json", source=None, deep_check=False, check_studies=False
+    json_file="app_data/test_index_data.json",
+    source=None,
+    deep_check=False,
+    check_studies=False,
 ):
     """
     test the indexing and the searchengine query functions
@@ -360,8 +384,9 @@ def test_indexing_search_query(
         get_omero_stats,
         get_no_images_sql_containers,
     )
+
     if not source:
-        print ("Data source is required to process ")
+        print("Data source is required to process ")
         return
 
     validate_queries(json_file, source, deep_check)
