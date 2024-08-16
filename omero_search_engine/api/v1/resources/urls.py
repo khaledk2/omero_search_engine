@@ -24,6 +24,7 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation,
     build_error_message,
     adjust_query_for_container,
+    get_data_sources
 )
 from omero_search_engine.api.v1.resources.resource_analyser import (
     search_value_for_resource,
@@ -45,6 +46,12 @@ from omero_search_engine.api.v1.resources.query_handler import (
 def index():
     return "OMERO search engine (API V1)"
 
+@resources.route("/data_resources/", methods=["GET"])
+def return_data_resources():
+    """
+    used to return the available data resources
+    """
+    return jsonify(get_data_sources())
 
 @resources.route("/<resource_table>/searchannotation_page/", methods=["POST"])
 def search_resource_page(resource_table):
