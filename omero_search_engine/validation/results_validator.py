@@ -937,75 +937,76 @@ def check_number_images_sql_containers_using_ids(data_source):
         search_omero_app.logger.info(
             "######################## Checking %s ########################\n" % resource
         )
-        for res_name_ in all_names.get(resource):
-            res_name = res_name_.get("name")
-            res_id = res_name_.get("id")
-            search_omero_app.logger.info(
-                "Checking %s name: %s, id: %s" % (resource, res_name, res_id)
-            )
-            and_filters = []
-            main_attributes = {
-                "and_main_attributes": [
-                    {
-                        "name": "%s_id" % resource,
-                        "value": res_id,
-                        "operator": "equals",
-                        "resource": "image",
-                    }
-                ]
-            }
-            or_filters = []
-            query = {"and_filters": and_filters, "or_filters": or_filters}
+        for d_source, res_names in all_names.get(resource).items():
+            for res_name_ in res_names:
+                res_name = res_name_.get("name")
+                res_id = res_name_.get("id")
+                search_omero_app.logger.info(
+                    "Checking %s name: %s, id: %s" % (resource, res_name, res_id)
+                )
+                and_filters = []
+                main_attributes = {
+                    "and_main_attributes": [
+                        {
+                            "name": "%s_id" % resource,
+                            "value": res_id,
+                            "operator": "equals",
+                            "resource": "image",
+                        }
+                    ]
+                }
+                or_filters = []
+                query = {"and_filters": and_filters, "or_filters": or_filters}
 
-            query_data = {"query_details": query, "main_attributes": main_attributes}
+                query_data = {"query_details": query, "main_attributes": main_attributes}
 
-            returned_results = search_resource_annotation("image", query_data)
-            if returned_results.get("results"):
-                if returned_results.get("results").get("size"):
-                    searchengine_results = returned_results["results"]["size"]
-            else:
-                searchengine_results = 0
-            search_omero_app.logger.info(
-                "Number of images returned from searchengine: %s" % searchengine_results
-            )
-            if resource == "project":
-                sql = query_images_in_project_id.substitute(project_id=res_id)
-            elif resource == "screen":
-                sql = query_images_in_screen_id.substitute(screen_id=res_id)
-            results = conn.execute_query(sql)
-            postgres_results = len(results)
-            search_omero_app.logger.info(
-                "Number of images returned from the database: %s" % postgres_results
-            )
-            if searchengine_results != postgres_results:
-                if res_name == "idr0021" and res_id == 872:
-                    # """
-                    # issue with these two images:
-                    # as they belong to two different datasets
-                    # image ids= 9539, 9552
-                    # """
-                    continue
-                dd = False
-                if searchengine_results > 0:
-                    test_array = []
-                    for res in returned_results["results"]["results"]:
-                        test_array.append(res.get("id"))
-                    for ress in results:
-                        if ress["id"] not in test_array:
-                            print("================>>>>")
-                            print(ress["id"])
-                    search_omero_app.logger.info("ERROR: Not equal results")
-                    print(
-                        "Error checking %s name: %s, id: %s"
-                        % (resource, res_name, res_id)
-                    )
-                # return False
-            else:
-                search_omero_app.logger.info("equal results")
-            search_omero_app.logger.info(
-                "\n-----------------------------------------------------------------------------\n"  # noqa
-            )
-    return dd
+                returned_results = search_resource_annotation("image", query_data)
+                if returned_results.get("results"):
+                    if returned_results.get("results").get("size"):
+                        searchengine_results = returned_results["results"]["size"]
+                else:
+                    searchengine_results = 0
+                search_omero_app.logger.info(
+                    "Number of images returned from searchengine: %s" % searchengine_results
+                )
+                if resource == "project":
+                    sql = query_images_in_project_id.substitute(project_id=res_id)
+                elif resource == "screen":
+                    sql = query_images_in_screen_id.substitute(screen_id=res_id)
+                results = conn.execute_query(sql)
+                postgres_results = len(results)
+                search_omero_app.logger.info(
+                    "Number of images returned from the database: %s" % postgres_results
+                )
+                if searchengine_results != postgres_results:
+                    if res_name == "idr0021" and res_id == 872:
+                        # """
+                        # issue with these two images:
+                        # as they belong to two different datasets
+                        # image ids= 9539, 9552
+                        # """
+                        continue
+                    dd = False
+                    if searchengine_results > 0:
+                        test_array = []
+                        for res in returned_results["results"]["results"]:
+                            test_array.append(res.get("id"))
+                        for ress in results:
+                            if ress["id"] not in test_array:
+                                print("================>>>>")
+                                print(ress["id"])
+                        search_omero_app.logger.info("ERROR: Not equal results")
+                        print(
+                            "Error checking %s name: %s, id: %s"
+                            % (resource, res_name, res_id)
+                        )
+                    # return False
+                else:
+                    search_omero_app.logger.info("equal results")
+                search_omero_app.logger.info(
+                    "\n-----------------------------------------------------------------------------\n"  # noqa
+                )
+        return dd
 
 
 def get_no_images_sql_containers(data_source, write_report=True):
