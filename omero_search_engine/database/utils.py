@@ -22,36 +22,36 @@ import sys
 import subprocess
 
 
-def restore_database():
+def restore_database(source):
     """
     restote the database from a database dump file
     """
     from omero_search_engine import search_omero_app
-
-    print("1111111111")
     main_dir = os.path.abspath(os.path.dirname(__file__))
     print(main_dir)
     mm = main_dir.replace("omero_search_engine/database", "")
     print(mm)
     sys.path.append(mm)
-    print("3333333333333")
-
     dat_file_name = os.path.join(mm, "app_data/omero.pgdump")
     print(dat_file_name)
-    restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
-        search_omero_app.config.get("DATABASE_USER"),
-        search_omero_app.config.get("DATABASE_SERVER_URI"),
-        search_omero_app.config.get("DATABASE_PORT"),
-        search_omero_app.config.get("DATABASE_NAME"),
-        dat_file_name,
-    )
-    print(restore_command)
-    try:
-        proc = subprocess.Popen(
-            restore_command,
-            shell=True,
-            env={"PGPASSWORD": search_omero_app.config.get("DATABASE_PASSWORD")},
+    for data_source in search_omero_app.config.database_connectors.keys():
+        if source.lower() != "all" and data_source.lower() != source.lower():
+            continue
+        conn = search_omero_app.config.database_connectors[data_source]
+        restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
+            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_USER"),
+            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_SERVER_URI"),
+            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_PORT"),
+            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_NAME"),
+            dat_file_name,
         )
-        proc.wait()
-    except Exception as e:
-        print("Exception happened during dump %s" % (e))
+        print(restore_command)
+        try:
+            proc = subprocess.Popen(
+                restore_command,
+                shell=True,
+                env={"PGPASSWORD": search_omero_app.config.get("DATABASE_PASSWORD")},
+            )
+            proc.wait()
+        except Exception as e:
+            print("Exception happened during dump %s" % (e))

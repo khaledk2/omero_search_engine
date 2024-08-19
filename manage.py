@@ -112,13 +112,15 @@ def sql_results_to_panda():
     pass
 
 
+@manager.option(
+    "-s",
+    "--source",
+    help="data source name, ndexeing all the data sources is the default",  # noqa
+)
 @manager.command
-def restore_postgresql_database():
+def restore_postgresql_database(source="all"):
     from omero_search_engine.database.utils import restore_database
-
-    print("HI")
-
-    restore_database()
+    restore_database(source)
 
 
 @manager.command
