@@ -111,13 +111,12 @@ def create_index(resource="all"):
 def sql_results_to_panda():
     pass
 
-
+@manager.command
 @manager.option(
     "-s",
     "--source",
-    help="data source name, ndexeing all the data sources is the default",  # noqa
+    help="data source name, restore all the data sources is the default",  # noqa
 )
-@manager.command
 def restore_postgresql_database(source="all"):
     from omero_search_engine.database.utils import restore_database
     restore_database(source)

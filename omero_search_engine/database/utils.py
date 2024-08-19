@@ -34,18 +34,20 @@ def restore_database(source):
     sys.path.append(mm)
     dat_file_name = os.path.join(mm, "app_data/omero.pgdump")
     print(dat_file_name)
-    for data_source in search_omero_app.config.database_connectors.keys():
-        if source.lower() != "all" and data_source.lower() != source.lower():
+    print (search_omero_app.config.get("DATA_SOURCES"))
+    print (search_omero_app.config.database_connectors.keys())
+    for data_source in search_omero_app.config.get("DATA_SOURCES"):
+        print(data_source["name"])
+        if source and source.lower() != "all" and data_source["name"].lower() != source.lower():
             continue
-        conn = search_omero_app.config.database_connectors[data_source]
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
-            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_USER"),
-            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_SERVER_URI"),
-            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_PORT"),
-            search_omero_app.config.get("DATA_SOURCES").get("DATABASE_NAME"),
+            data_source.get("DATABASE").get("DATABASE_USER"),
+            data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
+            data_source.get("DATABASE").get("DATABASE_PORT"),
+            data_source.get("DATABASE").get("DATABASE_NAME"),
             dat_file_name,
         )
-        print(restore_command)
+        print("Resore command: %s"%restore_command)
         try:
             proc = subprocess.Popen(
                 restore_command,
@@ -54,4 +56,4 @@ def restore_database(source):
             )
             proc.wait()
         except Exception as e:
-            print("Exception happened during dump %s" % (e))
+            print("Error, exception happened during dump %s" % (e))
