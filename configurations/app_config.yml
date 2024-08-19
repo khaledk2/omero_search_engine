@@ -14,7 +14,7 @@ DATA_SOURCES:
     - name: omero1
       DATABASE:
           DATABASE_NAME: omero
-          DATABSE_USER: database_user
+          DATABASE_USER: database_user
           DATABASE_PASSWORD: password
           DATABASE_SERVER_URI: 127.0.0.1
           DATABASE_PORT: 5432
