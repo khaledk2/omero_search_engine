@@ -52,8 +52,8 @@ def restore_database(source):
             proc = subprocess.Popen(
                 restore_command,
                 shell=True,
-                env={"PGPASSWORD": search_omero_app.config.get("DATABASE_PASSWORD")},
+                env={"PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")},
             )
             proc.wait()
         except Exception as e:
-            print("Error, exception happened during dump %s" % (e))
+            print("Error: exception happened during dump %s" % (e))

@@ -52,7 +52,7 @@ jobs:
           wget https://downloads.openmicroscopy.org/images/omero_db_searchengine.zip -P app_data
           unzip app_data/omero_db_searchengine.zip -d app_data/          
           # run  restore omero database
-          python manage.py restore_postgresql_database
+          python manage.py restore_postgresql_database -s omero1
           # run indexing indexing
           python manage.py get_index_data_from_database -b False -s omero1
           # run tests
