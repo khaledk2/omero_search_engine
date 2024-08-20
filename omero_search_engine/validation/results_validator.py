@@ -979,6 +979,7 @@ def check_number_images_sql_containers_using_ids(data_source):
                     "Number of images returned from the database: %s" % postgres_results
                 )
                 if searchengine_results != postgres_results:
+                    print ( res_name,res_id,"TOOOOOZ", searchengine_results , postgres_results)
                     if res_name == "idr0021" and res_id == 872:
                         # """
                         # issue with these two images:
