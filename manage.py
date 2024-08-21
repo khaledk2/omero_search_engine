@@ -463,6 +463,53 @@ def test_container_key_value():
 
     check_container_keys_vakues()
 
+@manager.command
+def test_get_container_images():
+    ids=[ 40175, 40176,  40177,  40178,  40179,  40180,  40181,  40182,
+ 40183, 40184, 40185, 40186, 40187, 40188, 40189, 40190, 40191, 40192,
+ 40193, 40194, 40195, 40196, 40197, 40198, 40199, 40200, 40201, 40202,
+ 40203, 40204, 40205, 40206, 40207
+]
+    project_id=997
+    from omero_search_engine.validation.psql_templates import query_images_in_project_id
+    sql = query_images_in_project_id.substitute(project_id=project_id)
+    and_filters = []
+    main_attributes = {
+        "and_main_attributes": [
+            {
+                "name": "id",
+                "value": 40175,
+                "operator": "equals",
+                "resource": "image",
+            }
+        ]
+    }
+    or_filters = []
+    query = {"and_filters": and_filters, "or_filters": or_filters}
+
+    query_data = {"query_details": query, "main_attributes": main_attributes}
+    from omero_search_engine.api.v1.resources.utils import (
+        search_resource_annotation,
+    )
+#[40175, 40176, 40177, 40178, 40207]
+
+    returned_results = search_resource_annotation("image", query_data)
+    if returned_results.get("results"):
+        if returned_results.get("results").get("size"):
+            searchengine_results = returned_results["results"]["size"]
+            for res in returned_results["results"]["results"]:
+                print (res)
+                print (res.get("project_name"))
+                print("datasetid: ",res.get("dataset_id"))
+                print(res.get("project_id"))
+                print (res.keys())
+                #id=res.get("id")
+                #if id in ids:
+                #    ids.remove(id)
+            print (searchengine_results)
+    print ("DONE !!!!")
+    print(ids)
+
 
 if __name__ == "__main__":
     from flask_script import Command
