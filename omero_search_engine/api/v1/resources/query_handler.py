@@ -52,11 +52,13 @@ def check_get_names(idr_, resource, attribute, return_exact=False):
                 if name[attribute] and idr_.lower() in name[attribute].lower()
             ]
         else:
-            act_name = [
-                name["id"]
-                for name in pr_names
-                if name[attribute] and idr_.lower() == name[attribute].lower()
-            ]
+            # This should be modified to query specific data source specific
+            for data_source, pr_names_ in pr_names.items():
+                act_name = [
+                    name["id"]
+                    for name in pr_names_
+                    if name[attribute] and idr_.lower() == name[attribute].lower()
+                ]
         return act_name
 
 
