@@ -160,7 +160,7 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         clean_index = True
 
     else:
-        clean_index = False
+        clean_index = False\
 
     for data_source in search_omero_app.config.database_connectors.keys():
         if source.lower() != "all" and data_source.lower() != source.lower():
@@ -186,8 +186,7 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         if clean_index:
             clean_index = False
         # validat ethe indexing
-        # test_indexing_search_query(source=data_source, deep_check=False,
-        # check_studies=True)
+        test_indexing_search_query(source=data_source, deep_check=False,check_studies=True)
 
     # backup the index data
     # if backup:
