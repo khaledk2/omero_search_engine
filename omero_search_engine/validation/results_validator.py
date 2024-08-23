@@ -294,11 +294,14 @@ class Validator(object):
         """
         if self.type == "buckets":
             if self.name:
-                res = get_key_values_return_contents(self.name, "image", False)
+                res = get_key_values_return_contents(
+                    self.name, "image", data_source=[self.data_source], csv=False
+                )
                 self.searchengine_results = json.loads(res.data)
             elif self.value:
+
                 self.searchengine_results = search_value_for_resource(
-                    "image", self.value
+                    "image", self.value, [self.data_source]
                 )
             return
 
@@ -397,6 +400,13 @@ class Validator(object):
                 ]
             query = {"and_filters": and_filters, "or_filters": []}
         and_main_attributes = []
+        if self.data_source and self.data_source.lower() != "all":
+            data_source_clause = {}
+            data_source_clause["name"] = "data_source"
+            data_source_clause["value"] = self.data_source
+            data_source_clause["operator"] = "equals"
+            and_main_attributes.append(data_source_clause)
+
         if hasattr(self, "owner_id") and self.owner_id:
             and_main_attributes.append(
                 {"name": "owner_id", "value": self.owner_id, "operator": "equals"}
@@ -952,13 +962,22 @@ def check_number_images_sql_containers_using_ids(data_source):
                             "value": res_id,
                             "operator": "equals",
                             "resource": "image",
-                        }
+                        },
+                        {
+                            "name": "data_source",
+                            "value": data_source,
+                            "operator": "equals",
+                            "resource": "image",
+                        },
                     ]
                 }
                 or_filters = []
                 query = {"and_filters": and_filters, "or_filters": or_filters}
 
-                query_data = {"query_details": query, "main_attributes": main_attributes}
+                query_data = {
+                    "query_details": query,
+                    "main_attributes": main_attributes,
+                }
 
                 returned_results = search_resource_annotation("image", query_data)
                 if returned_results.get("results"):
@@ -967,7 +986,8 @@ def check_number_images_sql_containers_using_ids(data_source):
                 else:
                     searchengine_results = 0
                 search_omero_app.logger.info(
-                    "Number of images returned from searchengine: %s" % searchengine_results
+                    "Number of images returned from searchengine: %s"
+                    % searchengine_results
                 )
                 if resource == "project":
                     sql = query_images_in_project_id.substitute(project_id=res_id)
@@ -1030,10 +1050,10 @@ def get_no_images_sql_containers(data_source, write_report=True):
         messages.append(
             "######################## Checking %s ########################\n" % resource
         )
-        ## this may be used for a specific data source
+        # this may be used for a specific data source
         for data_source, res_name__ in all_names.get(resource).items():
             pass
-            for res_name_ in res_name__: ##all_names.get(resource):
+            for res_name_ in res_name__:  # all_names.get(resource):
                 res_name = res_name_.get("name")
                 message1 = "Checking %s name: %s" % (resource, res_name)
                 messages.append(message1)

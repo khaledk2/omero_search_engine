@@ -428,8 +428,8 @@ def prepare_search_results_buckets(results_):
     }
 
 
-def get_key_values_return_contents(name, resource, csv):
-    resource_keys = query_cashed_bucket(name, resource)
+def get_key_values_return_contents(name, resource, data_source, csv):
+    resource_keys = query_cashed_bucket(name, resource, data_source)
     # if a csv flag is true thenm iut will send a CSV file
     # which contains the results otherwise it will return a JSON file
     if csv:
@@ -507,12 +507,17 @@ def query_cashed_bucket_part_value_keys(
         return returned_results
 
 
-def query_cashed_bucket(name, resource, es_index="key_value_buckets_information"):
+def query_cashed_bucket(
+    name, resource, data_source, es_index="key_value_buckets_information"
+):
     # returns possible matches for a specific resource
     if name:
         name = name.strip()
     if resource != "all":
-        query = key_values_buckets_template.substitute(name=name, resource=resource)
+
+        query = key_values_buckets_template.substitute(
+            name=name, resource=resource, data_source=json.dumps(data_source)
+        )
         res = search_index_for_values_get_all_buckets(es_index, query)
         returned_results = prepare_search_results_buckets(res)
         return returned_results
@@ -520,7 +525,9 @@ def query_cashed_bucket(name, resource, es_index="key_value_buckets_information"
         # search all resources for all possible matches
         returned_results = {}
         for table in resource_elasticsearchindex:
-            query = key_values_buckets_template.substitute(name=name, resource=table)
+            query = key_values_buckets_template.substitute(
+                name=name, resource=table, data_source=json.dumps([data_source])
+            )
             res = search_index_for_values_get_all_buckets(es_index, query)
             returned_results[table] = prepare_search_results_buckets(res)
         return returned_results
@@ -533,20 +540,20 @@ def query_cashed_bucket_value(value, es_index="key_value_buckets_information"):
 
 
 def search_value_for_resource(
-    table_, value, bookmarks=None, es_index="key_value_buckets_information"
+    table_, value, data_source, bookmarks=None, es_index="key_value_buckets_information"
 ):
     """
     send the request to elasticsearch and format the results
-    It support wildcard operations only
+    It supports wildcard operations only
     """
     value = adjust_value(value)
 
     if table_ != "all":
         query = resource_key_values_buckets_template.substitute(
-            value=value, resource=table_
+            value=value, resource=table_, data_source=json.dumps(data_source)
         )
         size_query = resource_key_values_buckets_size_template.substitute(
-            value=value, resource=table_
+            value=value, resource=table_, data_source=json.dumps(data_source)
         )
         # Get the total number of the results.
         res = search_index_for_value(es_index, size_query, True)
@@ -566,10 +573,10 @@ def search_value_for_resource(
                 continue
             # res = es.count(index=e_index, body=query)
             query = resource_key_values_buckets_template.substitute(
-                value=value, resource=table
+                value=value, resource=table, data_source=json.dumps(data_source)
             )
             size_query = resource_key_values_buckets_size_template.substitute(
-                value=value, resource=table_
+                value=value, resource=table_, data_source=json.dumps(data_source)
             )
             # Get the total number of the results.
             res = search_index_for_value(es_index, size_query, True)
@@ -584,10 +591,13 @@ Search using key and resource
 """
 key_values_buckets_template = Template(
     """
-{"query":{"bool":{"must":[{"bool":{
-"must":{"match":{"Attribute.keyrnamenormalize":"$name"}}}},{
-"bool": {"must": {"match":
-{"resource.keyresource": "$resource"}}}}]}}}"""
+{
+"query":{"bool":{"must":[{"bool":{
+"must":{"match":{"Attribute.keyrnamenormalize":"$name"}}}},{"bool":{"must":{
+"match":{"resource.keyresource":"$resource"}}}
+},{"bool":{"must":{"terms":{"data_source.keyvalue":$data_source}
+}}}]}}}
+"""
 )
 
 """
@@ -641,7 +651,8 @@ value_all_buckets_template = Template(
 resource_key_values_buckets_size_template = Template(
     """
 {"query":{"bool":{"must":[{"bool":{
-"must":{"wildcard":{"Value.keyvaluenormalize":"*$value*"}}}},{
+"must":{"wildcard":{"Value.keyvaluenormalize":"*$value*"}}}},{"bool":{
+"must":{"terms":{"data_source.keyvalue":$data_source}}}},{
 "bool": {"must": {"match":
 {"resource.keyresource": "$resource"}}}}]}}}"""
 )
@@ -651,7 +662,10 @@ resource_key_values_buckets_template = Template(
 {"query":{"bool":{"must":[{"bool":{
 "must":{"wildcard":{"Value.keyvaluenormalize":"*$value*"}}}},{
 "bool": {"must": {"match":
-{"resource.keyresource": "$resource"}}}}]}},
+{"resource.keyresource": "$resource"}}}},
+{"bool":{
+"must":{"terms":{ "data_source.keyvalue":$data_source}}}}
+]}},
 "size": 9999, "sort":[{ "_script": {
         "script": "doc['Value.keyvaluenormalize'].value.length()",
         "type": "number",

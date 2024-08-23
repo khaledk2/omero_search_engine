@@ -1074,7 +1074,7 @@ def search_resource_annotation(
     bookmark=None,
     pagination_dict=None,
     return_containers=False,
-    data_source=None
+    data_source=None,
 ):
     """
     @table_: the resource table, e.g. image. project, etc.
@@ -1107,20 +1107,18 @@ def search_resource_annotation(
             return build_error_message(
                 "{query} is not a valid query".format(query=query)
             )
-        if data_source and data_source.lower()!= "all" :
-            clause={}
-            clause["name"]="data_source"
-            clause["value"]=data_source
-            clause["operator"]="equals"
-            #'resource': 'image'
-
+        if data_source and data_source.lower() != "all":
+            clause = {}
+            clause["name"] = "data_source"
+            clause["value"] = data_source
+            clause["operator"] = "equals"
             if main_attributes and len(main_attributes) > 0:
                 if main_attributes.get("and_main_attributes"):
                     main_attributes.get("and_main_attributes").append(clause)
                 else:
-                    main_attributes["and_main_attributes"]=[clause]
+                    main_attributes["and_main_attributes"] = [clause]
             else:
-                main_attributes={}
+                main_attributes = {}
                 main_attributes["and_main_attributes"] = [clause]
 
         and_filters = query_details.get("and_filters")
@@ -1272,8 +1270,9 @@ def adjust_query_for_container(query):
         for filter in new_or_filters:
             or_filters.append(filter)
 
+
 def get_data_sources():
-    data_sources=[]
+    data_sources = []
     for data_source in search_omero_app.config.database_connectors.keys():
         data_sources.append(data_source)
     return data_sources

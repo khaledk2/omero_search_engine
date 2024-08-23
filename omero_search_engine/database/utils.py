@@ -27,6 +27,7 @@ def restore_database(source):
     restote the database from a database dump file
     """
     from omero_search_engine import search_omero_app
+
     main_dir = os.path.abspath(os.path.dirname(__file__))
     print(main_dir)
     mm = main_dir.replace("omero_search_engine/database", "")
@@ -34,11 +35,15 @@ def restore_database(source):
     sys.path.append(mm)
     dat_file_name = os.path.join(mm, "app_data/omero.pgdump")
     print(dat_file_name)
-    print (search_omero_app.config.get("DATA_SOURCES"))
-    print (search_omero_app.config.database_connectors.keys())
+    print(search_omero_app.config.get("DATA_SOURCES"))
+    print(search_omero_app.config.database_connectors.keys())
     for data_source in search_omero_app.config.get("DATA_SOURCES"):
         print(data_source["name"])
-        if source and source.lower() != "all" and data_source["name"].lower() != source.lower():
+        if (
+            source
+            and source.lower() != "all"
+            and data_source["name"].lower() != source.lower()
+        ):
             continue
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
@@ -47,12 +52,14 @@ def restore_database(source):
             data_source.get("DATABASE").get("DATABASE_NAME"),
             dat_file_name,
         )
-        print("Resore command: %s"%restore_command)
+        print("Resore command: %s" % restore_command)
         try:
             proc = subprocess.Popen(
                 restore_command,
                 shell=True,
-                env={"PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")},
+                env={
+                    "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
+                },
             )
             proc.wait()
         except Exception as e:
