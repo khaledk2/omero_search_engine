@@ -872,51 +872,54 @@ def test_no_images():
 
 
 def get_omero_stats():
-    values = ["Attribute", "No. buckets", "Total number", "Resource"]
-    base_folder = search_omero_app.config.get("BASE_FOLDER")
-    if not os.path.isdir(base_folder):
-        base_folder = os.path.expanduser("~")
-    stats_file = os.path.join(base_folder, "stats.csv")
+    for data_source in search_omero_app.config.database_connectors.keys():
+        values = ["Attribute", "No. buckets", "Total number", "Resource", "Data Source"]
+        base_folder = search_omero_app.config.get("BASE_FOLDER")
+        if not os.path.isdir(base_folder):
+            base_folder = os.path.expanduser("~")
+        stats_file = os.path.join(base_folder, "stats.csv")
 
-    from omero_search_engine.api.v1.resources.resource_analyser import (
-        get_restircted_search_terms,
-        query_cashed_bucket,
-    )
+        from omero_search_engine.api.v1.resources.resource_analyser import (
+            get_restircted_search_terms,
+            query_cashed_bucket,
+        )
 
-    data = []
-    terms = get_restircted_search_terms()
-    data.append(",".join(values))
-    for resource, names in terms.items():
-        for name in names:
-            if name == "name":
-                continue
-            returned_results = query_cashed_bucket(name, resource)
-            if resource == "image":
-                data.append(
-                    "%s, %s, %s,%s"
-                    % (
-                        name,
-                        returned_results.get("total_number_of_buckets"),
-                        returned_results.get("total_number_of_image"),
-                        resource,
+        data = []
+        terms = get_restircted_search_terms()
+        data.append(",".join(values))
+        for resource, names in terms.items():
+            for name in names:
+                if name == "name":
+                    continue
+                returned_results = query_cashed_bucket(name, resource, [data_source])
+                if resource == "image":
+                    data.append(
+                        "%s, %s, %s,%s,%s"
+                        % (
+                            name,
+                            returned_results.get("total_number_of_buckets"),
+                            returned_results.get("total_number_of_image"),
+                            resource,
+                            data_source,
+                        )
                     )
-                )
-            else:
-                kk = "total_number_of_%s" % resource
-                data.append(
-                    "%s, %s, %s,%s"
-                    % (
-                        name,
-                        returned_results.get("total_number_of_buckets"),
-                        returned_results.get(kk),
-                        resource,
+                else:
+                    kk = "total_number_of_%s" % resource
+                    data.append(
+                        "%s, %s, %s,%s,%s"
+                        % (
+                            name,
+                            returned_results.get("total_number_of_buckets"),
+                            returned_results.get(kk),
+                            resource,
+                            data_source,
+                        )
                     )
-                )
 
-            for dat in returned_results.get("data"):
-                if not dat["Value"]:
-                    print("Value is empty string", dat["Key"])
-    report = "\n".join(data)
+                for dat in returned_results.get("data"):
+                    if not dat["Value"]:
+                        print("Value is empty string", dat["Key"])
+        report = "\n".join(data)
 
     with open(stats_file, "w") as f:
         f.write(report)

@@ -408,9 +408,12 @@ class QueryRunner(
         #                    main_attributes,return_containers=self.return_containers)
         global res_and_main_attributes, res_or_main_attributes
         if res_and_main_attributes:
-            main_attributes["and_main_attributes"] = (
-                main_attributes.get("and_main_attributes") + res_and_main_attributes
-            )
+            if main_attributes.get("and_main_attributes"):
+                main_attributes["and_main_attributes"] = (
+                    main_attributes.get("and_main_attributes") + res_and_main_attributes
+                )
+            else:
+                main_attributes["and_main_attributes"] = res_and_main_attributes
         if resource == "image" and self.return_containers:
             res = search_query(
                 query,
