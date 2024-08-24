@@ -523,6 +523,7 @@ class Validator(object):
             None,
             self.resource,
             None,
+            data_source=self.data_source,
             return_containers=True,
         )
         # print(search_engine_results["results"])
