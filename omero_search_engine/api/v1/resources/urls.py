@@ -385,6 +385,7 @@ def search(resource_table):
     case_sensitive = request.args.get("case_sensitive")
     operator = request.args.get("operator")
     bookmark = request.args.get("bookmark")
+    data_source = request.args.get("data_source")
     return_containers = request.args.get("return_containers")
     if return_containers:
         return_containers = json.loads(return_containers.lower())
@@ -396,6 +397,7 @@ def search(resource_table):
         bookmark,
         resource_table,
         study,
+        data_source,
         return_containers,
     )
     return jsonify(results)
