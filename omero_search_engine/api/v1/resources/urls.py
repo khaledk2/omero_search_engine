@@ -90,6 +90,7 @@ def search_resource_page(resource_table):
             raw_elasticsearch_query = data.get("raw_elasticsearch_query")
             pagination_dict = data.get("pagination")
             return_containers = data.get("return_containers")
+            data_source = request.args.get("data_source")
             if return_containers:
                 return_containers = json.loads(return_containers.lower())
 
@@ -100,6 +101,7 @@ def search_resource_page(resource_table):
                 bookmark=bookmark,
                 pagination_dict=pagination_dict,
                 return_containers=return_containers,
+                data_source=data_source
             )
             return jsonify(resource_list)
         else:
@@ -169,11 +171,12 @@ def search_resource(resource_table):
     validation_results = query_validator(query)
     if validation_results == "OK":
         return_containers = request.args.get("return_containers")
+        data_source = request.args.get("data_source")
         if return_containers:
             return_containers = json.loads(return_containers.lower())
 
         resource_list = search_resource_annotation(
-            resource_table, query, return_containers=return_containers
+            resource_table, query, return_containers=return_containers, data_source=data_source
         )
         return jsonify(resource_list)
     else:

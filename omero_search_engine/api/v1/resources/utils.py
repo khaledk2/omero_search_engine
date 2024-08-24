@@ -1108,19 +1108,23 @@ def search_resource_annotation(
                 "{query} is not a valid query".format(query=query)
             )
         if data_source and data_source.lower() != "all":
-            clause = {}
-            clause["name"] = "data_source"
-            clause["value"] = data_source
-            clause["operator"] = "equals"
-            if main_attributes and len(main_attributes) > 0:
-                if main_attributes.get("and_main_attributes"):
-                    main_attributes.get("and_main_attributes").append(clause)
+            data_sources=get_data_sources()
+            data_source=data_source.split(',')
+            for data_s in data_source:
+                if data_s and data_s.strip().lower() not in data_sources:
+                    return "'%s' is not a data source"%data_s
+                clause = {}
+                clause["name"] = "data_source"
+                clause["value"] = data_s
+                clause["operator"] = "equals"
+                if main_attributes and len(main_attributes) > 0:
+                    if main_attributes.get("or_main_attributes"):
+                        main_attributes.get("or_main_attributes").append(clause)
+                    else:
+                        main_attributes["or_main_attributes"] = [clause]
                 else:
-                    main_attributes["and_main_attributes"] = [clause]
-            else:
-                main_attributes = {}
-                main_attributes["and_main_attributes"] = [clause]
-
+                    main_attributes = {}
+                    main_attributes["or_main_attributes"] = [clause]
         and_filters = query_details.get("and_filters")
         or_filters = query_details.get("or_filters")
         case_sensitive = query_details.get("case_sensitive")

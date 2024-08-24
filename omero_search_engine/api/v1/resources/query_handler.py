@@ -811,7 +811,6 @@ def add_local_schemas_to(resolver, schema_folder, base_uri, schema_ext=".json"):
 
 
 def query_validator(query):
-    print("TRoz", query)
     main_dir = os.path.abspath(os.path.dirname(__file__))
     query_schema_file = os.path.join(main_dir, "schemas", "query_data.json")
     base_uri = "file:" + abspath("") + "/"
