@@ -111,6 +111,7 @@ def create_index(resource="all"):
 def sql_results_to_panda():
     pass
 
+
 @manager.command
 @manager.option(
     "-s",
@@ -119,6 +120,7 @@ def sql_results_to_panda():
 )
 def restore_postgresql_database(source="all"):
     from omero_search_engine.database.utils import restore_database
+
     restore_database(source)
 
 
@@ -160,8 +162,7 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         clean_index = True
 
     else:
-        clean_index = False\
-
+        clean_index = False
     for data_source in search_omero_app.config.database_connectors.keys():
         if source.lower() != "all" and data_source.lower() != source.lower():
             continue
@@ -186,7 +187,9 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         if clean_index:
             clean_index = False
         # validat ethe indexing
-        test_indexing_search_query(source=data_source, deep_check=False,check_studies=True)
+        test_indexing_search_query(
+            source=data_source, deep_check=False, check_studies=True
+        )
 
     # backup the index data
     # if backup:
