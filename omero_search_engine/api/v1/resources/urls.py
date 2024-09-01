@@ -189,6 +189,7 @@ def get_values_using_value(resource_table):
     file: swagger_docs/search_for_any_value.yml
     """
     value = request.args.get("value")
+    data_source = request.args.get("data_source")
     if not value:
         return jsonify(
             build_error_message("Error: {error}".format(error="No value is provided "))
@@ -206,7 +207,7 @@ def get_values_using_value(resource_table):
     if key:
         # If the key is provided it will restrict the search to the provided key.
 
-        return query_cashed_bucket_part_value_keys(key, value, resource_table)
+        return query_cashed_bucket_part_value_keys(key, value,data_source, resource_table)
     bookmark = request.args.get("bookmark")
     if bookmark:
         bookmark = bookmark.split(",")
@@ -237,7 +238,7 @@ def get_values_using_value(resource_table):
                     )
                 )
             )
-    return jsonify(search_value_for_resource(resource_table, value, bookmark))
+    return jsonify(search_value_for_resource(resource_table, value, data_source, bookmark))
 
 
 @resources.route("/<resource_table>/searchvaluesusingkey/", methods=["GET"])
@@ -253,13 +254,14 @@ def search_values_for_a_key(resource_table):
     # default is false
     # if it sets to true, a CSV file content will be sent instead of dict
     csv = request.args.get("csv")
+    data_source = request.args.get("data_source")
     if csv:
         try:
             csv = json.loads(csv.lower())
         except Exception:
             csv = False
 
-    return get_key_values_return_contents(key, resource_table, csv)
+    return get_key_values_return_contents(key, resource_table,data_source, csv)
 
 
 # getannotationkeys==> keys

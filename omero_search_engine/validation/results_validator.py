@@ -295,13 +295,13 @@ class Validator(object):
         if self.type == "buckets":
             if self.name:
                 res = get_key_values_return_contents(
-                    self.name, "image", data_source=[self.data_source], csv=False
+                    self.name, "image", data_source=self.data_source, csv=False
                 )
                 self.searchengine_results = json.loads(res.data)
             elif self.value:
 
                 self.searchengine_results = search_value_for_resource(
-                    "image", self.value, [self.data_source]
+                    "image", self.value, self.data_source
                 )
             return
 
@@ -892,7 +892,7 @@ def get_omero_stats():
             for name in names:
                 if name == "name":
                     continue
-                returned_results = query_cashed_bucket(name, resource, [data_source])
+                returned_results = query_cashed_bucket(name, resource, data_source)
                 if resource == "image":
                     data.append(
                         "%s, %s, %s,%s,%s"

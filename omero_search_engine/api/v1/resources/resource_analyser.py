@@ -379,6 +379,7 @@ def prepare_search_results(results, size=0):
             continue
         row = {}
         returned_results.append(row)
+        row["Data Source"]=res["data_source"]
         row["Key"] = res["Attribute"]
         row["Value"] = res["Value"]
         row["Number of %ss" % resource] = res.get("items_in_the_bucket")
@@ -474,7 +475,7 @@ def get_key_values_return_contents(name, resource, data_source, csv):
 
 
 def query_cashed_bucket_part_value_keys(
-    name, value, resource, es_index="key_value_buckets_information"
+    name, value, data_source, resource, es_index="key_value_buckets_information"
 ):
     """
     Search for and obtain the available values for an attribute and part of the
@@ -486,9 +487,14 @@ def query_cashed_bucket_part_value_keys(
     if name:
         name = name.strip()
     value = adjust_value(value)
+    if data_source and data_source.strip() and data_source.lower() != "all":
+        data_source = [itm.strip().lower() for itm in data_source.split(',')]
+    else:
+        data_source = get_data_sources()
+
     if resource != "all":
         query = key_part_values_buckets_template.substitute(
-            name=name, value=value, resource=resource
+            name=name, value=value, resource=resource, data_source=json.dumps(data_source)
         )
         res = search_index_for_values_get_all_buckets(es_index, query)
         returned_results = prepare_search_results_buckets(res)
@@ -501,7 +507,7 @@ def query_cashed_bucket_part_value_keys(
             if table == "image1":
                 continue
             query = key_part_values_buckets_template.substitute(
-                name=name, value=value, resource=table
+                name=name, value=value, resource=table, data_source=json.dumps(data_source)
             )
             res = search_index_for_values_get_all_buckets(es_index, query)
             returned_results[table] = prepare_search_results_buckets(res)
@@ -512,6 +518,11 @@ def query_cashed_bucket(
     name, resource, data_source, es_index="key_value_buckets_information"
 ):
     # returns possible matches for a specific resource
+    if data_source and data_source.strip() and data_source.lower() != "all":
+        data_source = [itm.strip().lower() for itm in data_source.split(',')]
+    else:
+        data_source =get_data_sources()
+
     if name:
         name = name.strip()
     if resource != "all":
@@ -527,7 +538,7 @@ def query_cashed_bucket(
         returned_results = {}
         for table in resource_elasticsearchindex:
             query = key_values_buckets_template.substitute(
-                name=name, resource=table, data_source=json.dumps([data_source])
+                name=name, resource=table, data_source=json.dumps(data_source)
             )
             res = search_index_for_values_get_all_buckets(es_index, query)
             returned_results[table] = prepare_search_results_buckets(res)
@@ -548,6 +559,11 @@ def search_value_for_resource(
     It supports wildcard operations only
     """
     value = adjust_value(value)
+
+    if data_source and data_source.lower() != "all":
+        data_source = [itm.strip().lower() for itm in data_source.split(',')]
+    else:
+        data_source=get_data_sources()
 
     if table_ != "all":
         query = resource_key_values_buckets_template.substitute(
@@ -606,15 +622,52 @@ Search using key, part of the value and resource
 """
 key_part_values_buckets_template = Template(
     """
-{"query":{"bool":{"must":[{"bool":{
-"must":[{"match":{"Attribute.keyrnamenormalize":"$name"}},
-{"wildcard":{"Value.keyvaluenormalize":"*$value*"}}
-]
-}},{
-"bool": {"must": [
-{"match":{"resource.keyresource": "$resource"}}
-]}}]}}}"""
+{
+   "query":{
+      "bool":{
+         "must":[
+            {
+               "bool":{
+                  "must":[
+                     {
+                        "match":{
+                           "Attribute.keyrnamenormalize":"$name"
+                        }
+                     },
+                     {
+                        "wildcard":{
+                           "Value.keyvaluenormalize":"*$value*"
+                        }
+                     }
+                  ]
+               }
+            },
+            {
+               "bool":{
+                  "must":[
+                     {
+                        "match":{
+                           "resource.keyresource":"$resource"
+                        }
+                     }
+                  ]
+               }
+            },
+            {
+               "bool":{
+                  "must":{
+                     "terms":{
+                        "data_source.keyvalue":$data_source
+                     }
+                  }
+               }
+            }
+         ]
+      }
+   }
+}"""
 )
+
 
 # "fields": ["Attribute","Value","items_in_the_bucket",
 # "total_items_in_saved_buckets","total_buckets","total_items"],

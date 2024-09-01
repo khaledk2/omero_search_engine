@@ -32,6 +32,11 @@ parameters:
     description: bookmark is used to the call the next page if number of results is bigger than 1000, it returns with each reasult page.
     in: query
     type: integer
+  - name: data_source
+    in: query
+    type: string
+    required: false
+    description: If it is provided, it will return the search results for a specific data source, otherwise it will return the results from all the data sources
   - name: return_containers
     in: query
     type: boolean
