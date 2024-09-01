@@ -839,13 +839,13 @@ def get_keys(res_table, data_source):
 
 
 def push_keys_cache_index(
-    results, resource, data_resource, es_index, resourcename=None
+    results, resource, data_source, es_index, resourcename=None
 ):
     row = {}
     row["name"] = results
     row["doc_type"] = es_index
     row["resource"] = resource
-    row["data_resource"] = data_resource
+    row["data_source"] = data_source
     if resourcename:
         row["resourcename"] = resourcename
 

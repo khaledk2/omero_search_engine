@@ -394,7 +394,7 @@ def test_indexing_search_query(
 
     validate_queries(json_file, source, deep_check)
     if check_studies:
-        test_no_images()
+        test_no_images(source)
     get_omero_stats()
     get_no_images_sql_containers(data_source=source)
 

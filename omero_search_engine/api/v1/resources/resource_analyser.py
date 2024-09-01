@@ -26,6 +26,7 @@ from omero_search_engine.api.v1.resources.utils import (
     resource_elasticsearchindex,
     build_error_message,
     adjust_value,
+    get_data_sources,
 )
 import math
 from flask import jsonify, Response
@@ -679,6 +680,13 @@ key_values_buckets_template_2 = Template(
 "resource.keyresource":"$resource"}}}}]}}} """
 )
 
+key_values_buckets_template_with_data_source = Template(
+ """
+{"query":{"bool":{"must":[{"bool":{"must":{"match":{
+"resource.keyresource":"$resource"}}}},{"bool": {"must":
+{"match": {"data_source.keyvalue":$data_source}}}}]}}} """
+)
+
 key_values_buckets_template_search_name = Template(
     """
 {"query":{"bool":{"must":[{"bool":{"must":{"match":{
@@ -710,7 +718,7 @@ def get_restircted_search_terms():
     return restricted_search_terms
 
 
-def get_resource_attributes(resource, mode=None, es_index="key_values_resource_cach"):
+def get_resource_attributes(resource, data_source=None, mode=None, es_index="key_values_resource_cach"):
     """
     return the available attributes for one or all resources
     """
@@ -720,24 +728,42 @@ def get_resource_attributes(resource, mode=None, es_index="key_values_resource_c
             to return the common search terms,\
             you may remove it to return all the keys."
         )
-    returned_results = {}
-    if resource != "all":
-        query = key_values_buckets_template_2.substitute(resource=resource)
-        res = connect_elasticsearch(
-            es_index, query
-        )  # es.search(index=es_index, body=query)
-        hits = res["hits"]["hits"]
-        if len(hits) > 0:
-            returned_results[resource] = hits[0]["_source"]["name"]
-    else:
-        for table in resource_elasticsearchindex:
-            query = key_values_buckets_template_2.substitute(resource=table)
+    returned_results = []
+    if data_source and data_source.lower() !="all":
+       data_source = [itm.strip().lower() for itm in data_source.split(',')]
+    all_data_sources=get_data_sources()
+    for data_s in all_data_sources:
+        if data_source and data_source.lower() !="all" and data_s.lower() not in data_source:
+            continue
+        returned_results_ = {}
+        returned_results_["data_source"] = data_s
+        returned_results.append(returned_results_)
+        if resource != "all":
+            query = key_values_buckets_template_with_data_source.substitute(resource=resource, data_source=json.dumps(data_s))
+            #else:
+            #    query = key_values_buckets_template_2.substitute(resource=resource)
             res = connect_elasticsearch(
                 es_index, query
-            )  # .search(index=es_index, body=query)
+            )  # es.search(index=es_index, body=query)
+
+
             hits = res["hits"]["hits"]
             if len(hits) > 0:
-                returned_results[table] = hits[0]["_source"]["name"]
+                returned_results_[resource] = hits[0]["_source"]["name"]
+
+
+        else:
+            for table in resource_elasticsearchindex:
+                query = key_values_buckets_template_with_data_source.substitute(resource=table,
+                                                                       data_source=json.dumps(data_s))
+                #else:
+                #    query = key_values_buckets_template_2.substitute(resource=table)
+                res = connect_elasticsearch(
+                    es_index, query
+                )  # .search(index=es_index, body=query)
+                hits = res["hits"]["hits"]
+                if len(hits) > 0:
+                    returned_results_[table] = hits[0]["_source"]["name"]
 
     if mode == "searchterms":
         restricted_search_terms = get_restircted_search_terms()
@@ -747,9 +773,9 @@ def get_resource_attributes(resource, mode=None, es_index="key_values_resource_c
                 search_terms = list(set(restricted_search_terms[k]) & set(val))
                 if len(search_terms) > 0:
                     restircted_resources[k] = search_terms
-        returned_results = restircted_resources
+        returned_results.append( restircted_resources)
         if "project" in returned_results:
-            returned_results["project"].append("name")
+            returned_results_["project"].append("name")
 
     return returned_results
 
@@ -865,7 +891,7 @@ def get_the_results(resource, name, description, es_index="key_values_resource_c
                         )
                     ]
                 elif "resourcename" in hit["_source"]:
-                    returned_results[hit["_source"]["data_resource"]] = [
+                    returned_results[hit["_source"]["data_source"]] = [
                         item for item in hit["_source"]["resourcename"]
                     ]
                 else:
@@ -879,11 +905,18 @@ def get_the_results(resource, name, description, es_index="key_values_resource_c
     return returned_results
 
 
-def get_container_values_for_key(table_, container_name, csv, key=None):
+def get_container_values_for_key(table_, container_name, csv, ret_data_source=None, key=None):
     returned_results = []
     pr_names = get_resource_names("all")
+    if ret_data_source:
+        ret_data_source = [itm.strip().lower() for itm in ret_data_source.split(',')]
     for resourse, names_ in pr_names.items():
         for data_source, names in names_.items():
+            print ("====>>>>>",data_source, names)
+            if ret_data_source:
+                if data_source.lower() not in ret_data_source:
+                    print ("TTTTTCONAZZZ",ret_data_source)
+                    continue
             act_name = [
                 {"id": name["id"], "name": name["name"]}
                 for name in names

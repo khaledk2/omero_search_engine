@@ -192,6 +192,7 @@ class QueryRunner(
         columns_def,
         return_columns,
         return_containers,
+        data_source
     ):
         self.or_query_group = or_query_group
         self.and_query_group = and_query_group
@@ -204,6 +205,8 @@ class QueryRunner(
         self.additional_image_conds = []
         self.return_columns = return_columns
         self.return_containers = return_containers
+        self.data_source=data_source
+        print ("TOOOOOOOOOOOOOOOOOOZ::::::::", self.data_source)
 
     def get_image_non_image_query(self):
         res = None
@@ -423,8 +426,10 @@ class QueryRunner(
                 self.raw_elasticsearch_query,
                 main_attributes,
                 return_containers=self.return_containers,
+                data_source=self.data_source
             )
         else:
+            print("TOOOOOOOOOOOOOOOOZ2:",self.data_source)
             res = search_query(
                 query,
                 resource,
@@ -432,6 +437,7 @@ class QueryRunner(
                 pagination_dict,
                 self.raw_elasticsearch_query,
                 main_attributes,
+                data_source=self.data_source
             )
 
         if resource != "image":
@@ -450,6 +456,7 @@ def search_query(
     raw_elasticsearch_query,
     main_attributes=None,
     return_containers=False,
+    data_source=None
 ):
     search_omero_app.logger.info(
         "-------------------------------------------------"
@@ -460,6 +467,7 @@ def search_query(
     search_omero_app.logger.info(
         "-------------------------------------------------"
     )  # noqa
+    print ("TOOOOOOOOOOZZ33::::", data_source)
     search_omero_app.logger.info(("%s, %s") % (resource, query))
     if not main_attributes:
         q_data = {"query": {"query_details": query}}
@@ -479,13 +487,14 @@ def search_query(
                 bookmark=bookmark,
                 pagination_dict=pagination_dict,
                 return_containers=return_containers,
+                data_source=data_source
             )
         else:
             # Should have a method to search the elasticsearch and
             # returns the containers only,
             # It is hard coded in the util search_annotation method.
             ress = search_resource_annotation(
-                resource, q_data.get("query"), return_containers=return_containers
+                resource, q_data.get("query"), return_containers=return_containers, data_source=data_source
             )
         ress["Error"] = "none"
         return ress
@@ -635,7 +644,7 @@ def process_search_results(results, resource, columns_def):
     return returned_results
 
 
-def determine_search_results_(query_, return_columns=False, return_containers=False):
+def determine_search_results_(query_,data_source="all", return_columns=False, return_containers=False):
     from omero_search_engine.api.v1.resources.utils import build_error_message
 
     if query_.get("query_details"):
@@ -741,6 +750,7 @@ def determine_search_results_(query_, return_columns=False, return_containers=Fa
         columns_def,
         return_columns,
         return_containers,
+        data_source
     )
     query_results = query_runner.get_image_non_image_query()
     return query_results

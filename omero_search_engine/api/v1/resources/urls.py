@@ -273,7 +273,8 @@ def get_resource_keys(resource_table):
      return the keys for a resource or all the resources
     """
     mode = request.args.get("mode")
-    resource_keys = get_resource_attributes(resource_table, mode=mode)
+    data_source = request.args.get("data_source")
+    resource_keys = get_resource_attributes(resource_table, data_source=data_source, mode=mode)
     return jsonify(resource_keys)
 
 
@@ -335,6 +336,7 @@ def submit_query_return_containers():
         return jsonify(build_error_message("No query is provided"))
     adjust_query_for_container(query)
     return_columns = request.args.get("return_columns")
+    data_source = request.args.get("data_source")
     if return_columns:
         try:
             return_columns = json.loads(return_columns.lower())
@@ -343,7 +345,7 @@ def submit_query_return_containers():
     validation_results = query_validator(query)
     if validation_results == "OK":
         return jsonify(
-            determine_search_results_(query, return_columns, return_containers=True)
+            determine_search_results_(query, data_source=data_source, return_columns=return_columns, return_containers=True)
         )
     else:
         return jsonify(build_error_message(validation_results))
@@ -362,6 +364,7 @@ def submit_query():
         return jsonify(build_error_message("No query is provided"))
     adjust_query_for_container(query)
     return_columns = request.args.get("return_columns")
+    data_source = request.args.get("data_source")
     if return_columns:
         try:
             return_columns = json.loads(return_columns.lower())
@@ -369,7 +372,8 @@ def submit_query():
             return_columns = False
     validation_results = query_validator(query)
     if validation_results == "OK":
-        return jsonify(determine_search_results_(query, return_columns))
+
+        return jsonify(determine_search_results_(query,data_source=data_source, return_columns=return_columns))
     else:
         return jsonify(build_error_message(validation_results))
 
@@ -414,6 +418,7 @@ def container_key_values_search(resource_table):
 
     key = request.args.get("key")
     container_name = request.args.get("container_name")
+    data_source = request.args.get("data_source")
     if not container_name or not key:
         return build_error_message("Container name and key are required")
     csv = request.args.get("csv")
@@ -422,7 +427,7 @@ def container_key_values_search(resource_table):
             csv = json.loads(csv.lower())
         except Exception:
             csv = False
-    results = get_container_values_for_key(resource_table, container_name, csv, key)
+    results = get_container_values_for_key(resource_table, container_name, csv, ret_data_source=data_source, key=key)
     return results
 
 
@@ -440,10 +445,11 @@ def container_keys_search(resource_table):
         return build_error_message("Container name is required")
 
     csv = request.args.get("csv")
+    data_source=request.args.get("data_source")
     if csv:
         try:
             csv = json.loads(csv.lower())
         except Exception:
             csv = False
-    results = get_container_values_for_key(resource_table, container_name, csv)
+    results = get_container_values_for_key(resource_table, container_name, csv, ret_data_source=data_source)
     return results

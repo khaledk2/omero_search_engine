@@ -421,7 +421,7 @@ class Validator(object):
         query_validation_res = query_validator(query_data)
         if query_validation_res == "OK":
             search_omero_app.logger.info("Getting results from search engine")
-            searchengine_results = determine_search_results_(query_data)
+            searchengine_results = determine_search_results_(query_data, data_source=self.data_source)
             if searchengine_results.get("results"):
                 size = searchengine_results.get("results").get("size")
                 ids = [
@@ -449,7 +449,7 @@ class Validator(object):
                     )  # noqa
                     query_data_ = {"query_details": query, "bookmark": bookmark}
                     searchengine_results_ = determine_search_results_(
-                        query_data_
+                        query_data_,data_source=self.data_source
                     )  # noqa
                     ids_ = [
                         item["id"]
@@ -466,7 +466,7 @@ class Validator(object):
                         "pagination": pagination_dict,
                     }
                     searchengine_results_ = determine_search_results_(
-                        query_data_
+                        query_data_,data_source=self.data_source
                     )  # noqa
                     ids_ = [
                         item["id"]
@@ -778,7 +778,7 @@ def validate_queries(json_file, data_source, deep_check):
         f.write(report)
 
 
-def test_no_images():
+def test_no_images(data_source):
     idr_url = search_omero_app.config.get("IDR_TEST_FILE_URL")
     if not idr_url:
         return
@@ -840,7 +840,7 @@ def test_no_images():
         and_filters = []
         query = {"and_filters": and_filters, "or_filters": or_filters}
         query_data = {"query_details": query}
-        returned_results = determine_search_results_(query_data)
+        returned_results = determine_search_results_(query_data,data_source)
         if returned_results.get("results"):
             if returned_results.get("results").get("size"):
                 total_results = returned_results["results"]["size"]
@@ -1075,7 +1075,7 @@ def get_no_images_sql_containers(data_source, write_report=True):
                 query = {"and_filters": and_filters, "or_filters": or_filters}
                 query_data = {"query_details": query}
                 adjust_query_for_container(query_data)
-                returned_results = determine_search_results_(query_data)
+                returned_results = determine_search_results_(query_data, data_source=data_source)
                 if returned_results.get("results"):
                     if returned_results.get("results").get("size"):
                         seachengine_results = returned_results["results"]["size"]
