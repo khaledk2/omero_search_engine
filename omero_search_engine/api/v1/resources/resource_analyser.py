@@ -786,7 +786,7 @@ def get_resource_attributes(resource, data_source=None, mode=None, es_index="key
        data_source = [itm.strip().lower() for itm in data_source.split(',')]
     all_data_sources=get_data_sources()
     for data_s in all_data_sources:
-        if data_source and data_source.lower() !="all" and data_s.lower() not in data_source:
+        if data_source and data_source !="all" and data_s.lower() not in data_source:
             continue
         returned_results_ = {}
         returned_results_["data_source"] = data_s
