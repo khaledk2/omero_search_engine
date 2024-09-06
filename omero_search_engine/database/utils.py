@@ -45,12 +45,13 @@ def restore_database(source):
             and data_source["name"].lower() != source.lower()
         ):
             continue
+        backup_filename = os.path.join(mm, "app_data/%s"%data_source.get("DATABASE").get("DATABASE_BACKUP_FILE"))
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
             data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
             data_source.get("DATABASE").get("DATABASE_PORT"),
             data_source.get("DATABASE").get("DATABASE_NAME"),
-            dat_file_name,
+            backup_filename
         )
         print("Resore command: %s" % restore_command)
         try:

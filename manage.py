@@ -202,6 +202,7 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
 @manager.option("-s", "--server_port_number", help="database port number")
 @manager.option("-d", "--database", help="database name")
 @manager.option("-n", "--name", help="database usernname")
+@manager.option("-b", "--backup_filename", help="database backup filename ")
 @manager.option("-p", "--password", help="database username password")
 @manager.option("-w", "--working_data_source", help="data source")
 def set_database_configuration(
@@ -209,6 +210,7 @@ def set_database_configuration(
     url=None,
     server_port_number=None,
     database=None,
+    backup_filename=None,
     name=None,
     password=None,
 ):
@@ -228,6 +230,8 @@ def set_database_configuration(
         database_attrs["DATABASE_PASSWORD"] = password
     if server_port_number and server_port_number.isdigit():
         database_attrs["DATABASE_PORT"] = server_port_number
+    if backup_filename:
+        database_attrs["DATABASE_BACKUP_FILE"] = backup_filename
 
     if len(database_attrs) > 0:
         update_config_file(databse_config, configure_database=True)

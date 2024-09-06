@@ -22,6 +22,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      postgres_2:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgress
+          POSTGRES_PASSWORD: passwprd
+          POSTGRES_DB: omero_train
+        ports:
+          - 5433/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
       elasticsearch:
         image: elasticsearch:8.8.1
@@ -45,16 +58,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt;
           # Configure database url
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump 
           # configure elasticsearch
           python manage.py set_elasticsearch_configuration -e localhost:${{ job.services.elasticsearch.ports[9200] }}
           # download and extract the database backup file           
-          wget https://downloads.openmicroscopy.org/images/omero_db_searchengine.zip -P app_data
-          unzip app_data/omero_db_searchengine.zip -d app_data/          
+          wget https://downloads.openmicroscopy.org/images/omero_db_searchengine.zip -P app_data    
+          unzip app_data/omero_db_searchengine.zip -d app_data/  
+          wget https://github.com/khaledk2/ice-archh-64/releases/download/new_re_db/omero_train.zip -P app_data
+          unzip app_data/omero_train.zip -d app_data/
           # run  restore omero database
-          python manage.py restore_postgresql_database -s omero1
+          python manage.py restore_postgresql_database 
           # run indexing indexing
           python manage.py get_index_data_from_database -b False 
+          # set up the seond database
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres_2.ports[5433] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump       
+          
+          python manage.py restore_postgresql_database -s omero1
           # run tests
           python -m unittest discover -s unit_tests
   upload:
