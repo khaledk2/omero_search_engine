@@ -40,6 +40,7 @@ jobs:
         image: elasticsearch:8.8.1
         ports:
           - 9200/tcp
+          - 9300/tcp
         env:
           es_api_basic_auth_username: "elastic"
           ELASTIC_PASSWORD: "elasticsearch_user_password"
