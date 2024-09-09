@@ -45,6 +45,8 @@ jobs:
           es_api_basic_auth_username: "elastic"
           ELASTIC_PASSWORD: "elasticsearch_user_password"
           ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+          discovery.typ: "single-node"
+          cluster.max_shards_per_node: 6000
 
         options: -e="discovery.type=single-node" --health-cmd="curl -k -u elastic:elasticsearch_user_password  https://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
 
