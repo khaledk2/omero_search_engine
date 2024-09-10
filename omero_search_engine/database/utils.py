@@ -54,6 +54,18 @@ def restore_database(source):
             data_source.get("DATABASE").get("DATABASE_NAME")
         )
 
+        print("create_database_comand: %s" % create_database_comand)
+        try:
+            proc = subprocess.Popen(
+                create_database_comand,
+                shell=True,
+                env={
+                    "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
+                },
+            )
+            proc.wait()
+        except Exception as e:
+            print("Error: exception happened during dump %s" % (e))
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
             data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
