@@ -66,7 +66,7 @@ def restore_database(source):
             stdout, stderr =proc.communicate()
 
 
-            print ("Done for out %s, error %s"%(stdout,stderr))
+            print ("Done for create %s, error %s"%(stdout,stderr))
         except Exception as e:
             print("Error: exception happened during create database %s" % (e))
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
@@ -78,13 +78,15 @@ def restore_database(source):
         )
         print("Resore command: %s" % restore_command)
         try:
-            proc = subprocess.Popen(
+            proc2 = subprocess.Popen(
                 restore_command,
                 shell=True,
                 env={
                     "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
                 },
             )
-            proc.wait()
+            stdout1, stderr1 = proc2.communicate()
+            print("Done for restore %s, error %s" % (stdout1, stderr1))
+
         except Exception as e:
             print("Error: exception happened during dump %s" % (e))
