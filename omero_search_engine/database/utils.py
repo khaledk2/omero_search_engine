@@ -46,6 +46,14 @@ def restore_database(source):
         ):
             continue
         backup_filename = os.path.join(mm, "app_data/%s"%data_source.get("DATABASE").get("DATABASE_BACKUP_FILE"))
+
+        create_database_comand = "psql --username %s --host %s --port %s -c 'create database %s'" % (
+            data_source.get("DATABASE").get("DATABASE_USER"),
+            data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
+            data_source.get("DATABASE").get("DATABASE_PORT"),
+            data_source.get("DATABASE").get("DATABASE_NAME")
+        )
+
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
             data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
