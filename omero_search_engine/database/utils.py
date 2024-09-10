@@ -63,9 +63,12 @@ def restore_database(source):
                     "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
                 },
             )
-            proc.wait()
+            stdout, stderr =proc.communicate()
+
+
+            print ("Done for out %s, error %s"%(stdout,stderr))
         except Exception as e:
-            print("Error: exception happened during dump %s" % (e))
+            print("Error: exception happened during create database %s" % (e))
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
             data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
