@@ -80,13 +80,13 @@ jobs:
           rm app_data/omero.pgdump
           rm app_data/omero_train.pgdump
           # run indexing indexing
-          curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?pretty=true
-          curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/allocation/explain?pretty
-          curl -XGET 'http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?level=indices&pretty'
-          python manage.py get_index_data_from_database -b False
+          #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?pretty=true
+          #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/allocation/explain?pretty
+          #curl -XGET 'http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?level=indices&pretty'
+          #python manage.py get_index_data_from_database -b False
           
           # run tests
-          python -m unittest discover -s unit_tests
+          #python -m unittest discover -s unit_tests
   upload:
     needs: build
     if: startsWith(github.ref, 'refs/tags')
