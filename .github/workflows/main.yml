@@ -22,19 +22,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      postgres_2:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgress
-          POSTGRES_PASSWORD: passwprd
-          POSTGRES_DB: omero_train
-        ports:
-          - 5432/tcp
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+      #postgres_2:
+      #  image: postgres:16
+      #  env:
+      #    POSTGRES_USER: postgress
+      #    POSTGRES_PASSWORD: passwprd
+      #    POSTGRES_DB: omero_train
+      #  ports:
+      #    - 5432/tcp
+      #  options: >-
+      #    --health-cmd pg_isready
+      #    --health-interval 10s
+      #    --health-timeout 5s
+      #    --health-retries 5
 
       elasticsearch:
         image: elasticsearch:8.8.1
@@ -64,8 +64,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt;
           # Configure database url
+          sudo -u postgres psql -c "create database omero_train"       
           python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres_2.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump          
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump          
           # configure elasticsearch
           python manage.py set_elasticsearch_configuration -e localhost:${{ job.services.elasticsearch.ports[9200] }}
           # download and extract the database backup file           
