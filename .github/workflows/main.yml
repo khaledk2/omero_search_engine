@@ -37,7 +37,7 @@ jobs:
       #    --health-retries 5
 
       elasticsearch:
-        image: elasticsearch:8.15.1
+        image: elasticsearch:8.8.1
         ports:
           - 9200/tcp
           - 9300/tcp
