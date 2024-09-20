@@ -175,22 +175,23 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
             if resource.lower() != "all" and resource.lower() != res.lower():
                 continue
             get_insert_data_to_index(sql_st, res, data_source, clean_index)
-
         save_key_value_buckets(
             resource_table_=None,
             data_source=data_source,
             clean_index=clean_index,
             only_values=False,
         )
+        print("!Done for data_source: %s from %s" % (data_source, search_omero_app.config.database_connectors.keys()))
+    if clean_index:
+        clean_index = False
 
-        if clean_index:
-            clean_index = False
         # validat ethe indexing
         #test_indexing_search_query(
         #    source=data_source, deep_check=False, check_studies=True
         #)
 
-    # backup the index data
+
+     #backup the index data
     # if backup:
     #    backup_elasticsearch_data()
 

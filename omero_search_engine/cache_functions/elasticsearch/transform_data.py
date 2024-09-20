@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
 
 # Copyright (C) 2022 University of Dundee & Open Microscopy Environment.
 # All rights reserved.
@@ -531,7 +532,7 @@ def processor_work(lock, global_counter, val):
         lock.acquire()
         global_counter.value += 1
     except Exception as ex:
-        print("Error is %s" % ex)
+        print("Error %s" % ex)
         raise ex
     finally:
         lock.release()
@@ -587,6 +588,7 @@ def insert_resource_data_from_df(df, resource, data_source, lock=None):
 
         actions.append({"_index": es_index, "_source": record})  # ,
     es = search_omero_app.config.get("es_connector")
+    #logging.getLogger("elasticsearch").setLevel(logging.ERROR)
     search_omero_app.logger.info("Pushing the data to the Elasticsearch")
     try:
         lock.acquire()
@@ -730,7 +732,7 @@ def save_key_value_buckets(
         push_keys_cache_index(
             resource_keys, resource_table, data_source, es_index_2, name_results
         )
-        print(type(resource_keys), type(resource_table), es_index_2, type(name_results))
+        logging.info(type(resource_keys), type(resource_table), es_index_2, type(name_results))
         if only_values:
             continue
         search_omero_app.logger.info(
@@ -759,7 +761,7 @@ def save_key_value_buckets(
             counter_val = manager.Value("i", 0)
             func = partial(save_key_value_buckets_process, lock, counter_val)
             res = pool.map(func, vals)
-            print(res)
+            search_omero_app.logger.info(res)
         finally:
             pool.close()
 
@@ -806,8 +808,8 @@ def save_key_value_buckets_process(lock, global_counter, vals):
             search_omero_app.logger.info(helpers.bulk(es, actions))
         except Exception as e:
             search_omero_app.logger.info("Error:  %s" % str(e))
+            #raise e
             raise e
-            # raise e
         finally:
             lock.release()
     except Exception as e:
@@ -816,7 +818,7 @@ def save_key_value_buckets_process(lock, global_counter, vals):
             Error:%s "
             % (global_counter.value, str(e))
         )
-        raise e
+        #raise e
         if wrong_keys.get(resource_table):
             wrong_keys[resource_table] = wrong_keys[resource_table].append(key)
         else:

@@ -41,7 +41,7 @@ key_number_search_template_ = Template(
 }}}}}}}}"""
 )
 key_number_search_template = Template(
-    """
+    r"""
 {
    "size":0,
     "query":{ "bool" : {"must": {
@@ -261,7 +261,11 @@ def get_number_of_buckets(key, data_source, res_index):
 def get_all_values_for_a_key(table_, data_source, key):
     res_index = resource_elasticsearchindex.get(table_)
     query = key_number_search_template.substitute(key=key, data_source=data_source)
-    res = search_index_for_value(res_index, query)
+    try:
+        res = search_index_for_value(res_index, query)
+    except Exception as ex:
+        print("Query: %s Error: %s"%(query,str(ex)))
+        raise ex
     number_of_buckets = (
         res.get("aggregations")
         .get("value_search")
@@ -333,7 +337,6 @@ def get_values_for_a_key(table_, key, data_source):
     start_time = time.time()
     res = search_index_for_value(res_index, query)
     query_time = "%.2f" % (time.time() - start_time)
-    print("TIME ...", query_time)
     returned_results = []
     if res.get("aggregations"):
         for bucket in (
@@ -906,10 +909,6 @@ def get_resource_names(resource, name=None, description=False):
         ress = ["project", "screen"]
         for res in ress:
             returned_results[res] = get_the_results(res, name, description)
-
-    print("#############################################")
-    print(returned_results)
-    print("#############################################")
     return returned_results
 
 
@@ -965,10 +964,8 @@ def get_container_values_for_key(table_, container_name, csv, ret_data_source=No
         ret_data_source = [itm.strip().lower() for itm in ret_data_source.split(',')]
     for resourse, names_ in pr_names.items():
         for data_source, names in names_.items():
-            print ("====>>>>>",data_source, names)
             if ret_data_source:
                 if data_source.lower() not in ret_data_source:
-                    print ("TTTTTCONAZZZ",ret_data_source)
                     continue
             act_name = [
                 {"id": name["id"], "name": name["name"]}
