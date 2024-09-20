@@ -146,14 +146,12 @@ def delete_es_index(es_index):
             search_omero_app.logger.info("ERROR:" + error["root_cause"])
             search_omero_app.logger.info("TYPE:" + error["type"])
             return False
-
         # print out the response:
         search_omero_app.logger.info("\nresponse:%s" % str(response))
     else:
         search_omero_app.logger.info("\nIndex %s is not found" % str(es_index))
         return False
     return True
-
 
 def delete_data_from_index(resource):
     if resource_elasticsearchindex.get(resource) and resource != "all":
@@ -730,7 +728,6 @@ def save_key_value_buckets(
         push_keys_cache_index(
             resource_keys, resource_table, data_source, es_index_2, name_results
         )
-        print(type(resource_keys), type(resource_table), es_index_2, type(name_results))
         if only_values:
             continue
         search_omero_app.logger.info(

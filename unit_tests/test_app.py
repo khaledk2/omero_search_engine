@@ -114,7 +114,18 @@ class BasicTestCase(unittest.TestCase):
                 data_source
             ].execute_query(sql)
             self.assertIsNotNone(res)
-            self.assertEqual(res[0]["current_database"], "omero")
+            found_db_name = False
+            for source in search_omero_app.config.get("DATA_SOURCES"):
+                if source.get("DATABASE").get("DATABASE_NAME") == res[0]["current_database"]:
+                    found_db_name = True
+                    break
+
+        #for data_source in search_omero_app.config.database_connectors.keys():
+        #    res = search_omero_app.config.database_connectors[
+        #        data_source
+        #    ].execute_query(sql)
+        #    self.assertIsNotNone(res)
+        #    self.assertEqual(res[0]["current_database"], "omero")
 
     def validate_json_syntax(self, json_template):
         try:

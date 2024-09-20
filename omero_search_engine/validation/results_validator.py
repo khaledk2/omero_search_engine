@@ -1054,15 +1054,16 @@ def get_no_images_sql_containers(data_source, write_report=True):
         messages.append(
             "######################## Checking %s ########################\n" % resource
         )
+
+        search_omero_app.logger.info( "######################## Checking %s ########################\n" % resource)
         # this may be used for a specific data source
         for data_source, res_name__ in all_names.get(resource).items():
-            pass
+
             for res_name_ in res_name__:  # all_names.get(resource):
                 res_name = res_name_.get("name")
                 message1 = "Checking %s name: %s" % (resource, res_name)
                 messages.append(message1)
-                search_omero_app.logger.info(message1)
-
+                search_omero_app.logger.info("####>>>message: %s"%message1)
                 and_filters = [
                     {
                         "name": "name",

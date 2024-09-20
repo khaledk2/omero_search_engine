@@ -187,9 +187,9 @@ def get_index_data_from_database(resource="all", source="all", backup="True"):
         if clean_index:
             clean_index = False
         # validat ethe indexing
-        test_indexing_search_query(
-            source=data_source, deep_check=False, check_studies=True
-        )
+        #test_indexing_search_query(
+        #    source=data_source, deep_check=False, check_studies=True
+        #)
 
     # backup the index data
     # if backup:

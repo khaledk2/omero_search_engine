@@ -1116,9 +1116,6 @@ def search_resource_annotation(
     @raw_elasticsearch_query: raw query sending directly to elasticsearch
     """
     # try:
-    print ("tiiiiiiiiz")
-    print (data_source)
-    print("tiiiiiiiiz")
     res_index = resource_elasticsearchindex.get(table_)
     if not res_index:
         return build_error_message(
@@ -1140,7 +1137,6 @@ def search_resource_annotation(
             or len(query_details) == 0
             or isinstance(query_details, str)
         ):
-            print("Error ")
             return build_error_message(
                 "{query} is not a valid query".format(query=query)
             )
@@ -1186,7 +1182,6 @@ def search_resource_annotation(
         query = raw_elasticsearch_query
         raw_query_to_send_back = copy.copy(raw_elasticsearch_query)
     if return_containers:
-        print ("1222222222222222222222")
         # code to return the containers only
         # It will call the projects container first then
         # search within screens
@@ -1214,7 +1209,6 @@ def search_resource_annotation(
         studies = res + res_2
         res = {"results": studies}
     else:
-        print ("333333333333333333333")
         res = search_index_using_search_after(
             res_index, query, bookmark, pagination_dict, return_containers, data_source=data_source
         )

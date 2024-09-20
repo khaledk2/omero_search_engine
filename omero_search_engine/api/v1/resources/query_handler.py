@@ -206,7 +206,6 @@ class QueryRunner(
         self.return_columns = return_columns
         self.return_containers = return_containers
         self.data_source=data_source
-        print ("TOOOOOOOOOOOOOOOOOOZ::::::::", self.data_source)
 
     def get_image_non_image_query(self):
         res = None
@@ -429,7 +428,6 @@ class QueryRunner(
                 data_source=self.data_source
             )
         else:
-            print("TOOOOOOOOOOOOOOOOZ2:",self.data_source)
             res = search_query(
                 query,
                 resource,
@@ -461,14 +459,13 @@ def search_query(
     search_omero_app.logger.info(
         "-------------------------------------------------"
     )  # noqa
-    search_omero_app.logger.info(query)
-    search_omero_app.logger.info(main_attributes)
+    search_omero_app.logger.info("1: %s"%query)
+    search_omero_app.logger.info("2: %s"%main_attributes)
     search_omero_app.logger.info(resource)
     search_omero_app.logger.info(
         "-------------------------------------------------"
     )  # noqa
-    print ("TOOOOOOOOOOZZ33::::", data_source)
-    search_omero_app.logger.info(("%s, %s") % (resource, query))
+    search_omero_app.logger.info(("1... %s, 2....%s") % (resource, query))
     if not main_attributes:
         q_data = {"query": {"query_details": query}}
     elif resource == "image":

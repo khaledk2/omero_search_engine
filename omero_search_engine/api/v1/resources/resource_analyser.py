@@ -907,9 +907,6 @@ def get_resource_names(resource, name=None, description=False):
         for res in ress:
             returned_results[res] = get_the_results(res, name, description)
 
-    print("#############################################")
-    print(returned_results)
-    print("#############################################")
     return returned_results
 
 
@@ -965,10 +962,8 @@ def get_container_values_for_key(table_, container_name, csv, ret_data_source=No
         ret_data_source = [itm.strip().lower() for itm in ret_data_source.split(',')]
     for resourse, names_ in pr_names.items():
         for data_source, names in names_.items():
-            print ("====>>>>>",data_source, names)
             if ret_data_source:
                 if data_source.lower() not in ret_data_source:
-                    print ("TTTTTCONAZZZ",ret_data_source)
                     continue
             act_name = [
                 {"id": name["id"], "name": name["name"]}
