@@ -813,7 +813,7 @@ def save_key_value_buckets_process(lock, global_counter, vals):
             Error:%s "
             % (global_counter.value, str(e))
         )
-        raise e
+        #raise e
         if wrong_keys.get(resource_table):
             wrong_keys[resource_table] = wrong_keys[resource_table].append(key)
         else:
