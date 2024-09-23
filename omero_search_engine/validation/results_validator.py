@@ -294,11 +294,13 @@ class Validator(object):
         """
         if self.type == "buckets":
             if self.name:
+                print ("11111111111111111111111111")
                 res = get_key_values_return_contents(
                     self.name, "image", data_source=self.data_source, csv=False
                 )
                 self.searchengine_results = json.loads(res.data)
             elif self.value:
+                print("2222222222222222222222222222222")
 
                 self.searchengine_results = search_value_for_resource(
                     "image", self.value, self.data_source
@@ -925,7 +927,6 @@ def get_omero_stats():
     with open(stats_file, "w") as f:
         f.write(report)
 
-
 def check_number_images_sql_containers_using_ids(data_source):
     """
     This method tests the number of images inside each container
@@ -1031,7 +1032,6 @@ def check_number_images_sql_containers_using_ids(data_source):
                     "\n-----------------------------------------------------------------------------\n"  # noqa
                 )
         return dd
-
 
 def get_no_images_sql_containers(data_source, write_report=True):
     """
