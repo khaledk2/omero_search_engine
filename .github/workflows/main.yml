@@ -64,8 +64,8 @@ jobs:
           pip install -r requirements.txt;
           # Configure database url  
           sysctl -w vm.max_map_count=262144
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump
-          # python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump          
+          # python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero_train -b omero_train.pgdump          
           # configure elasticsearch
           python manage.py set_elasticsearch_configuration -e localhost:${{ job.services.elasticsearch.ports[9200] }}
           # download and extract the database backup file           
@@ -75,15 +75,15 @@ jobs:
           # unzip app_data/omero_train.zip -d app_data/
           # run  restore omero database
           python manage.py restore_postgresql_database
-          rm app_data/omero_db_searchengine.zip
+          #rm app_data/omero_db_searchengine.zip
           #rm app_data/omero_train.zip
-          rm app_data/omero.pgdump
+          #rm app_data/omero.pgdump
           #rm app_data/omero_train.pgdump
           # run indexing indexing
           #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?pretty=true
           #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/allocation/explain?pretty
           #curl -XGET 'http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?level=indices&pretty'
-          python manage.py get_index_data_from_database -b False
+          python manage.py get_index_data_from_database 
           
           # run tests
           python -m unittest discover -s unit_tests
