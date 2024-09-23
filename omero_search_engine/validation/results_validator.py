@@ -1021,6 +1021,9 @@ def check_number_images_sql_containers_using_ids(data_source):
                                 print("================>>>>")
                                 print(ress["id"])
                         search_omero_app.logger.info("ERROR: Not equal results")
+                        print("=====================")
+                        print (sql, query)
+                        print ("=====================")
                         print(
                             "Error checking %s name: %s, id: %s"
                             % (resource, res_name, res_id)
