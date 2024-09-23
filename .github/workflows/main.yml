@@ -76,9 +76,9 @@ jobs:
           # run  restore omero database
           python manage.py restore_postgresql_database
           rm app_data/omero_db_searchengine.zip
-          rm app_data/omero_train.zip
+          #rm app_data/omero_train.zip
           rm app_data/omero.pgdump
-          rm app_data/omero_train.pgdump
+          #rm app_data/omero_train.pgdump
           # run indexing indexing
           #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/health?pretty=true
           #curl -XGET http://localhost:${{ job.services.elasticsearch.ports[9200] }}/_cluster/allocation/explain?pretty
