@@ -1025,7 +1025,7 @@ def check_number_images_sql_containers_using_ids(data_source):
                         print (sql, query_data)
                         print (searchengine_results)
                         print (postgres_results)
-                        print ("=====================")
+                        print ("==============-=======")
                         print(
                             "Error checking %s name: %s, id: %s"
                             % (resource, res_name, res_id)
