@@ -493,6 +493,9 @@ def search_query(
             ress = search_resource_annotation(
                 resource, q_data.get("query"), return_containers=return_containers, data_source=data_source
             )
+        if type (ress) is str:
+            return ress
+
         ress["Error"] = "none"
         return ress
     except Exception as ex:

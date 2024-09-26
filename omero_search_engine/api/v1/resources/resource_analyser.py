@@ -902,6 +902,8 @@ def get_resource_names(resource, name=None, description=False, data_source=None)
             "This release does not support search by description."
         )
 
+    print ("data source: ", data_source)
+
     if resource != "all":
         returned_results = get_the_results(resource, name, description, data_source)
     else:
