@@ -1010,7 +1010,6 @@ def search_index_using_search_after(
     e_index, query,  bookmark_, pagination_dict, return_containers, data_source=None, ret_type=None
 ) -> object:
     #toz  ya
-    print ("========================>>>>>>%s"%data_source)
     returned_results = []
     if bookmark_ and not pagination_dict:
         add_paination = False
@@ -1190,7 +1189,6 @@ def search_resource_annotation(
         query["aggs"] = json.loads(
             count_attr_template.substitute(field="project_name.keyvalue")
         )
-        print("===>>>>>>",data_source)
         query["_source"] = {"includes": [""]}
         res = search_index_using_search_after(
             res_index,

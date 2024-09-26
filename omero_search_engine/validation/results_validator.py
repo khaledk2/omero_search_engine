@@ -294,14 +294,11 @@ class Validator(object):
         """
         if self.type == "buckets":
             if self.name:
-                print ("11111111111111111111111111")
                 res = get_key_values_return_contents(
                     self.name, "image", data_source=self.data_source, csv=False
                 )
                 self.searchengine_results = json.loads(res.data)
             elif self.value:
-                print("2222222222222222222222222222222")
-
                 self.searchengine_results = search_value_for_resource(
                     "image", self.value, self.data_source
                 )
@@ -800,8 +797,8 @@ def test_no_images(data_source):
 
     headers = lines[0]
     headers = headers.split("\t")
-    for i in range(len(headers) - 1):
-        print(i, headers[i])
+    #for i in range(len(headers) - 1):
+    #    print(i, headers[i])
     names = {}
     for line in lines:
         if lines.index(line) == 0:
@@ -1018,10 +1015,8 @@ def check_number_images_sql_containers_using_ids(data_source):
                             test_array.append(res.get("id"))
                         for ress in results:
                             if ress["id"] not in test_array:
-                                print("================>>>>")
                                 print(ress["id"])
                         search_omero_app.logger.info("ERROR: Not equal results")
-                        print("=====================")
                         print (sql, query_data)
                         print ("searchengine_results:",searchengine_results)
                         print ("postgres_results: ",postgres_results)
@@ -1059,7 +1054,6 @@ def get_no_images_sql_containers(data_source, write_report=True):
     for data_source_ in search_omero_app.config.database_connectors.keys():
         if data_source_.lower()!=data_source.lower():
             continue
-        print (data_source)
         conn = search_omero_app.config.database_connectors[data_source]
 
         all_names = get_resource_names("all",data_source=json.dumps(data_source))
