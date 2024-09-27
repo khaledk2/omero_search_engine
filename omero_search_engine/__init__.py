@@ -72,14 +72,19 @@ def create_app(config_name="development"):
     search_omero_app.app_context()
     search_omero_app.app_context().push()
     ELASTIC_PASSWORD = app_config.ELASTIC_PASSWORD
+    import ssl
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
+
     es_connector = Elasticsearch(
         app_config.ELASTICSEARCH_URL.split(","),
         verify_certs=app_config.verify_certs,
-        timeout=130,
-        max_retries=20,
+        timeout=210,
+        max_retries=30,
         retry_on_timeout=True,
         connections_per_node=10,
         scheme="https",
+        ssl_context=context,
         http_auth=("elastic", ELASTIC_PASSWORD),
     )
 
