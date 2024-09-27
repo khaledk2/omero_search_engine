@@ -114,18 +114,17 @@ class BasicTestCase(unittest.TestCase):
                 data_source
             ].execute_query(sql)
             self.assertIsNotNone(res)
-            found_db_name = False
+
+            found_db_name=False
             for source in search_omero_app.config.get("DATA_SOURCES"):
-                if source.get("DATABASE").get("DATABASE_NAME") == res[0]["current_database"]:
-                    found_db_name = True
+                if source.get("DATABASE").get("DATABASE_NAME")==res[0]["current_database"]:
+                    found_db_name=True
                     break
 
-        #for data_source in search_omero_app.config.database_connectors.keys():
-        #    res = search_omero_app.config.database_connectors[
-        #        data_source
-        #    ].execute_query(sql)
-        #    self.assertIsNotNone(res)
-        #    self.assertEqual(res[0]["current_database"], "omero")
+            self.assertTrue(found_db_name)
+            #self.assertEqual(res[0]["current_database"], search_omero_app.config.database_connectors[data_source]["DATABASE_NAME"])
+            #self.assertEqual(res[0]["current_database"], search_omero_app.config.database_connectors[data_source]["DATABASE_NAME"])
+
 
     def validate_json_syntax(self, json_template):
         try:
@@ -159,6 +158,7 @@ class BasicTestCase(unittest.TestCase):
         test submit query and get results
         """
         table = "image1"
+        es_index = "image_keyvalue_pair_metadata_1"
         es_index = "image_keyvalue_pair_metadata_1"
         es_index_2 = "key_values_resource_cach"
         create_es_index_2 = True

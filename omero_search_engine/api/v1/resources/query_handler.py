@@ -459,13 +459,13 @@ def search_query(
     search_omero_app.logger.info(
         "-------------------------------------------------"
     )  # noqa
-    search_omero_app.logger.info("1: %s"%query)
-    search_omero_app.logger.info("2: %s"%main_attributes)
+    search_omero_app.logger.info(query)
+    search_omero_app.logger.info(main_attributes)
     search_omero_app.logger.info(resource)
     search_omero_app.logger.info(
         "-------------------------------------------------"
     )  # noqa
-    search_omero_app.logger.info(("1... %s, 2....%s") % (resource, query))
+    search_omero_app.logger.info(("%s, %s") % (resource, query))
     if not main_attributes:
         q_data = {"query": {"query_details": query}}
     elif resource == "image":
@@ -493,6 +493,9 @@ def search_query(
             ress = search_resource_annotation(
                 resource, q_data.get("query"), return_containers=return_containers, data_source=data_source
             )
+        if type (ress) is str:
+            return ress
+
         ress["Error"] = "none"
         return ress
     except Exception as ex:

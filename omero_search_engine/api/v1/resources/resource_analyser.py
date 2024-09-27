@@ -41,7 +41,7 @@ key_number_search_template_ = Template(
 }}}}}}}}"""
 )
 key_number_search_template = Template(
-    """
+    r"""
 {
    "size":0,
     "query":{ "bool" : {"must": {
@@ -261,7 +261,11 @@ def get_number_of_buckets(key, data_source, res_index):
 def get_all_values_for_a_key(table_, data_source, key):
     res_index = resource_elasticsearchindex.get(table_)
     query = key_number_search_template.substitute(key=key, data_source=data_source)
-    res = search_index_for_value(res_index, query)
+    try:
+        res = search_index_for_value(res_index, query)
+    except Exception as ex:
+        print("Query: %s Error: %s"%(query,str(ex)))
+        raise ex
     number_of_buckets = (
         res.get("aggregations")
         .get("value_search")
@@ -333,7 +337,6 @@ def get_values_for_a_key(table_, key, data_source):
     start_time = time.time()
     res = search_index_for_value(res_index, query)
     query_time = "%.2f" % (time.time() - start_time)
-    print("TIME ...", query_time)
     returned_results = []
     if res.get("aggregations"):
         for bucket in (
@@ -889,7 +892,7 @@ def get_resource_attribute_values(
     return returned_results
 
 
-def get_resource_names(resource, name=None, description=False):
+def get_resource_names(resource, name=None, description=False, data_source=None):
     """
     return resources names attributes
     It works for projects and screens but can be extended.
@@ -898,21 +901,22 @@ def get_resource_names(resource, name=None, description=False):
         return build_error_message(
             "This release does not support search by description."
         )
-
     if resource != "all":
-        returned_results = get_the_results(resource, name, description)
+        returned_results = get_the_results(resource, name, description, data_source)
     else:
         returned_results = {}
         ress = ["project", "screen"]
         for res in ress:
-            returned_results[res] = get_the_results(res, name, description)
-
+            returned_results[res] = get_the_results(res, name, description, data_source)
     return returned_results
 
 
-def get_the_results(resource, name, description, es_index="key_values_resource_cach"):
+def get_the_results(resource, name, description, data_source, es_index="key_values_resource_cach"):
     returned_results = {}
-    query = key_values_buckets_template_2.substitute(resource=resource)
+    if data_source:
+        query = key_values_buckets_template_with_data_source.substitute(resource=resource, data_source=data_source)
+    else:
+        query = key_values_buckets_template_2.substitute(resource=resource)
     results_ = connect_elasticsearch(
         es_index, query
     )  # .search(index=es_index, body=query)

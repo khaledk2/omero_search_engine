@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import logging
 import os
 import sys
 import json
@@ -1014,34 +1015,33 @@ def search_index_using_search_after(
         add_paination = False
     else:
         add_paination = True
+    if not data_source:
+        data_source = get_data_sources()
     es = search_omero_app.config.get("es_connector")
     if return_containers:
         #####
-        if data_source:
-            if type(data_source) is str:
-                data_source = [itm.strip().lower() for itm in data_source.split(',')]
-            for data_s in data_source:
-                query2 = copy.deepcopy(query)
-                del query2["query"]["bool"]["must"][0]
-                main_dd = main_attribute_query_in_template.substitute(
-                    attribute="data_source",
-                    value=json.dumps([data_s]),
-                )
-                #query["query"]["bool"]["must"][0] = json.loads(main_dd)
-                query2["query"]["bool"]["must"].append(json.loads(main_dd))
-                res = es.search(index=e_index, body=query2)
-                if len(res["hits"]["hits"]) == 0:
-                    search_omero_app.logger.info("No result is found")
-                    continue
-                keys_counts = res["aggregations"]["key_count"]["buckets"]
-                idrs = []
-                for ek in keys_counts:
-                    idrs.append(ek["key"])
-                    res_res = get_studies_titles(ek["key"], ret_type, data_source)
-                    res_res["image count"] = ek["doc_count"]
-                    if data_source:
-                        res_res["data_source"] =data_s
-                    returned_results.append(res_res)
+        for data_s in data_source:
+            query2 = copy.deepcopy(query)
+            del query2["query"]["bool"]["must"][0]
+            main_dd = main_attribute_query_in_template.substitute(
+                attribute="data_source",
+                value=json.dumps([data_s]),
+            )
+            #query["query"]["bool"]["must"][0] = json.loads(main_dd)
+            query2["query"]["bool"]["must"].append(json.loads(main_dd))
+            res = es.search(index=e_index, body=query2)
+            if len(res["hits"]["hits"]) == 0:
+                search_omero_app.logger.info("No result is found")
+                continue
+            keys_counts = res["aggregations"]["key_count"]["buckets"]
+            idrs = []
+            for ek in keys_counts:
+                idrs.append(ek["key"])
+                res_res = get_studies_titles(ek["key"], ret_type, data_source)
+                res_res["image count"] = ek["doc_count"]
+                if data_source:
+                    res_res["data_source"] =data_s
+                returned_results.append(res_res)
 
         return returned_results
     page_size = search_omero_app.config.get("PAGE_SIZE")
@@ -1137,10 +1137,11 @@ def search_resource_annotation(
             or len(query_details) == 0
             or isinstance(query_details, str)
         ):
+            logging.info("Error ")
             return build_error_message(
                 "{query} is not a valid query".format(query=query)
             )
-        if data_source and data_source.lower() != "all":
+        if data_source  and data_source.lower() != "all":
             data_sources=get_data_sources()
             data_source = [itm.strip() for itm in data_source.split(',')]
             for data_s in data_source:
@@ -1174,7 +1175,7 @@ def search_resource_annotation(
         if isinstance(query_string, dict):
             return query_string
 
-        search_omero_app.logger.info("Query %s" % query_string)
+        #search_omero_app.logger.info("Query %s" % query_string)
 
         query = json.loads(query_string, strict=False)
         raw_query_to_send_back = json.loads(query_string, strict=False)
@@ -1316,3 +1317,8 @@ def get_data_sources():
     for data_source in search_omero_app.config.database_connectors.keys():
         data_sources.append(data_source)
     return data_sources
+
+def check_empty_string(string_to_check):
+    if string_to_check:
+        string_to_check=string_to_check.strip()
+    return string_to_check

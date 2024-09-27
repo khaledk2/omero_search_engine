@@ -299,7 +299,6 @@ class Validator(object):
                 )
                 self.searchengine_results = json.loads(res.data)
             elif self.value:
-
                 self.searchengine_results = search_value_for_resource(
                     "image", self.value, self.data_source
                 )
@@ -798,8 +797,8 @@ def test_no_images(data_source):
 
     headers = lines[0]
     headers = headers.split("\t")
-    for i in range(len(headers) - 1):
-        print(i, headers[i])
+    #for i in range(len(headers) - 1):
+    #    print(i, headers[i])
     names = {}
     for line in lines:
         if lines.index(line) == 0:
@@ -925,7 +924,6 @@ def get_omero_stats():
     with open(stats_file, "w") as f:
         f.write(report)
 
-
 def check_number_images_sql_containers_using_ids(data_source):
     """
     This method tests the number of images inside each container
@@ -1017,9 +1015,12 @@ def check_number_images_sql_containers_using_ids(data_source):
                             test_array.append(res.get("id"))
                         for ress in results:
                             if ress["id"] not in test_array:
-                                print("================>>>>")
                                 print(ress["id"])
                         search_omero_app.logger.info("ERROR: Not equal results")
+                        print (sql, query_data)
+                        print ("searchengine_results:",searchengine_results)
+                        print ("postgres_results: ",postgres_results)
+                        print ("==============-=======")
                         print(
                             "Error checking %s name: %s, id: %s"
                             % (resource, res_name, res_id)
@@ -1032,7 +1033,6 @@ def check_number_images_sql_containers_using_ids(data_source):
                 )
         return dd
 
-
 def get_no_images_sql_containers(data_source, write_report=True):
     """
     This method tests the number of images inside each container
@@ -1043,71 +1043,110 @@ def get_no_images_sql_containers(data_source, write_report=True):
     from omero_search_engine.api.v1.resources.urls import (
         get_resource_names,
     )
+    from omero_search_engine.api.v1.resources.utils import (
+        search_resource_annotation,
+    )
     from omero_search_engine.api.v1.resources.utils import adjust_query_for_container
 
     # conn = search_omero_app.config["database_connector"]
-    conn = search_omero_app.config.database_connectors[data_source]
 
-    all_names = get_resource_names("all")
     messages = []
-    for resource in all_names:
-        messages.append(
-            "######################## Checking %s ########################\n" % resource
-        )
+    for data_source_ in search_omero_app.config.database_connectors.keys():
+        if data_source_.lower()!=data_source.lower():
+            continue
+        conn = search_omero_app.config.database_connectors[data_source]
 
-        search_omero_app.logger.info( "######################## Checking %s ########################\n" % resource)
-        # this may be used for a specific data source
-        for data_source, res_name__ in all_names.get(resource).items():
+        all_names = get_resource_names("all",data_source=json.dumps(data_source))
+        #print (all_names)
 
-            for res_name_ in res_name__:  # all_names.get(resource):
-                res_name = res_name_.get("name")
-                message1 = "Checking %s name: %s" % (resource, res_name)
-                messages.append(message1)
-                search_omero_app.logger.info("####>>>message: %s"%message1)
-                and_filters = [
-                    {
-                        "name": "name",
-                        "value": res_name,
-                        "operator": "equals",
-                        "resource": "container",
+
+        for resource in all_names:
+            messages.append(
+                "######################## Checking %s ########################\n" % resource
+            )
+            for ds, res_name__ in all_names.get(resource).items():
+                for res_name_ in res_name__:
+                    res_name = res_name_.get("name")
+                    res_id = res_name_.get("id")
+                    print (res_name)
+                    message1 = "Checking %s name: %s" % (resource, res_name)
+                    messages.append(message1)
+                    search_omero_app.logger.info(message1)
+
+                   # and_filters = [
+                   #     {
+                   #         "name": "name",
+                   #         "id": res_id,
+                   #         "operator": "equals",
+                   #         "resource": "container",
+                   #     }
+                   # ]
+                   # or_filters = []
+                    #query = {"and_filters": and_filters, "or_filters": or_filters}
+                    #query_data = {"query_details": query}
+                    #adjust_query_for_container(query_data)
+                    and_filters = []
+                    main_attributes = {
+                        "and_main_attributes": [
+                            {
+                                "name": "%s_id" % resource,
+                                "value": res_id,
+                                "operator": "equals",
+                                "resource": "image",
+                            },
+                            {
+                                "name": "data_source",
+                                "value": data_source,
+                                "operator": "equals",
+                                "resource": "image",
+                            },
+                        ]
                     }
-                ]
-                or_filters = []
-                query = {"and_filters": and_filters, "or_filters": or_filters}
-                query_data = {"query_details": query}
-                adjust_query_for_container(query_data)
-                returned_results = determine_search_results_(query_data, data_source=data_source)
-                if returned_results.get("results"):
-                    if returned_results.get("results").get("size"):
-                        seachengine_results = returned_results["results"]["size"]
-                else:
-                    seachengine_results = 0
-                message2 = (
-                    "No of images returned from searchengine: %s" % seachengine_results
-                )
-                search_omero_app.logger.info(message2)
-                messages.append(message2)
-                sql = query_methods["%s_name" % resource].substitute(
-                    name=res_name, operator="="
-                )
-                results = conn.execute_query(sql)
-                postgres_results = len(results)
-                message3 = (
-                    "Number of images returned from the database: %s" % postgres_results
-                )
-                messages.append(message3)
-                search_omero_app.logger.info(message3)
-                if seachengine_results != postgres_results:
-                    message4 = "ERROR: Not equal results"
-                    messages.append(message4)
-                    search_omero_app.logger.info(message4)
-                else:
-                    message5 = "equal results"
-                    messages.append(message5)
-                    search_omero_app.logger.info(message5)
-                messages.append(
-                    "\n-----------------------------------------------------------------------------\n"  # noqa
-                )
+                    or_filters = []
+                    query = {"and_filters": and_filters, "or_filters": or_filters}
+
+                    query_data = {
+                        "query_details": query,
+                        "main_attributes": main_attributes,
+                    }
+
+                    returned_results = search_resource_annotation("image", query_data)
+                    #returned_results = determine_search_results_(query_data, data_source=data_source)
+                    if returned_results.get("results"):
+                        if returned_results.get("results").get("size"):
+                            seachengine_results = returned_results["results"]["size"]
+                    else:
+                        seachengine_results = 0
+                    message2 = (
+                        "No of images returned from searchengine: %s" % seachengine_results
+                    )
+                    search_omero_app.logger.info(message2)
+                    messages.append(message2)
+                    #sql = query_methods["%s_name" % resource].substitute(
+                    #    name=res_name, operator="="
+                    #)
+                    if resource == "project":
+                        sql = query_images_in_project_id.substitute(project_id=res_id)
+                    elif resource == "screen":
+                        sql = query_images_in_screen_id.substitute(screen_id=res_id)
+                    results = conn.execute_query(sql)
+                    postgres_results = len(results)
+                    message3 = (
+                        "Number of images returned from the database: %s" % postgres_results
+                    )
+                    messages.append(message3)
+                    search_omero_app.logger.info(message3)
+                    if seachengine_results != postgres_results:
+                        message4 = "ERROR: Not equal results"
+                        messages.append(message4)
+                        search_omero_app.logger.info(message4)
+                    else:
+                        message5 = "equal results"
+                        messages.append(message5)
+                        search_omero_app.logger.info(message5)
+                    messages.append(
+                        "\n-----------------------------------------------------------------------------\n"  # noqa
+                    )
         if write_report:
             base_folder = search_omero_app.config.get("BASE_FOLDER")
             if not os.path.isdir(base_folder):

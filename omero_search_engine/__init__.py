@@ -82,6 +82,7 @@ def create_app(config_name="development"):
         scheme="https",
         http_auth=("elastic", ELASTIC_PASSWORD),
     )
+
     search_omero_app.config.database_connectors = app_config.database_connectors
     print(search_omero_app.config.database_connectors)
     search_omero_app.config["es_connector"] = es_connector
@@ -104,6 +105,7 @@ def create_app(config_name="development"):
 
     search_omero_app.logger.setLevel(logging.INFO)
     search_omero_app.logger.info("app assistant startup")
+
     return search_omero_app
 
 

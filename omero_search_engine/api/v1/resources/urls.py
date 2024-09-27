@@ -25,6 +25,7 @@ from omero_search_engine.api.v1.resources.utils import (
     build_error_message,
     adjust_query_for_container,
     get_data_sources,
+    check_empty_string,
 )
 from omero_search_engine.api.v1.resources.resource_analyser import (
     search_value_for_resource,
@@ -91,6 +92,8 @@ def search_resource_page(resource_table):
             pagination_dict = data.get("pagination")
             return_containers = data.get("return_containers")
             data_source = request.args.get("data_source")
+            if data_source:
+                data_source=data_source.strip()
             if return_containers:
                 return_containers = json.loads(return_containers.lower())
 
@@ -172,6 +175,8 @@ def search_resource(resource_table):
     if validation_results == "OK":
         return_containers = request.args.get("return_containers")
         data_source = request.args.get("data_source")
+        if data_source:
+            data_source = data_source.strip()
         if return_containers:
             return_containers = json.loads(return_containers.lower())
 
@@ -190,6 +195,8 @@ def get_values_using_value(resource_table):
     """
     value = request.args.get("value")
     data_source = request.args.get("data_source")
+    if data_source:
+        data_source = data_source.strip()
     if not value:
         return jsonify(
             build_error_message("Error: {error}".format(error="No value is provided "))
@@ -255,6 +262,8 @@ def search_values_for_a_key(resource_table):
     # if it sets to true, a CSV file content will be sent instead of dict
     csv = request.args.get("csv")
     data_source = request.args.get("data_source")
+    if data_source:
+        data_source = data_source.strip()
     if csv:
         try:
             csv = json.loads(csv.lower())
@@ -276,6 +285,8 @@ def get_resource_keys(resource_table):
     """
     mode = request.args.get("mode")
     data_source = request.args.get("data_source")
+    if data_source:
+        data_source = data_source.strip()
     resource_keys = get_resource_attributes(resource_table, data_source=data_source, mode=mode)
     return jsonify(resource_keys)
 
@@ -315,6 +326,11 @@ def get_resource_names_(resource_table):
 
     value = request.args.get("value")
     description = request.args.get("use_description")
+    data_source = request.args.get("data_source")
+    data_source=check_empty_string(data_source)
+    if data_source:
+        data_source=data_source.strip(",")
+        data_source=json.dumps(data_source)
     if description:
         if description.lower() in ["true", "false"]:
             description = json.loads(description.lower())
@@ -322,7 +338,7 @@ def get_resource_names_(resource_table):
             description = True
         else:
             description = False
-    return jsonify(get_resource_names(resource_table, value, description))
+    return jsonify(get_resource_names(resource_table, value, description, data_source))
 
 
 @resources.route("/submitquery/containers/", methods=["POST"])
@@ -339,6 +355,8 @@ def submit_query_return_containers():
     adjust_query_for_container(query)
     return_columns = request.args.get("return_columns")
     data_source = request.args.get("data_source")
+    if data_source:
+        data_source = data_source.strip()
     if return_columns:
         try:
             return_columns = json.loads(return_columns.lower())
@@ -367,6 +385,8 @@ def submit_query():
     adjust_query_for_container(query)
     return_columns = request.args.get("return_columns")
     data_source = request.args.get("data_source")
+    if data_source:
+        data_source = data_source.strip()
     if return_columns:
         try:
             return_columns = json.loads(return_columns.lower())
@@ -392,6 +412,7 @@ def search(resource_table):
     operator = request.args.get("operator")
     bookmark = request.args.get("bookmark")
     data_source = request.args.get("data_source")
+    data_source=check_empty_string(data_source)
     return_containers = request.args.get("return_containers")
     if return_containers:
         return_containers = json.loads(return_containers.lower())

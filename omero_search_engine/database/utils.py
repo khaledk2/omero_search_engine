@@ -46,6 +46,29 @@ def restore_database(source):
         ):
             continue
         backup_filename = os.path.join(mm, "app_data/%s"%data_source.get("DATABASE").get("DATABASE_BACKUP_FILE"))
+
+        create_database_comand = "psql --username %s --host %s --port %s -c 'create database %s'" % (
+            data_source.get("DATABASE").get("DATABASE_USER"),
+            data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
+            data_source.get("DATABASE").get("DATABASE_PORT"),
+            data_source.get("DATABASE").get("DATABASE_NAME")
+        )
+
+        print("create_database_comand: %s" % create_database_comand)
+        try:
+            proc = subprocess.Popen(
+                create_database_comand,
+                shell=True,
+                env={
+                    "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
+                },
+            )
+            stdout, stderr =proc.communicate()
+
+
+            print ("Done for create %s, error %s"%(stdout,stderr))
+        except Exception as e:
+            print("Error: exception happened during create database %s" % (e))
         restore_command = "psql --username %s  --host %s --port %s -d %s -f  %s" % (
             data_source.get("DATABASE").get("DATABASE_USER"),
             data_source.get("DATABASE").get("DATABASE_SERVER_URI"),
@@ -55,13 +78,15 @@ def restore_database(source):
         )
         print("Resore command: %s" % restore_command)
         try:
-            proc = subprocess.Popen(
+            proc2 = subprocess.Popen(
                 restore_command,
                 shell=True,
                 env={
                     "PGPASSWORD": data_source.get("DATABASE").get("DATABASE_PASSWORD")
                 },
             )
-            proc.wait()
+            stdout1, stderr1 = proc2.communicate()
+            print("Done for restore %s, error %s" % (stdout1, stderr1))
+
         except Exception as e:
             print("Error: exception happened during dump %s" % (e))
