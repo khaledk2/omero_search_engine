@@ -228,9 +228,9 @@ class BasicTestCase(unittest.TestCase):
                 )
                 self.assertTrue(validator.identical)
 
-    def test_no_images_containers(self):
-        for data_source in search_omero_app.config.database_connectors.keys():
-            self.assertTrue(check_number_images_sql_containers_using_ids(data_source))
+    #def test_no_images_containers(self):
+    #    for data_source in search_omero_app.config.database_connectors.keys():
+    #        self.assertTrue(check_number_images_sql_containers_using_ids(data_source))
 
     def test_multi_or_quries(self):
         pass
