@@ -162,7 +162,6 @@ class BasicTestCase(unittest.TestCase):
         """
         table = "image1"
         es_index = "image_keyvalue_pair_metadata_1"
-        es_index = "image_keyvalue_pair_metadata_1"
         es_index_2 = "key_values_resource_cach"
         create_es_index_2 = True
         all_all_indices = get_all_indexes_from_elasticsearch()
