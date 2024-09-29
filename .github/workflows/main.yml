@@ -50,7 +50,7 @@ jobs:
         
           export PGPASSWORD=passwprd;
           echo $PGPASSWORD
-          PGPASSWORD=passwprd; psql -h localhost -U postgres -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
+          PGPASSWORD=passwprd; psql -h localhost -U postgress -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
  
 
   upload:
