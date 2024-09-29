@@ -61,7 +61,7 @@ jobs:
           wget https://github.com/khaledk2/ice-archh-64/releases/download/new_re_db/omero_train.zip -P app_data
           unzip app_data/omero_train.zip -d app_data/
           rm app_data/omero_train.zip
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres_2.ports[5433] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump
           python manage.py restore_postgresql_database -s omero_train
           python manage.py get_index_data_from_database -b False -s omero_train
           # run tests
