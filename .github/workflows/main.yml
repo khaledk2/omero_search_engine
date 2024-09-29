@@ -15,6 +15,7 @@ jobs:
           POSTGRES_USER: postgress
           POSTGRES_PASSWORD: passwprd
           POSTGRES_DB: omero
+          max_wal_size: 4GB
         ports:
           - 5432/tcp
         options: >-
@@ -28,6 +29,8 @@ jobs:
           POSTGRES_USER: postgress
           POSTGRES_PASSWORD: passwprd
           POSTGRES_DB: omero_train
+          max_wal_size: 4GB
+
         ports:
           - 5433/tcp
         options: >-
