@@ -23,21 +23,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      postgres2:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgress
-          POSTGRES_PASSWORD: passwprd
-          POSTGRES_DB: omero_train
-          max_wal_size: 4GB
-
-        ports:
-          - 5433/tcp
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
       elasticsearch:
         image: elasticsearch:8.8.1
@@ -65,7 +50,7 @@ jobs:
         
           export PGPASSWORD=passwprd;
           echo $PGPASSWORD
-          export PGPASSWORD=passwprd; psql -h localhost -U postgres -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
+          PGPASSWORD=passwprd; psql -h localhost -U postgres -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
  
 
   upload:
