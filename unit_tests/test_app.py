@@ -161,6 +161,7 @@ class BasicTestCase(unittest.TestCase):
         test submit query and get results
         """
         table = "image1"
+        table_2 = "image"
         es_index = "image_keyvalue_pair_metadata_1"
         es_index_2 = "key_values_resource_cach"
         create_es_index_2 = True
@@ -174,7 +175,7 @@ class BasicTestCase(unittest.TestCase):
             self.assertTrue(
                 create_index(es_index_2, key_values_resource_cache_template)
             )
-        res = search_resource_annotation(table, query)
+        res = search_resource_annotation(table_2, query)
         assert len(res.get("results")) >= 0
         self.assertTrue(delete_es_index(es_index))
         if create_es_index_2:
