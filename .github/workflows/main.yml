@@ -44,8 +44,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt;
-          # Configure database url
-          #python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd
+          # Configure database url          
           python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump
           # configure elasticsearch
           python manage.py set_elasticsearch_configuration -e localhost:${{ job.services.elasticsearch.ports[9200] }}
@@ -56,6 +55,15 @@ jobs:
           python manage.py restore_postgresql_database
           # run indexing indexing
           python manage.py get_index_data_from_database -b False
+          # set up the seond database
+          rm app_data/omero_db_searchengine.zip
+          rm app_data/omero.pgdump
+          wget https://github.com/khaledk2/ice-archh-64/releases/download/new_re_db/omero_train.zip -P app_data
+          unzip app_data/omero_train.zip -d app_data/
+          rm app_data/omero_train.zip
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres_2.ports[5433] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump
+          python manage.py restore_postgresql_database -s omero_train
+          python manage.py get_index_data_from_database -b False -s omero_train
           # run tests
           python -m unittest discover -s unit_tests
   upload:
