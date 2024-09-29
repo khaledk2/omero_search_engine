@@ -61,9 +61,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt;
           # Configure database url          
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump          
+          #python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero1 -d omero -b omero.pgdump          
         
-         
+          export PGPASSWORD=passwprd;
+          echo $PGPASSWORD
           export PGPASSWORD=passwprd; psql -h localhost -U postgres -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
  
 
