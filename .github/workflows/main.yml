@@ -69,6 +69,7 @@ jobs:
           psql -h localhost -U postgress -p ${{ job.services.postgres.ports[5432] }} -c 'CREATE DATABASE omero_train'
           python manage.py restore_postgresql_database -s omero_train
           python manage.py get_index_data_from_database -b False -s omero_train
+          rm app_data/omero_train.pgdump
           # run tests
           python -m unittest discover -s unit_tests
   upload:
