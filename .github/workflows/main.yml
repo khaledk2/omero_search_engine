@@ -22,6 +22,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      postgres2:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgress
+          POSTGRES_PASSWORD: passwprd
+          POSTGRES_DB: omero_train
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
       elasticsearch:
         image: elasticsearch:8.8.1
@@ -61,7 +74,7 @@ jobs:
           wget https://github.com/khaledk2/ice-archh-64/releases/download/new_re_db/omero_train.zip -P app_data
           unzip app_data/omero_train.zip -d app_data/
           rm app_data/omero_train.zip
-          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump
+          python manage.py set_database_configuration -u localhost -s  ${{ job.services.postgres2.ports[5432] }} -n postgress -p passwprd -w omero_train -d omero_train -b omero_train.pgdump
           python manage.py restore_postgresql_database -s omero_train
           python manage.py get_index_data_from_database -b False -s omero_train
           # run tests
