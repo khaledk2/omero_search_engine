@@ -444,7 +444,7 @@ def insert_resource_data(folder, resource, data_source, from_json):
         counter_val = manager.Value("i", 0)
         func = partial(handle_file_2, lock, counter_val)
         # map the data which will be consumed by the processes inside the pool
-        search_omero_app.logger.info("VALS %S"%vals)
+        search_omero_app.logger.info("VALS %s" %vals)
         res = pool.map(func, vals)  # noqa
         delta = str(datetime.now() - start_time)
         search_omero_app.logger.info("Total time=%s" % delta)
