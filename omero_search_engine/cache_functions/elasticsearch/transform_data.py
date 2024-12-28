@@ -368,7 +368,7 @@ def handle_file_2(lock, global_counter, val):
     search_omero_app.logger.info(
         "%s/%s Reading the csv file %s" % (global_counter.value, total_files, file_name)
     )
-    if resource == "imqge":
+    if resource == "image":
         df = pd.read_csv(file_name, low_memory=False).replace({np.nan: None})
     else:
         df = pd.read_csv(file_name, low_memory=False).replace({np.nan: None})
@@ -405,8 +405,11 @@ def insert_resource_data(folder, resource, data_source, from_json):
     f_con = 0
     if os.path.isfile(folder):
         files_list = [folder]
+        search_omero_app.logger.info("1: %s"%files_list)
+
     elif os.path.isdir(folder):
         files_list = get_file_list(folder)
+        search_omero_app.logger.info("2: %s" % files_list)
     else:
         search_omero_app.logger.info(
             "No valid folder ({folder}) is provided ".format(folder=folder)
@@ -441,6 +444,7 @@ def insert_resource_data(folder, resource, data_source, from_json):
         counter_val = manager.Value("i", 0)
         func = partial(handle_file_2, lock, counter_val)
         # map the data which will be consumed by the processes inside the pool
+        search_omero_app.logger.info("VALS %S"%vals)
         res = pool.map(func, vals)  # noqa
         delta = str(datetime.now() - start_time)
         search_omero_app.logger.info("Total time=%s" % delta)

@@ -57,7 +57,7 @@ jobs:
           # run  restore omero database
           python manage.py restore_postgresql_database
           # run indexing indexing
-          python manage.py get_index_data_from_database -b False
+          # python manage.py get_index_data_from_database -b False
           # set up the seond database
           rm app_data/omero_db_searchengine.zip
           rm app_data/omero.pgdump
