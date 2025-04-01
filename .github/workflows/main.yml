@@ -80,7 +80,6 @@ jobs:
           # run tests
           python -m unittest discover -s unit_tests/queries_tests
           python -m unittest discover -s unit_tests/indexing_tests
-          python -m unittest discover -s unit_tests/queries_tests
 
   upload:
     needs: build

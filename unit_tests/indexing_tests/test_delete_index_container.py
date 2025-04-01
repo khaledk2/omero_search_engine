@@ -78,6 +78,7 @@ class BasicTestCase(unittest.TestCase):
             for con1 in containers_ad["results"]["results"]:
                 self.assertNotEquals(int(con1["id"]), int(id))
         # test index container
+        time.sleep(60)
         index_container_from_database(resource, data_source, ids, "False", "True")
         time.sleep(60)
         containers_ai = return_containes_images("omero1")
