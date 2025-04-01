@@ -44,7 +44,7 @@ from test_data import (
 
 from manage import (
     delete_conatiner,
-    index_container_from_database,
+    index_container_from_database, update_data_source_cache,
 )
 
 from omero_search_engine import create_app
@@ -79,7 +79,9 @@ class BasicTestCase(unittest.TestCase):
                 self.assertNotEquals(int(con1["id"]), int(id))
         # test index container
         time.sleep(60)
-        index_container_from_database(resource, data_source, ids, "False", "True")
+        index_container_from_database(resource, data_source, ids, "False", "False")
+        time.sleep(60)
+        update_data_source_cache(data_source)
         time.sleep(60)
         containers_ai = return_containes_images("omero1")
         for id, container in containers_n.items():
