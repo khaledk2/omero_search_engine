@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-containers_1 = {
+containers_n = {
     "1273": {
         "type": "project",
         "name": "idr0021-R",
@@ -30,9 +30,6 @@ containers_1 = {
         "image count": 1,
         "data_source": "omero1",
     },
-}
-
-containers_2 = {
     "1582": {
         "type": "project",
         "name": "matlab-project",
