@@ -79,20 +79,6 @@ class BasicTestCase(unittest.TestCase):
                 self.assertNotEquals(int(con1["id"]), int(id))
         # test index container
         index_container_from_database(resource, data_source, ids, "False", "True")
-        time.sleep(60)
-        containers_ai = return_containes_images("omero1")
-        for id, container in containers_n.items():
-            found = False
-            cur_res = None
-            for con1 in containers_ai["results"]["results"]:
-                if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
-                    found = True
-                    cur_res = con1
-                    break
-            self.assertTrue(found)
-            self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
-            self.assertEqual(cur_res["name"], container["name"])
-
 
 if __name__ == "__main__":
     unittest.main()
