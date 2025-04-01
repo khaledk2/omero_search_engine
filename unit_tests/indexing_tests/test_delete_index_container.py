@@ -79,7 +79,7 @@ class BasicTestCase(unittest.TestCase):
                 self.assertNotEquals(int(con1["id"]), int(id))
         # test index container
         index_container_from_database(resource, data_source, ids, "False", "True")
-        time.sleep(30)
+        time.sleep(60)
         containers_ai = return_containes_images("omero1")
         for id, container in containers_n.items():
             found = False
