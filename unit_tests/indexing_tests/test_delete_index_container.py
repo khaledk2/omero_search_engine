@@ -90,11 +90,10 @@ class BasicTestCase(unittest.TestCase):
             for con1 in containers_ai["results"]["results"]:
                 if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
                     found = True
-                    cur_res = con1
                     break
             self.assertTrue(found)
-            self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
-            self.assertEqual(cur_res["name"], container["name"])
+            self.assertEqual(int(con1["image count"]), int(container["image count"]))
+            self.assertEqual(con1["name"], container["name"])
 
 
 if __name__ == "__main__":
