@@ -49,7 +49,7 @@ from manage import (
 
 from omero_search_engine import create_app
 
-create_app("testing")
+omero_app_=create_app("testing")
 
 # for data_source in search_omero_app.config.database_connectors.keys():
 
@@ -78,22 +78,25 @@ class BasicTestCase(unittest.TestCase):
             for con1 in containers_ad["results"]["results"]:
                 self.assertNotEquals(int(con1["id"]), int(id))
         # test index container
-        time.sleep(70)
         index_container_from_database(resource, data_source, ids, "False", "False")
-        time.sleep(70)
+        time.sleep(60)
         update_data_source_cache(data_source)
-        time.sleep(70)
+        time.sleep(60)
         containers_ai = return_containes_images("omero1")
+        time.sleep(60)
         for id, container in containers_n.items():
             found = False
             cur_res = None
             for con1 in containers_ai["results"]["results"]:
                 if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
                     found = True
+                    cur_res=con1
                     break
             self.assertTrue(found)
-            self.assertEqual(int(con1["image count"]), int(container["image count"]))
-            self.assertEqual(con1["name"], container["name"])
+            omero_app_.logger.info("%s: ===>====>>>>>: %s"%(id,cur_res["name"]))
+            print (id, "===>====>>>>>")
+            self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
+            self.assertEqual(cur_res["name"], container["name"])
 
 
 if __name__ == "__main__":
