@@ -67,8 +67,8 @@ class BasicTestCase(unittest.TestCase):
         # test delete container
         ids_ = list(containers_n.keys())
         ids = ",".join(ids_)
-        data_source = containers_n[ids_[0]]["data_source"]
-        resource = containers_n[ids_[0]]["type"]
+        data_source = "omero1" #containers_n[ids_[0]]["data_source"]
+        resource = "project" #containers_n[ids_[0]]["type"]
         delete_conatiner(resource, data_source, ids, "True")
         time.sleep(30)
         for id, container in containers_n.items():
