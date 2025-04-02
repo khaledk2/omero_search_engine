@@ -716,7 +716,7 @@ def index_container_s_from_database(target_resource, resource, id, data_source):
         no_processors = search_omero_app.config.get("NO_PROCESSES")
         if not no_processors:
             no_processors = int(multiprocessing.cpu_count() / 2)
-        no_processors = 2
+        no_processors = 1
         search_omero_app.logger.info(
             "Number of the allowed parallel\
             processes inside the pool: %s"

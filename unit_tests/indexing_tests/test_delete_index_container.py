@@ -93,7 +93,7 @@ class BasicTestCase(unittest.TestCase):
                     cur_res=con1
                     break
             self.assertTrue(found)
-            omero_app_.logger.info("%s: ===>====>>>>>: %s"%(id,cur_res["name"]))
+            omero_app_.logger.info("%s: ==%s=>===%s=>>>>>: %s"%(id,cur_res["name"],container["image count"],cur_res["image count"]))
             print (id, "===>====>>>>>")
             try:
                 self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
