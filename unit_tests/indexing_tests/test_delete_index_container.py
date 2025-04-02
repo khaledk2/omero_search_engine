@@ -95,8 +95,11 @@ class BasicTestCase(unittest.TestCase):
             self.assertTrue(found)
             omero_app_.logger.info("%s: ===>====>>>>>: %s"%(id,cur_res["name"]))
             print (id, "===>====>>>>>")
-            self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
-            self.assertEqual(cur_res["name"], container["name"])
+            try:
+                self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
+                self.assertEqual(cur_res["name"], container["name"])
+            except Exception as e:
+                raise Exception ("Error %s for %s: ===>====>>>>>: %s"%(e,id,cur_res["name"]))
 
 
 if __name__ == "__main__":
