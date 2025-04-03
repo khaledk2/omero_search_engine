@@ -43,8 +43,7 @@ from omero_search_engine.cache_functions.elasticsearch.transform_data import (
 
 
 from test_data import (
-    containers_1,
-    containers_2,
+    containers_n,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -65,79 +64,32 @@ class BasicTestCase(unittest.TestCase):
 
     def test_delete_index_one_container(self):
         import time
+        from manage import index_container_from_database, delete_conatiner
 
-        # test delete container
-        for id, container in containers_1.items():
-            delete_container(id, container["type"], container["data_source"], False)
-            update_data_source_cache(container["data_source"])
-            time.sleep(60)
-            containers_ad = return_containes_images(
-                container["data_source"],
-            )
-            for con1 in containers_ad["results"]["results"]:
-                self.assertNotEquals(int(con1["id"]), int(id))
-
-        # test index container
-        resources_index = {
-            "project": ["image", "project"],
-            "screen": ["image", "screen", "well", "plate"],
-        }
-        for id, container in containers_1.items():
-            for res in resources_index[container["type"]]:
-                index_container_s_from_database(
-                    container["type"], res, id, container["data_source"]
-                )
-
-            update_data_source_cache(container["data_source"])
-            search_omero_app.logger.info("Waiting to index the data... ")
-
-            time.sleep(60)
-            # return_containes_images
-            containers_ai = return_containes_images(container["data_source"])
-
-            found = False
-            cur_res = None
-            for con1 in containers_ai["results"]["results"]:
-                if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
-                    found = True
-                    cur_res = con1
-                    break
-            self.assertTrue(found)
-            self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
-            self.assertEqual(cur_res["name"], container["name"])
-
-        # def test_delete_index_multi_containers(self):
-        resources_index = {
-            "project": ["image", "project"],
-            "screen": ["image", "screen", "well", "plate"],
-        }
-        import time
-
-        ids = []
-        data_source = ""
-        resource = ""
-        for id in containers_2:
-            data_source = containers_2[id]["data_source"]
-            resource = containers_2[id]["type"]
-            ids.append(id)
-        delete_container(",".join(ids), resource, data_source, True)
-        time.sleep(60)
-        # return_containes_images
-        containers_ad = return_containes_images(data_source)
-
-        for id, container in containers_2.items():
-            for con1 in containers_ad["results"]["results"]:
-                self.assertNotEquals(int(con1["id"]), int(id))
-
-        for res in resources_index[resource]:
-            index_container_s_from_database(resource, res, ",".join(ids), data_source)
+        ids_=list (containers_n.keys())
+        data_source=containers_n[ids_[0]]["data_source"]
+        resource=containers_n[ids_[0]]["type"]
+        #index_container_from_database(resource,data_source, ",".join(ids_),"False", "False")
+        delete_container(",".join(ids_),resource,data_source,"False")
+        time.sleep(20)
         update_data_source_cache(data_source)
-        time.sleep(60)
-        containers_ai = return_containes_images(data_source)
-        found = False
-        cur_res = None
-        for id, container in containers_2.items():
-            for con1 in containers_ai["results"]["results"]:
+        time.sleep(20)
+        containers_ad = return_containes_images(
+            data_source,
+        )
+        # test delete container
+        for id, container in containers_n.items():
+            for con1 in containers_ad["results"]["results"]:
+                self.assertNotEquals(int(con1["id"]), int(id))
+
+        index_container_from_database(resource, data_source, ",".join(ids_), "False", "False")
+        delete_container(",".join(ids_), resource, data_source, "False")
+        time.sleep(20)
+        update_data_source_cache(data_source)
+        time.sleep(20)
+        containers_ad = return_containes_images(data_source)
+        for id, container in containers_n.items():
+            for con1 in containers_ad["results"]["results"]:
                 if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
                     found = True
                     cur_res = con1
