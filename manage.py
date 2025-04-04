@@ -659,7 +659,7 @@ def index_container_from_database(
     from omero_search_engine.cache_functions.elasticsearch.transform_data import (
         index_container_s_from_database,
     )
-    import json
+    import json, time
 
     backup = json.loads(backup.lower())
     update_cache = json.loads(update_cache.lower())
@@ -668,6 +668,7 @@ def index_container_from_database(
         index_container_s_from_database(resource, res, id, data_source)
 
     if update_cache:
+        time.sleep(60)
         from omero_search_engine.api.v1.resources.utils import update_data_source_cache
 
         update_data_source_cache(data_source)
@@ -675,6 +676,7 @@ def index_container_from_database(
     # backup the index data
     if backup:
         backup_elasticsearch_data()
+    time.sleep(60)
 
 
 @manager.command

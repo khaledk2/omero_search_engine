@@ -23,10 +23,6 @@ Basic app unit tests
 
 import unittest
 
-from omero_search_engine.api.v1.resources.utils import (
-    update_data_source_cache,
-    delete_container,
-)
 
 from omero_search_engine.api.v1.resources.resource_analyser import (
     return_containes_images,
@@ -64,14 +60,12 @@ class BasicTestCase(unittest.TestCase):
 
     def test_delete_index_one_container(self):
         import time
-        from manage import index_container_from_database, delete_conatiner
+        from manage import index_container_from_database, delete_conatiner, update_data_source_cache
 
         ids_=list (containers_n.keys())
         data_source=containers_n[ids_[0]]["data_source"]
         resource=containers_n[ids_[0]]["type"]
-        delete_container(",".join(ids_),resource,data_source,"True")
-        #update_data_source_cache(data_source)
-        time.sleep(20)
+        delete_conatiner(resource,data_source,','.join(ids_), "True")
         containers_ad = return_containes_images(
             data_source,
         )
@@ -79,10 +73,7 @@ class BasicTestCase(unittest.TestCase):
         for id, container in containers_n.items():
             for con1 in containers_ad["results"]["results"]:
                 self.assertNotEquals(int(con1["id"]), int(id))
-
         index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
-        #update_data_source_cache(data_source)
-        time.sleep(20)
         containers_ad = return_containes_images(data_source)
         found=False
         for id, container in containers_n.items():
