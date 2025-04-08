@@ -72,9 +72,10 @@ class BasicTestCase(unittest.TestCase):
         for id, container in containers_n.items():
             for con1 in containers_ad["results"]["results"]:
                 self.assertNotEquals(int(con1["id"]), int(id))
-        for id in containers_n:
-            #index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
-            index_container_from_database(resource, data_source, id, "False", "True")
+        index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
+        #for id in containers_n:
+        #    #index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
+        #    index_container_from_database(resource, data_source, id, "False", "True")
         containers_ad = return_containes_images(data_source)
         found=False
         for id, container in containers_n.items():

@@ -666,6 +666,7 @@ def index_container_from_database(
 
     for res in resources_index[resource]:
         index_container_s_from_database(resource, res, id, data_source)
+        time.sleep(60)
 
     if update_cache:
         time.sleep(60)
