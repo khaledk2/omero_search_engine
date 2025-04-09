@@ -42,16 +42,24 @@ containers_n = {
 }
 
 container_m={
-    "1272": {
+    "1273": {
         "type": "project",
-        "name": "idr0021",
-        "image count": 33,
+        "name": "idr0021-R",
+        "image count": 414,
         "data_source": "omero_train",
     },
-    "1264": {
+
+    "701": {
         "type": "project",
-        "name": "idr0021",
-        "image count": 354,
+        "name": "ggg",
+        "image count": 1,
+        "data_source": "omero_train",
+    },
+
+    "1582": {
+        "type": "project",
+        "name": "matlab-project",
+        "image count": 4,
         "data_source": "omero_train",
     },
 }
