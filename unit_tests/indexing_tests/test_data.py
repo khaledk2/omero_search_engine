@@ -24,10 +24,10 @@ containers_n = {
         "image count": 414,
         "data_source": "omero1",
     },
-    "963": {
+    "971": {
         "type": "project",
         "name": "idr0021",
-        "image count": 414,
+        "image count": 417,
         "data_source": "omero1",
     },
     "701": {
