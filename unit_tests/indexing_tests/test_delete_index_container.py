@@ -40,6 +40,7 @@ from omero_search_engine.cache_functions.elasticsearch.transform_data import (
 
 from test_data import (
     containers_n,
+    container_m,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -88,6 +89,36 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
         self.assertEqual(cur_res["name"], container["name"])
 
+
+    def test_delete_index_other_container(self):
+        import time
+        from manage import index_container_from_database, delete_conatiner, update_data_source_cache
+        ids_=list (container_m.keys())
+        data_source=container_m[ids_[0]]["data_source"]
+        resource=container_m[ids_[0]]["type"]
+        delete_conatiner(resource,data_source,','.join(ids_), "True")
+        containers_ad = return_containes_images(
+            data_source,
+        )
+        # test delete container
+        for id, container in containers_n.items():
+            for con1 in containers_ad["results"]["results"]:
+                self.assertNotEquals(int(con1["id"]), int(id))
+        index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
+        #for id in containers_n:
+        #    #index_container_from_database(resource, data_source, ",".join(ids_), "False", "True")
+        #    index_container_from_database(resource, data_source, id, "False", "True")
+        containers_ad = return_containes_images(data_source)
+        found=False
+        for id, container in container_m.items():
+            for con1 in containers_ad["results"]["results"]:
+                if int(con1["id"]) == int(id) and con1["type"] == container["type"]:
+                    found = True
+                    cur_res = con1
+                    break
+        self.assertTrue(found)
+        self.assertEqual(int(cur_res["image count"]), int(container["image count"]))
+        self.assertEqual(cur_res["name"], container["name"])
 
 if __name__ == "__main__":
     unittest.main()
