@@ -42,10 +42,16 @@ containers_n = {
 }
 
 container_m={
-    "971": {
+    "1272": {
         "type": "project",
-        "name": "idr00021",
-        "image count": 417,
+        "name": "idr0021",
+        "image count": 33,
+        "data_source": "omero_train",
+    },
+    "1264": {
+        "type": "project",
+        "name": "idr0021",
+        "image count": 354,
         "data_source": "omero_train",
     },
 }
