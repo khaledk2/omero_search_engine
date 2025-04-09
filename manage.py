@@ -676,7 +676,7 @@ def index_container_from_database(
     # backup the index data
     if backup:
         backup_elasticsearch_data()
-
+    time.sleep(60)
 
 
 @manager.command
