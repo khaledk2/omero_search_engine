@@ -669,7 +669,6 @@ def index_container_from_database(
         time.sleep(60)
 
     if update_cache:
-        time.sleep(60)
         from omero_search_engine.api.v1.resources.utils import update_data_source_cache
 
         update_data_source_cache(data_source)
