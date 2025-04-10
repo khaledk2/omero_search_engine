@@ -426,7 +426,7 @@ def cache_key_value_index(
 @manager.option(
     "-s",
     "--source",
-    help="data source name, ndexeing all the data sources is the default",  # noqa
+    help="data source name, testing  all the data sources is the default",  # noqa
 )
 def test_indexing_search_query(
     json_file="app_data/test_index_data.json",
