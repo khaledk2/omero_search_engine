@@ -671,11 +671,12 @@ def index_container_from_database(
         time.sleep(60)
 
     if update_cache:
-        for single_res in resources_index:
-            for res in resources_index[single_res]:
-                update_data_source_cache(data_source, res, delete_current_cache)
-                time.sleep(60)
-                delete_current_cache = False
+        update_data_source_cache(data_source)
+        #for single_res in resources_index:
+        #    for res in resources_index[single_res]:
+        #        update_data_source_cache(data_source, res, delete_current_cache)
+        #        time.sleep(60)
+        #        delete_current_cache = False
 
     # backup the index data
     if backup:
