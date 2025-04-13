@@ -669,10 +669,13 @@ def index_container_from_database(
     for res in resources_index[resource]:
         index_container_s_from_database(resource, res, id, data_source)
         time.sleep(60)
-        if update_cache:
-            update_data_source_cache(data_source, res, delete_current_cache)
-            time.sleep(60)
-            delete_current_cache = False
+
+    if update_cache:
+        for single_res in resources_index:
+            for res in resources_index[single_res]:
+                update_data_source_cache(data_source, res, delete_current_cache)
+                time.sleep(60)
+                delete_current_cache = False
 
     # backup the index data
     if backup:
@@ -700,3 +703,20 @@ if __name__ == "__main__":
 # 23:53:55,523
 # screen 206
 # project 404
+
+
+"""
+idr=# select name from project where id=404;
+                 name
+--------------------------------------
+ idr0041-cai-mitoticatlas/experimentA
+(1 row)
+
+idr=# ^C
+idr=# ^C
+idr=# select name from screen where id=206;
+             name
+-------------------------------
+ idr0008-rohn-actinome/screenB
+(1 row)
+"""
