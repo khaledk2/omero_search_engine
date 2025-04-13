@@ -658,7 +658,7 @@ def index_container_from_database(
     from omero_search_engine.cache_functions.elasticsearch.transform_data import (
         index_container_s_from_database,
     )
-    from omero_search_engine.api.v1.resources.utils import update_data_source_cache
+    # from omero_search_engine.api.v1.resources.utils import update_data_source_cache
     import json
     import time
 
