@@ -856,7 +856,7 @@ def test_no_images(data_source):
                 result,
             )
         report.append(message)
-    search_omero_app.logger.info(message)
+        search_omero_app.logger.info(message)
     report = "\n-----------------------------------------------------------------------------\n".join(  # noqa
         report
     )
