@@ -832,7 +832,7 @@ def insert_resource_data_from_df(df, resource, data_source, lock=None):
     try:
         if lock:
             lock.acquire()
-        res = helpers.bulk(es, actions)
+        res = helpers.bulk(es, actions, stats_only=True,)
         search_omero_app.logger.info("%s Pushing results: %s" % (es_index, str(res)))
 
     except Exception as err:
