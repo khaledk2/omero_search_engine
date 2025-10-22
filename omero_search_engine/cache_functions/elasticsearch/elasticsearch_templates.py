@@ -245,10 +245,9 @@ key_value_buckets_info_template = {
             "Value": {
                 "type": "text",
                 "fields": {
-                    "keyvalue": {"type": "keyword"},
+                    "keyvalue": {"type": "keyword", "ignore_above": 256,},
                     "keyvaluenormalize": {
                         "type": "keyword",
-                        "ignore_above": 256,
                         "normalizer": "valuesnormalizer",
                     },
                 },
