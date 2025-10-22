@@ -278,7 +278,7 @@ def prepare_images_data(data, data_source, doc_type):
                             row_to_insert["key_values"].append(
                                 {
                                     "name": "Number of Rois",
-                                    "value": str(nn_value),
+                                    "value": nn_value,
                                     "index": 0,
                                 }
                             )
@@ -287,7 +287,7 @@ def prepare_images_data(data, data_source, doc_type):
                             row_to_insert["key_values"].append(
                                 {
                                     "name": "Number of channels",
-                                    "value": str(n_value),
+                                    "value": n_value,
                                     "get_indexindex": 0,
                                 }
                             )
