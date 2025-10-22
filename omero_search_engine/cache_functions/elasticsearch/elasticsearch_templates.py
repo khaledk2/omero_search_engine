@@ -248,6 +248,7 @@ key_value_buckets_info_template = {
                     "keyvalue": {"type": "keyword"},
                     "keyvaluenormalize": {
                         "type": "keyword",
+                        "ignore_above": 256,
                         "normalizer": "valuesnormalizer",
                     },
                 },
