@@ -278,7 +278,7 @@ def prepare_images_data(data, data_source, doc_type):
                             row_to_insert["key_values"].append(
                                 {
                                     "name": "Number of Rois",
-                                    "value": nn_value,
+                                    "value": str(nn_value),
                                     "index": 0,
                                 }
                             )
@@ -287,7 +287,7 @@ def prepare_images_data(data, data_source, doc_type):
                             row_to_insert["key_values"].append(
                                 {
                                     "name": "Number of channels",
-                                    "value": n_value,
+                                    "value": str(n_value),
                                     "get_indexindex": 0,
                                 }
                             )
@@ -832,7 +832,7 @@ def insert_resource_data_from_df(df, resource, data_source, lock=None):
     try:
         if lock:
             lock.acquire()
-        res = helpers.bulk(es, actions, stats_only=True,)
+        res = helpers.bulk(es, actions)
         search_omero_app.logger.info("%s Pushing results: %s" % (es_index, str(res)))
 
     except Exception as err:
