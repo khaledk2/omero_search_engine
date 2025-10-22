@@ -220,7 +220,7 @@ def prepare_images_data(data, data_source, doc_type):
         "well_id",
         "wellsample_id",
         "image_size",
-        "roi_id",
+        #"roi_id",
         "Channels",
         "SizeC",
         "SizeT",
@@ -233,7 +233,7 @@ def prepare_images_data(data, data_source, doc_type):
 
     new_columns = [
         "image_size",
-        "roi_id",
+        #"roi_id",
         "Channels",
         "SizeC",
         "SizeT",

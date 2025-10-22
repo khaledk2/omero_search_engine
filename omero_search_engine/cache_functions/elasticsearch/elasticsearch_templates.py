@@ -52,17 +52,6 @@ non_image_template = {
             "owner_id": {"type": "long"},
             "group_id": {"type": "long"},
             "permissions": {"type": "long"},
-            "vector": {
-                "type": "dense_vector",
-                "dims": 384,
-                # "index": True,
-                # "similarity": "cosine",
-                # "index_options": {
-                #    "type": "int8_hnsw",
-                #    "m": 16,
-                #    "ef_construction": 100
-                # }
-            },
             "key_values": {
                 "type": "nested",
                 "properties": {
@@ -83,14 +72,13 @@ non_image_template = {
                                 "type": "keyword",
                                 "normalizer": "valuesnormalizer",
                             },
-                            "keyvalue": {"type": "keyword"},
                             "numerical_value": {
                                 "type": "double",
                                 "ignore_malformed": True
-                              },
-
+                            },
+                            "keyvalue": {"type": "keyword",
+                            "ignore_above": 256},
                         },
-
                     },
                     "index": {"type": "short"},
                 },
@@ -157,17 +145,6 @@ image_template = {
             "screen_name": {
                 "type": "text",
                 "fields": {"keyvalue": {"type": "keyword"}},
-            },
-            "vector": {
-                "type": "dense_vector",
-                "dims": 384,
-                # "index": True,
-                # "similarity": "cosine",
-                # "index_options": {
-                #    "type": "int8_hnsw",
-                #    "m": 16,
-                #    "ef_construction": 100
-                # }
             },
             "key_values": {
                 "type": "nested",
@@ -280,40 +257,6 @@ key_value_buckets_info_template = {
             "total_buckets": {"type": "long"},
             "total_items": {"type": "long"},
             "total_items_in_saved_buckets": {"type": "long"},
-            # "Attribute_vector": {
-            #    "type": "dense_vector",
-            #    "dims": 384,
-            #    #"index": True,
-            #    #"similarity": "cosine",
-            # "index_options": {
-            #   "type": "int8_hnsw",
-            #   "m": 16,
-            #   "ef_construction": 100
-            # }
-            # },
-            # "value_vector": {
-            #    "type": "dense_vector",
-            #    "dims": 384,
-            #    "index": True,
-            # "similarity": "cosine",
-            # "index_options": {
-            #    "type": "int8_hnsw",
-            #    "m": 16,
-            #    "ef_construction": 100
-            # }
-            # },
-            "vectorized_key_value": {
-                "type": "dense_vector",
-                "dims": 384,
-                #"dims": 768,
-                "index": True,
-                # "similarity": "cosine",
-                # "index_options": {
-                #    "type": "int8_hnsw",
-                #    "m": 16,
-                #    "ef_construction": 100
-                # }
-            },
         }
     },
 }
