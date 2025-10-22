@@ -220,7 +220,7 @@ def prepare_images_data(data, data_source, doc_type):
         "well_id",
         "wellsample_id",
         "image_size",
-        #"roi_id",
+        "roi_id",
         "Channels",
         "SizeC",
         "SizeT",
@@ -233,7 +233,7 @@ def prepare_images_data(data, data_source, doc_type):
 
     new_columns = [
         "image_size",
-        #"roi_id",
+        "roi_id",
         "Channels",
         "SizeC",
         "SizeT",
@@ -291,13 +291,14 @@ def prepare_images_data(data, data_source, doc_type):
                                     "get_indexindex": 0,
                                 }
                             )
-                        row_to_insert["key_values"].append(
-                            {
-                                "name": rcd,
-                                "value": row.get(rcd),
-                                "index": 0,
-                            }
-                        )
+                        if rcd != "roi_id":
+                            row_to_insert["key_values"].append(
+                                {
+                                    "name": rcd,
+                                    "value": row.get(rcd),
+                                    "index": 0,
+                                }
+                            )
                 else:
                     row_to_insert[rcd] = row.get(rcd)
 
