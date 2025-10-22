@@ -76,7 +76,8 @@ non_image_template = {
                                 "type": "double",
                                 "ignore_malformed": True
                             },
-                            "keyvalue": {"type": "keyword"},
+                            "keyvalue": {"type": "keyword",
+                             "ignore_above": 256},
                         },
                     },
                     "index": {"type": "short"},
@@ -245,7 +246,7 @@ key_value_buckets_info_template = {
             "Value": {
                 "type": "text",
                 "fields": {
-                    "keyvalue": {"type": "keyword", "ignore_above": 256,},
+                    "keyvalue": {"type": "keyword"},
                     "keyvaluenormalize": {
                         "type": "keyword",
                         "normalizer": "valuesnormalizer",
