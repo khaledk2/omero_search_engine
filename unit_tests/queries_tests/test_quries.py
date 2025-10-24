@@ -29,6 +29,7 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation,
     get_data_sources,
 )
+from omero_search_engine.api.v1.resources.resource_analyser import get_resource_attributes
 
 from omero_search_engine.cache_functions.elasticsearch.elasticsearch_templates import (  # noqa
     image_template,
@@ -377,15 +378,14 @@ class BasicTestCase(unittest.TestCase):
                         validator.searchengine_results.get("size"),
                     )
 
-    def test_fed_terms(self):
-        from omero_search_engine.api.v1.resources.resource_analyser import get_resource_attributes
+    def test_index_new_attributes(self):
+        """
+        Test new indexed attributes
+        """
         for data_source in search_omero_app.config.database_connectors.keys():
-            resource_keys = get_resource_attributes("image", data_source=data_source)
+            resource_keys = get_resource_attributes("image", data_source="omero")
             for term in test_fed_terms:
                 assert term in resource_keys
-
-
-
 
     def test_data_sources(self):
         """
