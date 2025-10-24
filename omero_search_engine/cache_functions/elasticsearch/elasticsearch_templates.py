@@ -161,10 +161,10 @@ image_template = {
                                 "type": "keyword",
                                 "normalizer": "valuesnormalizer",
                             },
-                          #  "numerical_value": {
-                          #      "type": "double",
-                          #      "ignore_malformed": True,
-                          #  },
+                            "numerical_value": {
+                                "type": "double",
+                                "ignore_malformed": True,
+                            },
                             "keyvalue": {"type": "keyword"},
                         },
                     },

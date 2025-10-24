@@ -230,7 +230,7 @@ def prepare_images_data(data, data_source, doc_type):
         "image_format",
         "pixelstype",
     ]
-
+#["he", "pr"]
     new_columns = {
         "image_size": "image_size",
         "roi_id": "roi_id",
