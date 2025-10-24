@@ -261,8 +261,8 @@ def prepare_images_data(data, data_source, doc_type):
             row_to_insert = data_to_be_inserted[row["id"]]
         else:
             row_to_insert = {}
-            data_to_be_inserted[row["id"]] = row_to_insert
             row_to_insert["key_values"] = []
+            data_to_be_inserted[row["id"]] = row_to_insert
             if image_webclient_url and image_url and thumb_url:
                 row_to_insert["image_webclient_url"] = image_webclient_url % row["id"]
                 row_to_insert["image_url"] = image_url % row["id"]
@@ -284,6 +284,7 @@ def prepare_images_data(data, data_source, doc_type):
                                     "index": 0,
                                 }
                             )
+                            continue
                         elif rcd == "channels":
                             n_value = len(row.get(rcd).split(","))
                             row_to_insert["key_values"].append(
@@ -293,27 +294,26 @@ def prepare_images_data(data, data_source, doc_type):
                                     "get_indexindex": 0,
                                 }
                             )
-                        if rcd != "roi_id":
-                            row_to_insert["key_values"].append(
-                                {
-                                    "name": new_columns[rcd],
-                                    "value": row.get(rcd),
-                                    "index": 0,
-                                }
-                            )
+                        row_to_insert["key_values"].append(
+                            {
+                                "name": new_columns[rcd],
+                                "value": row.get(rcd),
+                                "index": 0,
+                            }
+                        )
                 else:
                     row_to_insert[rcd] = row.get(rcd)
 
             # row_to_insert["key_values"] = []
             #data_to_be_inserted[row["id"]] = row_to_insert
-        #key_value = row_to_insert["key_values"]
-            row_to_insert["key_values"].append(
-                {
-                    "name": row["mapvalue_name"],
-                    "value": row["mapvalue_value"],
-                    "index": row["mapvalue_index"],
-                }
-            )
+        key_value = row_to_insert["key_values"]
+        key_value.append(
+            {
+                "name": row["mapvalue_name"],
+                "value": row["mapvalue_value"],
+                "index": row["mapvalue_index"],
+            }
+        )
 
     return data_to_be_inserted
 
