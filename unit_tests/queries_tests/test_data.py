@@ -108,3 +108,6 @@ csv_test_data = [
     {"key": "organism", "value": "homo sapiens", "no_results": 15756},
     {"key": "gene symbol", "value": "pcnt", "no_results": 1484},
 ]
+
+test_fed_terms=[ "SizeC","SizeT","SizeX","SizeY",
+        "SizeZ","image_format", "pixelstype"]

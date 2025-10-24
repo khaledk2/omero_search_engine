@@ -65,6 +65,7 @@ from test_data import (
     image_owner,
     image_group,
     image_owner_group,
+    test_fed_terms,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -375,6 +376,16 @@ class BasicTestCase(unittest.TestCase):
                         len(validator.postgres_results),
                         validator.searchengine_results.get("size"),
                     )
+
+    def test_fed_terms(self):
+        from omero_search_engine.api.v1.resources.resource_analyser import get_resource_attributes
+        for data_source in search_omero_app.config.database_connectors.keys():
+            resource_keys = get_resource_attributes("image", data_source=data_source)
+            for term in test_fed_terms:
+                assert term in resource_keys
+
+
+
 
     def test_data_sources(self):
         """
