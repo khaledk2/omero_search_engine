@@ -303,7 +303,7 @@ def prepare_images_data(data, data_source, doc_type):
                 else:
                     row_to_insert[rcd] = row.get(rcd)
 
-            # row_to_insert["key_values"] = []
+            row_to_insert["key_values"] = []
             data_to_be_inserted[row["id"]] = row_to_insert
         key_value = row_to_insert["key_values"]
         key_value.append(
