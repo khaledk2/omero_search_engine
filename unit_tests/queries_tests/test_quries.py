@@ -383,9 +383,9 @@ class BasicTestCase(unittest.TestCase):
         Test new indexed attributes
         """
         for data_source in search_omero_app.config.database_connectors.keys():
-            resource_keys = get_resource_attributes("image", data_source="omero")
-            for term in test_fed_terms:
-                assert term in resource_keys
+            resource_keys = get_resource_attributes("image", data_source=data_source)
+            assert all(item in resource_keys for item in test_fed_terms)
+            assert any(item in resource_keys for item in test_fed_terms)
 
     def test_data_sources(self):
         """
