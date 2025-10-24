@@ -307,13 +307,13 @@ def prepare_images_data(data, data_source, doc_type):
             # row_to_insert["key_values"] = []
             #data_to_be_inserted[row["id"]] = row_to_insert
         #key_value = row_to_insert["key_values"]
-        row_to_insert["key_values"].append(
-            {
-                "name": row["mapvalue_name"],
-                "value": row["mapvalue_value"],
-                "index": row["mapvalue_index"],
-            }
-        )
+            row_to_insert["key_values"].append(
+                {
+                    "name": row["mapvalue_name"],
+                    "value": row["mapvalue_value"],
+                    "index": row["mapvalue_index"],
+                }
+            )
 
     return data_to_be_inserted
 
