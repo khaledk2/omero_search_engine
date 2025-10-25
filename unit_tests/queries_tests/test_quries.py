@@ -395,6 +395,28 @@ class BasicTestCase(unittest.TestCase):
                         break
             self.assertTrue (is_it_in)
 
+            #assert all(item in resource_keys for item in test_fed_terms) ##====.> 2
+            #assert any(item in test_fed_terms for item in resource_keys) #===>first
+
+
+    def test_index_new_attributes(self):
+        """
+        Test new indexed attributes
+        """
+        for data_source in search_omero_app.config.database_connectors.keys():
+            resource_keys = get_resource_attributes("image", data_source=data_source)
+            attributes=resource_keys[0]["image"]
+            assert all(item in attributes for item in test_fed_terms)  ##====.> 2
+
+    def test_index_new_attributes(self):
+        """
+        Test new indexed attributes
+        """
+        for data_source in search_omero_app.config.database_connectors.keys():
+            resource_keys = get_resource_attributes("image", data_source=data_source)
+            attributes = resource_keys[0]["image"]
+            assert any(item in attributes for item in test_fed_terms)  ##====.> 2
+
     def test_data_sources(self):
         """
         Test available data sources
