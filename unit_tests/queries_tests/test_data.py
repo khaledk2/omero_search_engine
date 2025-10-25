@@ -116,7 +116,7 @@ test_fed_terms = [
     "sizet",
     "sizex",
     "sizey",
-    "zizez",
+    "sizez",
     "image_format",
     "pixelstype",
 ]
