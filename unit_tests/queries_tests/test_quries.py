@@ -395,8 +395,8 @@ class BasicTestCase(unittest.TestCase):
             #            break
             #self.assertTrue (is_it_in)
 
-            # assert all(item in resource_keys for item in test_fed_terms)
-            assert any(item in test_fed_terms for item in resource_keys)
+            assert all(item in resource_keys for item in test_fed_terms)
+            #assert any(item in test_fed_terms for item in resource_keys) ===>first
 
     def test_data_sources(self):
         """
