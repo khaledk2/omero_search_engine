@@ -111,13 +111,12 @@ csv_test_data = [
 
 test_fed_terms = [
     "image_size",
-    "roi_id",
     "channels",
-    "SizeC",
-    "SizeT",
-    "SizeX",
-    "SizeY",
-    "SizeZ",
+    "sizec",
+    "sizet",
+    "sizex",
+    "sizey",
+    "zizez",
     "image_format",
     "pixelstype",
 ]
