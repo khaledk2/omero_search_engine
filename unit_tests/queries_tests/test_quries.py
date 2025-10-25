@@ -387,12 +387,13 @@ class BasicTestCase(unittest.TestCase):
         for data_source in search_omero_app.config.database_connectors.keys():
             resource_keys = get_resource_attributes("image", data_source=data_source)
             attributes=resource_keys[0]["image"]
-            is_it_in=False
+            is_it_in=True
             for item in test_fed_terms:
-                for item2 in attributes:
-                    if item == item2:
-                        is_it_in=True
-                        break
+                if item not in attributes:
+                    #for item2 in attributes:
+                    #if item == item2:
+                    is_it_in=False
+                    break
             self.assertTrue (is_it_in)
 
             #assert all(item in resource_keys for item in test_fed_terms) ##====.> 2
