@@ -109,5 +109,15 @@ csv_test_data = [
     {"key": "gene symbol", "value": "pcnt", "no_results": 1484},
 ]
 
-test_fed_terms=[ "SizeC","SizeT","SizeX","SizeY",
-        "SizeZ","image_format", "pixelstype"]
+test_fed_terms = [
+    "image_size",
+    "roi_id",
+    "channels",
+    "SizeC",
+    "SizeT",
+    "SizeX",
+    "SizeY",
+    "SizeZ",
+    "image_format",
+    "pixelstype",
+]
