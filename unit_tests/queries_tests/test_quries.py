@@ -399,7 +399,7 @@ class BasicTestCase(unittest.TestCase):
             #assert any(item in test_fed_terms for item in resource_keys) #===>first
 
 
-    def test_index_new_attributes(self):
+    def test_index_new_attributes1(self):
         """
         Test new indexed attributes
         """
@@ -408,7 +408,7 @@ class BasicTestCase(unittest.TestCase):
             attributes=resource_keys[0]["image"]
             assert all(item in attributes for item in test_fed_terms)  ##====.> 2
 
-    def test_index_new_attributes(self):
+    def test_index_new_attributes2(self):
         """
         Test new indexed attributes
         """
