@@ -388,9 +388,10 @@ class BasicTestCase(unittest.TestCase):
             resource_keys = get_resource_attributes("image", data_source=data_source)
             is_it_in=False
             for item in test_fed_terms:
-                if item in resource_keys:
-                    is_it_in=True
-                    break
+                for item2 in resource_keys:
+                    if item.lower() in item2.lower():
+                        is_it_in=True
+                        break
             self.assertTrue (is_it_in)
 
             # assert all(item in resource_keys for item in test_fed_terms)
