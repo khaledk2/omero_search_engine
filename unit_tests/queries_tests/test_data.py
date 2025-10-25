@@ -111,11 +111,11 @@ csv_test_data = [
 
 test_fed_terms = [
     "channels",
-    "sizec",
-    "sizet",
-    "sizex",
-    "sizey",
-    "sizez",
+    "SizeC",
+    "SizeT",
+    "SizeX",
+    "SizeY",
+    "SizeZ",
     "image_format",
     "pixelstype",
 ]
