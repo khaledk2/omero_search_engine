@@ -390,7 +390,7 @@ class BasicTestCase(unittest.TestCase):
             is_it_in=False
             for item in test_fed_terms:
                 for item2 in attributes:
-                    if item.lower() in item2.lower():
+                    if item.lower() == item2:
                         is_it_in=True
                         break
             self.assertTrue (is_it_in)
