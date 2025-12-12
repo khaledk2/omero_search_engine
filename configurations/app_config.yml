@@ -11,8 +11,6 @@ verify_certs: False
 ELASTIC_PASSWORD: elasticsearch_user_password
 BASE_FOLDER: /etc/searchengine/
 #NO_PROCESSES: 1mana
-DATA_SOURCES:
-
 DEFAULT_DATASOURCE: default_datasource
 AUTOMATIC_REFRESH: True
 NOT_INDEX_VECTOR: True
