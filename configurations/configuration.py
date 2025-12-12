@@ -160,6 +160,8 @@ def rename_datasource(data_source_name, new_data_source_name):
     changed = False
     with open(app_config.INSTANCE_CONFIG) as f:
         configuration = yaml.load(f, Loader=yaml.Loader)
+    if not configuration.get("DATA_SOURCES"):
+        configuration["DATA_SOURCES"]=[]
     for data_source in configuration.get("DATA_SOURCES"):
         if data_source.get("name").lower() == data_source_name.lower():
             data_source["name"] = new_data_source_name
