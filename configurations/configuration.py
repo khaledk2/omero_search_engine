@@ -57,6 +57,8 @@ def set_database_connection_variables(config):
 
     config.database_connectors = {}
     config.FILES = {}
+    if not hasattr(config, 'DATA_SOURCES'):
+        return
     for source in config.DATA_SOURCES:
         if source.get("DATABASE"):
             if source.get("DATABASE").get("DATABASE_PORT"):
@@ -117,6 +119,8 @@ def update_config_file(updated_configuration, data_source=False):
 def config_datasource(configuration, updated_configuration):
     changed = False
     found = False
+    if not configuration.get("DATA_SOURCES"):
+        configuration["DATA_SOURCES"] = []
     if (
         updated_configuration.get("CSV")
         and updated_configuration.get("CSV").get("type") == "CSV"
@@ -145,6 +149,7 @@ def config_datasource(configuration, updated_configuration):
                         data_source["DATABASE"][k] = v
                         changed = True
                 break
+
         if not found:
             configuration.get("DATA_SOURCES").append(updated_configuration)
             changed = True
