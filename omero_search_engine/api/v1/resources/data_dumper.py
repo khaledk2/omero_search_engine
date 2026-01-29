@@ -114,13 +114,12 @@ def dump_data(target_folder, id, resource, over_write, file_format, data_source=
                     {"name": "data_source", "value": data_source, "operator": "equals"},
                 ]
             }
-            print(main_attributes_query)
+            search_omero_app.logger.info(main_attributes_query)
             results = get_all_query_results(
                 query, main_attributes_query, data_source, duplicated
             )
-            print(len(results))
             if file_format == "csv_bff":
-                columns = write_BBF(results, container_type, file_name)
+                columns = write_bff_file(results, container_type, file_name)
                 for col in columns:
                     if col not in headers:
                         headers.append(col)
@@ -137,7 +136,6 @@ def dump_data(target_folder, id, resource, over_write, file_format, data_source=
     end_time = datetime.now()
     search_omero_app.logger.info("Elapsed time: : %s" % (end_time - start_time))
     search_omero_app.logger.info("Total images: %s" % totalrecords)
-    # print(main_containers)
 
 
 def combine_sub_containers(main_containers, target_folder):
@@ -162,7 +160,9 @@ def combine_sub_containers(main_containers, target_folder):
                     if os.path.exists(file) and os.path.getsize(file) > 0:
                         df_list.append(pd.read_csv(file, dtype=str))
 
-                print(subfolders, resource_path, file_name)
+                search_omero_app.logger.info(
+                    "%s,%s,%s" % (subfolders, resource_path, file_name)
+                )
                 if len(df_list) > 0:
                     all_df = pd.concat(df_list)
                     all_df.to_csv(file_name, index=False)
@@ -293,7 +293,7 @@ def save_results_file(results, file_name="results.json"):
         outfile.write(json.dumps(results, indent=4))
 
 
-def write_BBF(results, resource, file_name):
+def write_bff_file(results, resource, file_name):
     import pandas as pd
 
     to_ignore_list = {
@@ -355,7 +355,7 @@ def write_BBF(results, resource, file_name):
                     line[name] = item
     df = pd.DataFrame(lines)
     df.to_csv(file_name)
-    print(len(lines))
+
     return df.columns.values
 
 
@@ -411,7 +411,6 @@ def get_submitquery_results(query, datasource, folder_name=None):
         "page: %s, / %s received results: %s " % (page, total_pages, len(total_results))
     )
     filename = os.path.join(folder_name, f"{count}.csv")
-    # write_BBF(total_results, resource, file_name)
     from omero_search_engine.api.v1.resources.utils import write_bff
 
     columns = write_bff(
@@ -424,9 +423,6 @@ def get_submitquery_results(query, datasource, folder_name=None):
     while next_page and total <= search_omero_app.config.get(
         "MAX_RESULTS_FOR_ASYNC_QUERY"
     ):
-        # and len(total_results) <= search_omero_app.config.get(
-        # "MAX_RESULTS_FOR_ASYNC_QUERY"
-        # )):  # len(received_results) < total_results:
         total_results = []
         count += 1
         query["pagination"] = pagination_dict
@@ -449,7 +445,6 @@ def get_submitquery_results(query, datasource, folder_name=None):
             if col not in columns:
                 columns.append(col)
 
-        # write_BBF(total_results, filename)
         total = total + len(total_results)
         search_omero_app.logger.info(
             "bookmark: %s, page: %s, / %s received results: %s"
