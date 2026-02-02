@@ -70,7 +70,7 @@ def delete_es_index(resource, es_index):
     "-r",
     "--resource",
     default=None,
-    help="resource name, deleting all data from the its related index",
+    help="resource name, deleting all data from its related index",
 )
 def delete_all_data_from_es_index(resource):
     from omero_search_engine.cache_functions.elasticsearch.transform_data import (
@@ -877,12 +877,12 @@ def update_es_maximum_results():
 
 @search_omero_app.cli.command("set_QUERIES_TTL")
 @click.option(
-    "-q", "--quires_ttl", default=None, help="quires files time to live in days"
+    "-q", "--queries_ttl", default=None, help="quires files time to live in days"
 )
-def set_QUERIES_TTL(quires_ttl):
+def set_QUERIES_TTL(queries_ttl):
     print("hello")
     try:
-        update_config_file({"QUERIES_TTL": float(quires_ttl)})
+        update_config_file({"QUERIES_TTL": float(queries_ttl)})
     except Exception as ex:
         print(f"QUERIES_TTL value has to numerical value, error: {ex}")
 
@@ -903,7 +903,7 @@ def set_redis_url(redis_url):
     "-m",
     "--max_results_for_async_query",
     default=None,
-    help="max no of returned results for async query",
+    help="max number of returned results for async query",
 )
 def set_MAX_RESULTS_FOR_ASYNC_QUERY(max_results_for_async_query):
     print("hello")

@@ -54,7 +54,6 @@ main_folder = os.path.dirname(os.path.realpath(__file__))
 
 
 search_omero_app = Flask(__name__)
-# celery_app = Celery()
 
 search_omero_app.json_encoder = LazyJSONEncoder
 
