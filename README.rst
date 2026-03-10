@@ -188,9 +188,10 @@ Disclaimer
 License
 -------
 
-OMERO search engine is released under the GPL v2.
+OMERO search engine is released under the [GPL v2](LOCENSE.txt).
 
 Copyright
 ---------
 
 2022, The Open Microscopy Environment, Glencoe Software, Inc.
+
