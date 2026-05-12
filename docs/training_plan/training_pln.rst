@@ -19,7 +19,7 @@ Objective: Teach administrators how to install, configure, and manage the IDR-se
     * Running the playbook to install the application
 * Administration Commands
     * Overview of admin commands
-    * How to use them to configure and run the IDR-searcher
+    * How to use admin commands to configure and run the IDR-searcher
 * Data Indexing
     * How to perform data indexing
     * Generating and managing cache files
@@ -33,7 +33,7 @@ Objective: Teach administrators how to install, configure, and manage the IDR-se
 * Backup and Recovery
     * Backup procedures
     * Restore process
-    * disaster recovery basics
+    * Disaster recovery basics
 
 User Training
 -------------
@@ -48,7 +48,6 @@ Objective: Teach users how to effectively use the IDR-searcher and its APIs.
     * Navigating the API documentation
 * API Query Types
     * Understanding GET and POST requests
-    * When and how to use each type
 * POST Request Format
     * JSON request structure and formatting
 * Results Format
