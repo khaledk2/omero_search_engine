@@ -1,7 +1,7 @@
 Case Studies: Indexing multiple data sources in a single deployment
 ===================================================================
 
-The following ata sources were indexed within the same IDR searcher instance and made searchable together:
+The following data sources were indexed within the same IDR searcher instance and made searchable together:
 
 * IDR data source: Database with source metadata.
 * `SSBD <https://ssbd.riken.jp/database/>`_ Data source: use of CSV files exported from public resource and converted to the supported CSV format before indexing.
