@@ -27,7 +27,7 @@ pytz==2025.2
 PyYAML==6.0.2
 referencing==0.36.2
 requests==2.32.4
-rpds-py==0.25.1
+rpds-py==0.25.
 six==1.17.0
 SQLAlchemy==1.4.21
 style==1.1.0
@@ -41,3 +41,7 @@ Werkzeug==3.1.5
 celery==5.5.3
 redis==5.2.1
 deepdiff==8.6.2
+jwt==1.4.0
+PyJWT==2.13.0
+#https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20240202/zeroc_ice-3.6.5-cp312-cp312-manylinux_2_28_x86_64.whl
+omero-py==5.22.1

@@ -28,7 +28,9 @@ import time
 from omero_search_engine import search_omero_app
 from string import Template
 from app_data.data_attrs import annotation_resource_link
-from flask import Response
+from flask import Response, g
+
+from omero_search_engine.api.auth.utils import is_datasource_public
 
 contain_list = ["contains", "not_contains"]
 main_dir = os.path.abspath(os.path.dirname(__file__))
@@ -216,6 +218,7 @@ def elasticsearch_query_builder(
     nested_must_part = []
     nested_must_not_part = []
     all_should_part_list = []
+    ############### start of main attributes ##############################
     if main_attributes and len(main_attributes) > 0:
         # should_part_list=[]
         # all_should_part_list.append(should_part_list)
@@ -332,6 +335,7 @@ def elasticsearch_query_builder(
 
             # if len(should_part_list)>0:
             #    minimum_should_match=len(should_part_list)
+            ############### End of main attributes ##############################
 
     if and_filter and len(and_filter) > 0:
         for filter in and_filter:
@@ -1033,6 +1037,12 @@ def search_index_using_search_after(
         #####
         for data_s in data_source:
             query2 = copy.deepcopy(query)
+            if not is_datasource_public(data_s):
+                post_filter_query = get_permission_query(data_s)
+                if len(post_filter_query) > 0:
+                    query2["post_filter"] = post_filter_query
+                else:
+                    return "non valid token"
             main_dd = main_attribute_query_in_template.substitute(
                 attribute="data_source",
                 value=json.dumps([data_s]),
@@ -1042,6 +1052,7 @@ def search_index_using_search_after(
                 query2["query"]["bool"]["must"].append(json.loads(main_dd))
             else:
                 query2["query"]["bool"]["must"] = [json.loads(main_dd)]
+            ######
             res = es.search(index=e_index, body=query2)
             if len(res["hits"]["hits"]) == 0:
                 search_omero_app.logger.info("No result found")
@@ -1055,9 +1066,11 @@ def search_index_using_search_after(
                 if data_source:
                     res_res["data_source"] = data_s
                 returned_results.append(res_res)
-
         return returned_results
     page_size = search_omero_app.config.get("PAGE_SIZE")
+    #add_user_permssion_query(query)
+    #post_filter = {"term": {"group_id": "10"}
+
     res = es.count(index=e_index, body=query)
     size = res["count"]
     search_omero_app.logger.info("Total: %s" % size)
@@ -1086,8 +1099,14 @@ def search_index_using_search_after(
 
     if not bookmark_ and pagination_dict:
         bookmark_ = get_bookmark(pagination_dict)
+    if not is_datasource_public(data_source):
+        post_filter_query = get_permission_query(data_source)
+        if len(post_filter_query) > 0:
+            query["post_filter"] = post_filter_query
+        else:
+            return"Non valid token"
     if not bookmark_:
-        result = es.search(index=e_index, body=query)
+        result = es.search(index=e_index, body=query)#,post_filter = post_filter_query)
         if len(result["hits"]["hits"]) == 0:
             search_omero_app.logger.info("No result is found")
             return returned_results
@@ -1100,6 +1119,8 @@ def search_index_using_search_after(
         search_omero_app.logger.info(bookmark_)
         query["search_after"] = bookmark_
         res = es.search(index=e_index, body=query)
+
+        # ####################################res
         for el in res["hits"]["hits"]:
             returned_results.append(el["_source"])
         if len(res["hits"]["hits"]) == 0:
@@ -1154,7 +1175,6 @@ def search_resource_annotation_return_containers_only(
         res = determine_search_results_(
             query, data_s, return_columns, return_containers
         )
-
         if type(res) is dict and len(res) > 0:
             if len(res) == 1 and res.get("Error"):
                 logging.info(
@@ -1185,6 +1205,7 @@ def search_resource_annotation(
     return_containers=False,
     data_source=None,
     random_results=0,
+    public_search=False,
 ):
     """
     @table_: the resource table, e.g. image. project, etc.
@@ -1192,6 +1213,7 @@ def search_resource_annotation(
     @raw_elasticsearch_query: raw query sending directly to elasticsearch
     """
     # try:
+    raw_elasticsearch_query = None
     res_index = resource_elasticsearchindex.get(table_)
     if not res_index:
         return build_error_message(
@@ -1254,12 +1276,14 @@ def search_resource_annotation(
 
         try:
             query = literal_eval(query_string)
-            raw_query_to_send_back = literal_eval(query_string)
+            #raw_query_to_send_back = literal_eval(query_string)
+            raw_query_to_send_back =  {}
         except Exception as ex:
             raise Exception("Failed to load the query, error: %s" % str(ex))
     else:
         query = raw_elasticsearch_query
-        raw_query_to_send_back = copy.copy(raw_elasticsearch_query)
+        # raw_query_to_send_back = copy.copy(raw_elasticsearch_query)
+        raw_query_to_send_back={}
     if return_containers:
         # code to return the containers only
         # It will call the projects container first then
@@ -1418,7 +1442,6 @@ def get_data_sources():
     for data_source in search_omero_app.config.get("FILES").keys():
         data_sources.append(data_source)
     return data_sources
-
 
 def check_empty_string(string_to_check):
     if string_to_check:
@@ -1794,7 +1817,6 @@ def write_bff(results, file_name=None, return_contents=False, save_parquer=True)
             engine="fastparquet",
             index=False,
         )
-    print(len(lines))
     return columns_headers
 
 
@@ -1863,7 +1885,6 @@ def change_es_maximum_results_rows():
         es.indices.put_settings(
             index=index, body={"index": {"max_result_window": 30000}}
         )
-        print(f"Updated {index}")
 
 
 # /data/data_dump/idr/csv_bff
@@ -2020,3 +2041,28 @@ def write_json_from_folder(container_name, container_type, data_source=None):
         f_out.write("]")
     for file_ in files_list:
         os.remove(file_)
+
+def get_permission_query (datasource):
+    token = getattr(g, 'token', None)
+    if type(datasource) is list:
+        if len(datasource) >1:
+            print  ("Not supported")
+            return {}
+        else:
+            datasource=datasource[0]
+    if not token:
+        return {}
+    token=token.get(datasource)
+    if  not token or token.get("is_admin") == True:
+        return {}
+    groups= list(token.get("user_groups").keys())
+    user_id=token.get("user_id")
+    permisson_query= {
+            "bool": {
+                "filter": [
+                    {"terms": {"group_id": groups}},
+                    {"term": {"owner_id": user_id}}
+                ]
+            }
+    }
+    return permisson_query
