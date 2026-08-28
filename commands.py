@@ -372,6 +372,7 @@ def set_data_source_files(
 
 ###############################################################################
 
+
 @search_omero_app.cli.command("rename_data_source")
 @click.option("-n", "--new_data_source_name", default=None, help="new data source name")
 @click.option(
@@ -918,6 +919,7 @@ def set_redis_url(redis_url):
     except Exception as ex:
         print(f"set_redis_url value error, error message: {ex}")
 
+
 # REDIS_URL
 @search_omero_app.cli.command("set_MAX_RESULTS_FOR_ASYNC_QUERY")
 @click.option(
@@ -981,6 +983,7 @@ def set_MAX_PAGE_SIZE(max_page_size):
     except Exception as ex:
         print(f"MAX_PAGE_SIZE value has to integer value, error: {ex}")
 
+
 @search_omero_app.cli.command("set_JWT_expire_time")
 @click.option(
     "-j",
@@ -993,4 +996,3 @@ def set_JWT_expire_time(jwt_expire_time):
         update_config_file({"JWT_EXPIRE_TIME": jwt_expire_time})
     except Exception as ex:
         print(f"expire_time for the JWT value  error: {ex}")
-

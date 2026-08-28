@@ -58,7 +58,7 @@ search_omero_app = Flask(__name__)
 search_omero_app.json_encoder = LazyJSONEncoder
 
 search_omero_app.config["SWAGGER"] = {
-   # "openapi": "3.0.3",
+    # "openapi": "3.0.3",
     "title": "IDR searcher API",
     "version": str(__version__),
     "description": LazyString(
@@ -73,15 +73,14 @@ search_omero_app.config["SWAGGER"] = {
             "type": "apiKey",
             "name": "Authorization",  # 👈 Tells it which header to populate
             "in": "header",
-            "description": "Enter your token with the prefix: Bearer <your_jwt>"
+            "description": "Enter your token with the prefix: Bearer <your_jwt>",
         }
     },
     ##############
     "termsOfService": "https://github.com/ome/omero_search_engine/blob/main/LICENSE.txt",  # noqa
 }
 
-'''
-  
+"""
      "components": {
         "securitySchemes": {
             "bearerAuth": {
@@ -92,7 +91,7 @@ search_omero_app.config["SWAGGER"] = {
         }
     },
 
-    '''
+    """
 swagger = Swagger(search_omero_app, template=template)
 
 app_config = load_configuration_variables_from_file(config_)
@@ -220,34 +219,55 @@ from omero_search_engine.api.auth import (  # noqa
     auth_resources as resources_auth,
 )
 
-search_omero_app.register_blueprint(
-    resources_auth, url_prefix="/auth"
-)
+search_omero_app.register_blueprint(resources_auth, url_prefix="/auth")
+
 
 @search_omero_app.before_request
 def before_request():
-    from omero_search_engine.api.auth.utils import get_jwt_from_request, is_datasource_public
+    from omero_search_engine.api.auth.utils import (
+        get_jwt_from_request,
+        is_datasource_public,
+    )
     from omero_search_engine.api.v1.resources.utils import get_working_data_source
 
-    #do not check for a token in case of login function
-    exempt_path=["/auth/login", "/data_sources/", "/apidocs/", "/favicon.ico", "/flasgger_static", "/apispec_1.json","/check_query_job"]
-    for path in exempt_path :
+    # do not check for a token in case of login function
+    exempt_path = [
+        "/auth/login",
+        "/data_sources/",
+        "/apidocs/",
+        "/favicon.ico",
+        "/flasgger_static",
+        "/apispec_1.json",
+        "/check_query_job",
+    ]
+    for path in exempt_path:
         if request.path.__contains__(path):
             return
 
     # Extract the token from the Authorization header
     data_source = get_working_data_source(request.args.get("data_source"))
-    if is_datasource_public(data_source) == False:
+    if is_datasource_public(data_source) == False:  # noqa
         token = get_jwt_from_request()
-        #token={"is_valid":True, "is_expired": False}
+        # token={"is_valid":True, "is_expired": False}
         if token:
-            g.token = token  # Store the token in thread-local storage accessible to all methods in the current request
+            g.token = token
+            # Store the token in storage accessible
+            # to all methods in the current request
         if not token:
-            # Returning a value here immediately aborts the request and responds to the user
-            return jsonify({
-                "status": "error",
-                "message": "Data source %s is private, please provide JWT token."%data_source
-            }), 401  # Unauthorized status code
+            # Returning a value here immediately in case of private datasource
+            # and there is no token is provided
+            # aborts the request and responds to the user
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Data source %s is private, "
+                        "please provide JWT token." % data_source,
+                    }
+                ),
+                401,
+            )  # Unauthorized status code
+
 
 # add it to account for CORS
 @search_omero_app.after_request

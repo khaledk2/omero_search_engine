@@ -236,7 +236,7 @@ class QueryRunner(
         self.bookmark = bookmark
         self.pagination_dict = pagination_dict
         self.columns_def = columns_def
-        self.raw_elasticsearch_query = None # raw_elasticsearch_query
+        self.raw_elasticsearch_query = None  # raw_elasticsearch_query
         self.image_query = {}
         self.additional_image_conds = []
         self.return_columns = return_columns
@@ -602,7 +602,6 @@ def search_query(
             If you have this error again, please contact the\
             system administrator."
         }
-
 
 
 def combine_conditions(curnt_cond, new_cond, resource):

@@ -81,8 +81,8 @@ def set_database_connection_variables(config):
             )
             config.database_connectors[source.get("name")] = database_connector
             print("==================================")
-            print (DATABASE_URI)
-            print ("==================================")
+            print(DATABASE_URI)
+            print("==================================")
         elif source.get("CSV"):
             csv_config = {"Type": "CSV"}
             config.FILES[source.get("name")] = csv_config

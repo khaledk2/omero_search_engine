@@ -19,6 +19,7 @@
 
 from . import resources
 from flask import request, jsonify, make_response, g
+from omero_search_engine.api.v1.resources.utils import is_datasource_public
 
 import json
 from omero_search_engine.api.v1.resources.utils import (
@@ -49,7 +50,8 @@ from omero_search_engine.api.v1.resources.query_handler import (
     simple_search,
     query_validator,
 )
-from ...auth.utils import get_jwt_from_request, isd datasource_public
+
+# from ...auth.utils import get_jwt_from_request, isd datasource_public
 
 
 @resources.route("/", methods=["GET"])
@@ -65,15 +67,16 @@ def return_data_resources():
     """
     used to return the available data resources
     """
-    data_sources=get_data_sources()
-    datasources={}
+    data_sources = get_data_sources()
+    datasources = {}
     for ds in data_sources:
         if not is_datasource_public(ds):
-            public=False
+            public = False
         else:
-            public=True
-        datasources[ds]={"Public":public}
+            public = True
+        datasources[ds] = {"Public": public}
     return jsonify(datasources)
+
 
 @resources.route("/<resource_table>/searchannotation_page/", methods=["POST"])
 def search_resource_page(resource_table):
@@ -107,7 +110,7 @@ def search_resource_page(resource_table):
         validation_results = query_validator(query)
         if validation_results == "OK":
             bookmark = data.get("bookmark")
-            raw_elasticsearch_query = None # data.get("raw_elasticsearch_query")
+            raw_elasticsearch_query = None  # data.get("raw_elasticsearch_query")
             pagination_dict = data.get("pagination")
             return_containers = data.get("return_containers")
             data_source = get_working_data_source(request.args.get("data_source"))
@@ -522,6 +525,7 @@ def search(resource_table):
     file: swagger_docs/search.yml
     """
     from omero_search_engine import search_omero_app
+
     data_source = get_working_data_source(request.args.get("data_source"))
     search_omero_app.config.get("PAGE_SIZE")
     key = request.args.get("key")
@@ -609,7 +613,7 @@ def search(resource_table):
 
         query["case_sensitive"] = case_sensitive
 
-        job = add_query.apply_async((query, data_source, token), queue="queries")
+        job = add_query.apply_async((query, data_source), queue="queries")
         # res=add_query.apply_async(("query", "args"), queue="queries")
 
         return jsonify({"query_id": job.id})
@@ -648,10 +652,12 @@ def container_images():
     """
     data_source = get_working_data_source(request.args.get("data_source"))
     if not is_datasource_public(data_source):
-        token = getattr(g, 'token', None).get(data_source)
+        token = getattr(g, "token", None).get(data_source)
         if not token or not token["is_valid"] or not token["is_admin"]:
             return build_error_message(
-                "%s data source is private, Admin only can access this url, please provide an authorization token" % data_source
+                "%s data source is private, "
+                "Admin only can access this url, please provide an authorization token"
+                % data_source
             )
     return return_containers_images(data_source)
 
@@ -705,7 +711,7 @@ def sub_container_images():
         try:
             data = json.loads(data)
         except Exception as e:
-            search_omero_app.logger.info("Error : %s"%str(e))
+            search_omero_app.logger.info("Error : %s" % str(e))
             return jsonify(
                 build_error_message(
                     "{error}".format(error="No proper query data provided.")
@@ -771,11 +777,14 @@ def get_container_data():
     container_type = request.args.get("container_type")
     container_name = request.args.get("container_name")  #
     data_source = request.args.get("data_source")
+
     if not is_datasource_public(data_source):
-        token = getattr(g, 'token', None).get("data_source")
+        token = getattr(g, "token", None).get("data_source")
         if not token or not token["is_valid"] or not token["is_admin"]:
             return build_error_message(
-                "%s data source is private, Admin only can access this url, please provide an authorization token" % data_source
+                "%s data source is private, "
+                "Admin only can access this url, please provide an authorization token"
+                % data_source
             )
     file_type = request.args.get("file_type")
     if not file_type:

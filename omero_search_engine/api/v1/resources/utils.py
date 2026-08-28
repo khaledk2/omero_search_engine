@@ -218,7 +218,7 @@ def elasticsearch_query_builder(
     nested_must_part = []
     nested_must_not_part = []
     all_should_part_list = []
-    ############### start of main attributes ##############################
+    # ********** start of main attributes **********#
     if main_attributes and len(main_attributes) > 0:
         # should_part_list=[]
         # all_should_part_list.append(should_part_list)
@@ -335,7 +335,7 @@ def elasticsearch_query_builder(
 
             # if len(should_part_list)>0:
             #    minimum_should_match=len(should_part_list)
-            ############### End of main attributes ##############################
+            # ********** End of main attributes **********#
 
     if and_filter and len(and_filter) > 0:
         for filter in and_filter:
@@ -1068,8 +1068,8 @@ def search_index_using_search_after(
                 returned_results.append(res_res)
         return returned_results
     page_size = search_omero_app.config.get("PAGE_SIZE")
-    #add_user_permssion_query(query)
-    #post_filter = {"term": {"group_id": "10"}
+    # add_user_permssion_query(query)
+    # post_filter = {"term": {"group_id": "10"}
 
     res = es.count(index=e_index, body=query)
     size = res["count"]
@@ -1104,9 +1104,11 @@ def search_index_using_search_after(
         if len(post_filter_query) > 0:
             query["post_filter"] = post_filter_query
         else:
-            return"Non valid token"
+            return "Non valid token"
     if not bookmark_:
-        result = es.search(index=e_index, body=query)#,post_filter = post_filter_query)
+        result = es.search(
+            index=e_index, body=query
+        )  # ,post_filter = post_filter_query)
         if len(result["hits"]["hits"]) == 0:
             search_omero_app.logger.info("No result is found")
             return returned_results
@@ -1276,14 +1278,14 @@ def search_resource_annotation(
 
         try:
             query = literal_eval(query_string)
-            #raw_query_to_send_back = literal_eval(query_string)
-            raw_query_to_send_back =  {}
+            # raw_query_to_send_back = literal_eval(query_string)
+            raw_query_to_send_back = {}
         except Exception as ex:
             raise Exception("Failed to load the query, error: %s" % str(ex))
     else:
         query = raw_elasticsearch_query
         # raw_query_to_send_back = copy.copy(raw_elasticsearch_query)
-        raw_query_to_send_back={}
+        raw_query_to_send_back = {}
     if return_containers:
         # code to return the containers only
         # It will call the projects container first then
@@ -1442,6 +1444,7 @@ def get_data_sources():
     for data_source in search_omero_app.config.get("FILES").keys():
         data_sources.append(data_source)
     return data_sources
+
 
 def check_empty_string(string_to_check):
     if string_to_check:
@@ -2042,27 +2045,25 @@ def write_json_from_folder(container_name, container_type, data_source=None):
     for file_ in files_list:
         os.remove(file_)
 
-def get_permission_query (datasource):
-    token = getattr(g, 'token', None)
+
+def get_permission_query(datasource):
+    token = getattr(g, "token", None)
     if type(datasource) is list:
-        if len(datasource) >1:
-            print  ("Not supported")
+        if len(datasource) > 1:
+            print("Not supported")
             return {}
         else:
-            datasource=datasource[0]
+            datasource = datasource[0]
     if not token:
         return {}
-    token=token.get(datasource)
-    if  not token or token.get("is_admin") == True:
+    token = token.get(datasource)
+    if not token or token.get("is_admin") is True:
         return {}
-    groups= list(token.get("user_groups").keys())
-    user_id=token.get("user_id")
-    permisson_query= {
-            "bool": {
-                "filter": [
-                    {"terms": {"group_id": groups}},
-                    {"term": {"owner_id": user_id}}
-                ]
-            }
+    groups = list(token.get("user_groups").keys())
+    user_id = token.get("user_id")
+    permisson_query = {
+        "bool": {
+            "filter": [{"terms": {"group_id": groups}}, {"term": {"owner_id": user_id}}]
+        }
     }
     return permisson_query
