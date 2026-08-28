@@ -27,7 +27,7 @@ pytz==2025.2
 PyYAML==6.0.2
 referencing==0.36.2
 requests==2.32.4
-rpds-py==0.25.
+rpds-py==0.25.1
 six==1.17.0
 SQLAlchemy==1.4.21
 style==1.1.0
