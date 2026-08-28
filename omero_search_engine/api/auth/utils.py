@@ -43,37 +43,6 @@ def create_token(datasource, omename, password, session_id):
         )
 
 
-"""
-def token_required_(f):
-    @wraps(f)
-    def decorator(res, *args, **kwargs):
-        user_groups = {}
-        is_admin = False
-        is_expired = True
-        token = request.headers.get("Authorization")
-        if token:
-            try:
-                token_data = jwt.decode(
-                    token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
-                )
-                user_groups = token_data.get("all_groups")
-                is_admin = token_data.get("is_admin")
-                is_expired = False
-                is_valid = True
-            except jwt.ExpiredSignature as e:
-                print("1. Error: %s" % e)
-                is_expired = True
-                is_valid = False
-            except Exception as e:
-                print("2. Error: %s" % e)
-                is_valid = False
-        return f(res, user_groups, is_admin, is_expired, request, *args, **kwargs)
-
-    return decorator
-
-"""
-
-
 def check_tocken(token):
     try:
         token_data = jwt.decode(
