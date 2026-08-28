@@ -231,7 +231,7 @@ def backup_elasticsearch_data():
 @click.option("-t", "--thumb_url", default=None, help="thumb url")
 @click.option("-c", "--image_webclient_url", default=None, help="image webclient url")
 @click.option("-i", "--image_url", default=None, help="image url")
-@click.option("-p", "--public", default=True, help="public datasource if set to true")
+@click.option("-i", "--is_public", default=True, help="public datasource if set to true")
 def set_database_configuration(
     working_data_source,
     url,
@@ -243,7 +243,7 @@ def set_database_configuration(
     image_webclient_url,
     thumb_url,
     image_url,
-    public,
+    is_public,
 ):
     if not working_data_source:
         print("Data source is required to process")
@@ -269,7 +269,7 @@ def set_database_configuration(
         database_config["thumb_url"] = thumb_url
     if image_url:
         database_config["image_url"] = image_url
-    database_config["public"] = public
+    database_config["public"] = is_public
 
     if len(database_attrs) > 0 or len(database_config) > 2:
         update_config_file(database_config, data_source=True)
