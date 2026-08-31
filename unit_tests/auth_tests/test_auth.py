@@ -63,7 +63,6 @@ from unit_tests.queries_tests.test_data import (
     contains_not_contains_queries,
     image_owner,
     image_group,
-    image_owner_group,
 )
 
 from omero_search_engine import search_omero_app, create_app
