@@ -231,7 +231,9 @@ def backup_elasticsearch_data():
 @click.option("-t", "--thumb_url", default=None, help="thumb url")
 @click.option("-c", "--image_webclient_url", default=None, help="image webclient url")
 @click.option("-i", "--image_url", default=None, help="image url")
-@click.option("-i", "--is_public", default=True, help="public datasource if set to true")
+@click.option(
+    "-i", "--is_public", default=True, help="public datasource if set to true"
+)
 def set_database_configuration(
     working_data_source,
     url,

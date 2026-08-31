@@ -421,6 +421,9 @@ class Validator(object):
             searchengine_results = determine_search_results_(
                 query_data, data_source=self.data_source
             )
+            if searchengine_results.get("results") == "Non valid token":
+                raise Exception(searchengine_results.get("results"))
+
             if searchengine_results.get("results"):
                 size = searchengine_results.get("results").get("size")
                 ids = [

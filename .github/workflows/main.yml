@@ -84,6 +84,8 @@ jobs:
           python3 -m unittest discover -s unit_tests/indexing_tests
           python3 -m unittest discover -s unit_tests/queries_tests         
           python3 -m unittest discover -s unit_tests/datasource_tests
+          flask set_database_configuration -i false -w omero_train
+          python3 -m unittest discover -s unit_tests/auth_tests
 
 
   upload:
