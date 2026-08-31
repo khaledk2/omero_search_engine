@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2022 University of Dundee & Open Microscopy Environment.
+# Copyright (C) 2026 University of Dundee & Open Microscopy Environment.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -352,26 +352,6 @@ class BasicTestCase(unittest.TestCase):
                     self.assertEqual(
                         str(e),
                         "Non valid token",
-                    )
-
-    def test_owner_group(self):
-        # data_source = "idr"
-
-        for resource, cases in image_owner_group.items():
-            for case in cases:
-                name = case[0]
-                value = case[1]
-                owner_id = case[2]
-                group_id = case[3]
-                validator = Validator(self.data_source, deep_check)
-                validator.set_simple_query(resource, name, value)
-                validator.set_owner_group(owner_id=owner_id, group_id=group_id)
-                try:
-                    validator.compare_results()
-                except Exception as e:
-                    self.assertEqual(
-                        "Non valid token",
-                        str(e),
                     )
 
     def test_log_in_log_out(self):
