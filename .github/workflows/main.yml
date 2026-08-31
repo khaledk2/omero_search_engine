@@ -82,10 +82,12 @@ jobs:
           flask get_index_data_from_csv_files -d test_csv  -f app_data/test_images.csv -r image -u True
           # run tests          
           python3 -m unittest discover -s unit_tests/indexing_tests
-          python3 -m unittest discover -s unit_tests/queries_tests         
-          python3 -m unittest discover -s unit_tests/datasource_tests
+          python3 -m unittest discover -s unit_tests/queries_tests     
           flask set_database_configuration -i false -w omero_train
           python3 -m unittest discover -s unit_tests/auth_tests
+          flask set_database_configuration -i true -w omero_train
+          python3 -m unittest discover -s unit_tests/datasource_tests
+          
 
 
   upload:
