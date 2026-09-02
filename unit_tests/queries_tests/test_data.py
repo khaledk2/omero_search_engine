@@ -108,3 +108,20 @@ csv_test_data = [
     {"key": "organism", "value": "homo sapiens", "no_results": 15756},
     {"key": "gene symbol", "value": "pcnt", "no_results": 1484},
 ]
+
+expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvbWVuYW1lIjoidXNlci00OSIsImV4cCI6MTc4ODM2MzYyMCwiaXNfYWRtaW4iOmZhbHNlLCJzZXNzaW9uX2lkIjoiMjMxZTJjZGEtNzNhMC00YWNjLWExZmUtZGIxZDNjM2JlNzg5Iiwic2Vzc2lvbklkIjoxNzY4NTQsInVzZXJfaWQiOjgwOSwiZ3JvdXBzIjp7IjYiOnsibmFtZSI6IkxhYjMifSwiMyI6eyJuYW1lIjoiTGFiNCJ9LCI1Ijp7Im5hbWUiOiJMYWIxIn0sIjQiOnsibmFtZSI6IkxhYjIifX0sImRhdGFfc291cmNlIjoiaWRyIn0.pNmjqVXfga4hWUK7Qh5pHhkQmxCoqgUSBZcpAcdEmwI"  # noqa
+
+omename = "user-49"
+user_data = {
+    "is_admin": False,
+    "session_id": "7a75338d-100b-45e1-9e66-c8c4ef2e7cba",
+    "sessionId": 176858,
+    "user_id": 809,
+    "groups": {
+        6: {"name": "Lab3"},
+        3: {"name": "Lab4"},
+        5: {"name": "Lab1"},
+        4: {"name": "Lab2"},
+    },
+    "data_source": "idr",
+}

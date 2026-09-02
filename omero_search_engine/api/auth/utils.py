@@ -10,29 +10,10 @@ from omero_search_engine.api.auth.OMERO_connector.utils import (
 
 
 def create_token(datasource, omename, password, session_id):
-    from omero_search_engine import search_omero_app
 
     data = connect_omero(datasource, omename, password, session_id)
     if len(data) > 0:
-        # JWT expire after 2 hrs by default unless
-        # it has been configured otherwise using
-        # set_JWT_expire_time
-        jwt_exp = search_omero_app.config.get("JWT_EXPIRE_TIME")
-        if not jwt_exp:
-            jwt_exp = 120
-        exp = int(
-            round(
-                (
-                    datetime.datetime.utcnow() + datetime.timedelta(minutes=jwt_exp)
-                ).timestamp()
-            )
-        )
-        token = jwt.encode(
-            {**{"omename": omename, "exp": exp}, **data},
-            current_app.config["SECRET_KEY"],
-            "HS256",
-        )
-        return jsonify({"token": token})
+        return jsonify({"token": build_token(data, omename)})
     else:
         return jsonify(
             {
@@ -43,21 +24,50 @@ def create_token(datasource, omename, password, session_id):
         )
 
 
-def check_tocken(token):
+def build_token(data, omename):
+    from omero_search_engine import search_omero_app
+
+    # JWT expire after 2 hrs by default unless
+    # it has been configured otherwise using
+    # set_JWT_expire_time
+    jwt_exp = search_omero_app.config.get("JWT_EXPIRE_TIME")
+    if not jwt_exp:
+        jwt_exp = 120
+    exp = int(
+        round(
+            (
+                datetime.datetime.utcnow() + datetime.timedelta(minutes=jwt_exp)
+            ).timestamp()
+        )
+    )
+    print("##############################################Toto")
+    print(data)
+    print("##############################################")
+    token = jwt.encode(
+        {**{"omename": omename, "exp": exp}, **data},
+        current_app.config["SECRET_KEY"],
+        "HS256",
+    )
+    return token
+
+
+def check_token(token, check_session=True):
     try:
         token_data = jwt.decode(
             token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
         )
     except Exception as e:
         print("Error is %s" % str(e))
-        return None
-    if token_data.get("session_id"):
-        if not verify_session(
-            token_data.get("data_source"), token_data.get("session_id")
-        ):
+        return {"is_valid": False, "error": str(e)}
+
+    if check_session:
+        if token_data.get("session_id"):
+            if not verify_session(
+                token_data.get("data_source"), token_data.get("session_id")
+            ):
+                return {"is_valid": False}
+        else:
             return {"is_valid": False}
-    else:
-        return {"is_valid": False}
 
     user_groups = token_data.get("groups")
     is_admin = token_data.get("is_admin")
@@ -85,7 +95,7 @@ def get_jwt_from_request():
         token = auth_header
     if token:
         # check if the token is valid
-        auth = check_tocken(token)
+        auth = check_token(token)
 
     return auth
 

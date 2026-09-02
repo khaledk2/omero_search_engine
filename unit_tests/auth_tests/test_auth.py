@@ -45,6 +45,7 @@ from omero_search_engine.cache_functions.elasticsearch.transform_data import (
     get_all_indexes_from_elasticsearch,
 )
 
+from omero_search_engine.api.auth.utils import check_token, build_token
 
 from unit_tests.queries_tests.test_data import (
     sql,
@@ -63,7 +64,11 @@ from unit_tests.queries_tests.test_data import (
     contains_not_contains_queries,
     image_owner,
     image_group,
+    expired_token,
+    user_data,
+    omename,
 )
+
 
 from omero_search_engine import search_omero_app, create_app
 
@@ -352,6 +357,17 @@ class BasicTestCase(unittest.TestCase):
                         str(e),
                         "Non valid token",
                     )
+
+    def test_expired_token(self):
+        check = check_token(expired_token, check_session=False)
+        print(check, "TOOOZ")
+        self.assertFalse(check.get("is_valid"))
+        self.assertEqual(check.get("error"), "Signature has expired")
+
+    def test_create_token(self):
+        token = build_token(user_data, omename)
+        check = check_token(token, check_session=False)
+        self.assertTrue(check.get(self.data_source).get("is_valid"))
 
     def test_log_in_log_out(self):
         """
