@@ -123,5 +123,5 @@ user_data = {
         5: {"name": "Lab1"},
         4: {"name": "Lab2"},
     },
-    "data_source": "idr",
+    "data_source": "omero_train",
 }
