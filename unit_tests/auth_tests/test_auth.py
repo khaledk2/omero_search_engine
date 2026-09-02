@@ -205,9 +205,10 @@ class BasicTestCase(unittest.TestCase):
                 try:
                     validator.get_results_searchengine("equals")
                 except Exception as e:
+                    print (e," is the errororoor")
                     self.assertEqual(
-                        "Non valid token",
                         str(e),
+                        "Non valid token",
                     )
 
     def test_and_query(self):
@@ -365,7 +366,9 @@ class BasicTestCase(unittest.TestCase):
 
     def test_create_token(self):
         token = build_token(user_data, omename)
+        print (token, ":: is the token")
         check = check_token(token, check_session=False)
+        print (check, "::: is the check")
         self.assertTrue(check.get(self.data_source).get("is_valid"))
 
 
