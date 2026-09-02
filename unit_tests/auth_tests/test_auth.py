@@ -29,6 +29,9 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation,
 )
 
+from flask import  g
+
+
 from omero_search_engine.cache_functions.elasticsearch.elasticsearch_templates import (  # noqa
     image_template,
     key_values_resource_cache_template,
@@ -68,7 +71,6 @@ from unit_tests.queries_tests.test_data import (
     user_data,
     omename,
 )
-
 
 from omero_search_engine import search_omero_app, create_app
 
@@ -200,7 +202,6 @@ class BasicTestCase(unittest.TestCase):
                 value = case[1]
                 validator = Validator(self.data_source, deep_check)
                 validator.set_simple_query(resource, name, value)
-                validator.get_results_db("equals")
                 try:
                     validator.get_results_searchengine("equals")
                 except Exception as e:
@@ -316,7 +317,6 @@ class BasicTestCase(unittest.TestCase):
                 value = case[1]
                 validator = Validator(self.data_source, deep_check)
                 validator.set_contains_not_contains_query(resource, name, value)
-                validator.get_results_db("contains")
                 try:
                     validator.get_results_searchengine("contains")
                 except Exception as e:
@@ -360,7 +360,6 @@ class BasicTestCase(unittest.TestCase):
 
     def test_expired_token(self):
         check = check_token(expired_token, check_session=False)
-        print(check, "TOOOZ")
         self.assertFalse(check.get("is_valid"))
         self.assertEqual(check.get("error"), "Signature has expired")
 
@@ -368,6 +367,7 @@ class BasicTestCase(unittest.TestCase):
         token = build_token(user_data, omename)
         check = check_token(token, check_session=False)
         self.assertTrue(check.get(self.data_source).get("is_valid"))
+
 
     def test_log_in_log_out(self):
         """

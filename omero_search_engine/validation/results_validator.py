@@ -594,9 +594,9 @@ class Validator(object):
         Get and compare the results between the database and the searchengine
         """
         st_time = datetime.now()
-        self.get_results_db(operator)
-        st2_time = datetime.now()
         self.get_results_searchengine(operator)
+        st2_time = datetime.now()
+        self.get_results_db(operator)
         st3_time = datetime.now()
         sql_time = st2_time - st_time
         searchengine_time = st3_time - st2_time
