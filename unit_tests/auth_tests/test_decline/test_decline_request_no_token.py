@@ -83,7 +83,7 @@ class BasicTestCase(unittest.TestCase):
         """test url"""
         tester = search_omero_app.test_client(self)
         response = tester.get("/api/v1/resources/", content_type="html/text")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_searchannotation(self):
         """test url"""
@@ -93,7 +93,7 @@ class BasicTestCase(unittest.TestCase):
         response = tester.post(
             "/api/v1/resources/image/searchannotation/", data=query
         )  # noqa
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
         Error = response.json["Error"]
         print (Error)
         self.assertTrue("No query data is provided" in Error)
@@ -104,7 +104,7 @@ class BasicTestCase(unittest.TestCase):
         """
         tester = search_omero_app.test_client(self)
         response = tester.get("a", content_type="html/text")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
 
     def test_query_database(self):
         """
