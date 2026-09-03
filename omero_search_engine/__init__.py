@@ -239,6 +239,7 @@ def before_request():
         "/flasgger_static",
         "/apispec_1.json",
         "/check_query_job",
+        # "/api/v1/resources"
     ]
     for path in exempt_path:
         if request.path.__contains__(path):
@@ -246,7 +247,7 @@ def before_request():
 
     # Extract the token from the Authorization header
     data_source = get_working_data_source(request.args.get("data_source"))
-    if not is_datasource_public(data_source):
+    if not data_source and is_datasource_public(data_source):
         token = get_jwt_from_request()
         # token={"is_valid":True, "is_expired": False}
         print("BOBO", token)
