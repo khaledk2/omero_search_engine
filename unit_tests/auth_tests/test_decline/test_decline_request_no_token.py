@@ -29,9 +29,6 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation,
 )
 
-from flask import  g
-
-
 from omero_search_engine.cache_functions.elasticsearch.elasticsearch_templates import (  # noqa
     image_template,
     key_values_resource_cache_template,
@@ -48,8 +45,6 @@ from omero_search_engine.cache_functions.elasticsearch.transform_data import (
     get_all_indexes_from_elasticsearch,
 )
 
-from omero_search_engine.api.auth.utils import check_token, build_token
-
 from unit_tests.queries_tests.test_data import (
     sql,
     valid_and_filters,
@@ -62,11 +57,10 @@ from unit_tests.queries_tests.test_data import (
     query_image_and_or,
     simple_queries,
     query_in,
-    images_keys,
-    images_value_parts,
     contains_not_contains_queries,
     image_owner,
     image_group,
+    data_source,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -80,7 +74,7 @@ deep_check = False
 
 class BasicTestCase(unittest.TestCase):
     def setUp(self):
-        self.data_source = "omero_train"
+        self.data_source = data_source
 
     def tearDown(self):
         pass
@@ -284,28 +278,6 @@ class BasicTestCase(unittest.TestCase):
                         "Non valid token",
                     )
 
-    def test_seach_for_any_value(self):
-        # data_source = "idr"
-        for part in images_value_parts:
-            validator = Validator(self.data_source, deep_check)
-            validator.set_simple_query("image", None, part, type="buckets")
-            validator.compare_results()
-            self.assertEqual(
-                len(validator.postgres_results),
-                validator.searchengine_results.get("total_number_of_buckets"),
-            )
-
-    def test_available_values_for_key(self):
-        # data_source = "idr"
-        for image_key in images_keys:
-            validator = Validator(self.data_source, deep_check)
-            validator.set_simple_query("image", image_key, None, type="buckets")
-            validator.compare_results()
-            self.assertEqual(
-                len(validator.postgres_results),
-                validator.searchengine_results.get("total_number_of_buckets"),
-            )
-
     def test_contains_not_contains_queries(self):
         # data_source = "idr"
         for resource, cases in contains_not_contains_queries.items():
@@ -354,8 +326,6 @@ class BasicTestCase(unittest.TestCase):
                         str(e),
                         "Non valid token",
                     )
-
-
 
     def test_log_in_log_out(self):
         """

@@ -45,6 +45,7 @@ from unit_tests.queries_tests.test_data import (
     user_data,
     user_2_data,
     omename,
+    data_source,
 )
 
 from omero_search_engine import create_app
@@ -58,7 +59,7 @@ deep_check = False
 
 class BasicTestCase(unittest.TestCase):
     def setUp(self):
-        self.data_source = "omero_train"
+        self.data_source = data_source
 
     def test_expired_token(self):
         check = check_token(expired_token, check_session=False)

@@ -110,8 +110,8 @@ csv_test_data = [
 ]
 
 expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvbWVuYW1lIjoidXNlci00OSIsImV4cCI6MTc4ODM2MzYyMCwiaXNfYWRtaW4iOmZhbHNlLCJzZXNzaW9uX2lkIjoiMjMxZTJjZGEtNzNhMC00YWNjLWExZmUtZGIxZDNjM2JlNzg5Iiwic2Vzc2lvbklkIjoxNzY4NTQsInVzZXJfaWQiOjgwOSwiZ3JvdXBzIjp7IjYiOnsibmFtZSI6IkxhYjMifSwiMyI6eyJuYW1lIjoiTGFiNCJ9LCI1Ijp7Im5hbWUiOiJMYWIxIn0sIjQiOnsibmFtZSI6IkxhYjIifX0sImRhdGFfc291cmNlIjoiaWRyIn0.pNmjqVXfga4hWUK7Qh5pHhkQmxCoqgUSBZcpAcdEmwI"  # noqa
-
 omename = "user-49"
+data_source = "omero_train"
 user_data = {
     "is_admin": False,
     "session_id": "7a75338d-100b-45e1-9e66-c8c4ef2e7cba",
@@ -123,7 +123,7 @@ user_data = {
         5: {"name": "Lab1"},
         4: {"name": "Lab2"},
     },
-    "data_source": "omero_train",
+    "data_source": data_source,
 }
 
 user_2_data = {
@@ -132,5 +132,5 @@ user_2_data = {
     # "is_valid": True,
     "user_groups": {"153": {"name": "group1"}},
     "user_id": 252,
-    "data_source": "omero_train",
+    "data_source": data_source,
 }
