@@ -246,9 +246,10 @@ def before_request():
 
     # Extract the token from the Authorization header
     data_source = get_working_data_source(request.args.get("data_source"))
-    if is_datasource_public(data_source):
+    if not is_datasource_public(data_source):
         token = get_jwt_from_request()
         # token={"is_valid":True, "is_expired": False}
+        print("BOBO", token)
         if token:
             g.token = token
             # Store the token in storage accessible

@@ -125,3 +125,12 @@ user_data = {
     },
     "data_source": "omero_train",
 }
+
+user_2_data = {
+    "is_admin": False,
+    # "is_expired": False,
+    # "is_valid": True,
+    "user_groups": {"153": {"name": "group1"}},
+    "user_id": 252,
+    "data_source": "omero_train",
+}
