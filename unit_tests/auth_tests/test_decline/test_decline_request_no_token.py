@@ -94,8 +94,9 @@ class BasicTestCase(unittest.TestCase):
             "/api/v1/resources/image/searchannotation/", data=query
         )  # noqa
         self.assertEqual(response.status_code, 401)
-        Error = response.json["message"]
-        self.assertTrue("please provide JWT toke" in Error)
+        res_text = response.text
+        print (res_text)
+        self.assertTrue("please provide JWT token" in res_text)
 
     def test_not_found(self):
         """

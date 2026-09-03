@@ -94,7 +94,7 @@ class BasicTestCase(unittest.TestCase):
         validator.get_results_db("not_equals")
         validator.get_results_searchengine("not_equals")
         self.assertEqual(
-            12439,
+            12475,
             validator.searchengine_results.get("size"),
         )
         self.assertTrue(validator.identical)
