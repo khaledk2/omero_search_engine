@@ -1040,7 +1040,8 @@ def search_index_using_search_after(
             if not is_datasource_public(data_s):
                 post_filter_query = get_permission_query(data_s)
                 if len(post_filter_query) > 0:
-                    query2["post_filter"] = post_filter_query
+                    if not post_filter_query.get("is_admin"):
+                        query2["post_filter"] = post_filter_query
                 else:
                     return "non valid token"
             main_dd = main_attribute_query_in_template.substitute(
@@ -1101,8 +1102,11 @@ def search_index_using_search_after(
         bookmark_ = get_bookmark(pagination_dict)
     if not is_datasource_public(data_source):
         post_filter_query = get_permission_query(data_source)
+        print(post_filter_query)
         if len(post_filter_query) > 0:
-            query["post_filter"] = post_filter_query
+            if not post_filter_query.get("is_admin"):
+                print(post_filter_query)
+                query["post_filter"] = post_filter_query
         else:
             return "Non valid token"
     if not bookmark_:
@@ -2058,7 +2062,7 @@ def get_permission_query(datasource):
         return {}
     token = token.get(datasource)
     if not token or token.get("is_admin") is True:
-        return {}
+        return {"is_admin": True}
     groups = list(token.get("user_groups").keys())
     user_id = token.get("user_id")
     permisson_query = {

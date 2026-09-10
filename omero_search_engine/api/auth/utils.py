@@ -40,9 +40,6 @@ def build_token(data, omename):
             ).timestamp()
         )
     )
-    print("##############################################Toto")
-    print(data)
-    print("##############################################")
     token = jwt.encode(
         {**{"omename": omename, "exp": exp}, **data},
         current_app.config["SECRET_KEY"],
@@ -115,7 +112,9 @@ def is_datasource_public(datasource):
 
 def get_data_source_server_url(datasource):
     from omero_search_engine import search_omero_app
-
+    if not search_omero_app.config.get("DATA_SOURCES"):
+        from omero_search_engine import create_app
+        create_app()
     for data_source in search_omero_app.config.get("DATA_SOURCES"):
         if type(datasource) is list:
             if data_source.get("name").lower() in datasource:
