@@ -112,8 +112,10 @@ def is_datasource_public(datasource):
 
 def get_data_source_server_url(datasource):
     from omero_search_engine import search_omero_app
+
     if not search_omero_app.config.get("DATA_SOURCES"):
         from omero_search_engine import create_app
+
         create_app()
     for data_source in search_omero_app.config.get("DATA_SOURCES"):
         if type(datasource) is list:
