@@ -24,9 +24,8 @@ def connect_omero(datasource, omename, password, session_id):
         conn = BlitzGateway(client_obj=client)
 
     is_connected = conn.connect()
-    print("https://192.168.1.201/::::", is_connected)
+    print(host, port, is_connected)
     if is_connected:
-
         # conn.SERVICE_OPTS.setOmeroGroup('-1')
         groups = get_user_groups(conn)
         ctx = conn.getEventContext()

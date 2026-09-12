@@ -860,6 +860,10 @@ def save_key_value_buckets(
     It will use multiprocessing pool to use parallel processing
 
     """
+
+    from flask import g
+
+    g.run_mode = {"index_mode": True}
     if data_source is None:
         return "No data source provided"
     es_index = "key_value_buckets_information"
@@ -904,6 +908,7 @@ def save_key_value_buckets(
         resource_keys = [res["key"] for res in res]
         name_results = None
         if resource_table in ["project", "screen"]:
+            # in case of private data it will throw private data source error
             name_result = get_all_index_data(resource_table, data_source)
             try:
                 for res in name_result["results"]["results"]:
@@ -965,6 +970,8 @@ def save_key_value_buckets(
             search_omero_app.logger.info(res)
         finally:
             pool.close()
+            pool.join()
+            g.index_mode = {"index_mode": False}
 
 
 def save_key_value_buckets_process(lock, global_counter, vals):

@@ -1040,7 +1040,9 @@ def search_index_using_search_after(
             if not is_datasource_public(data_s):
                 post_filter_query = get_permission_query(data_s)
                 if len(post_filter_query) > 0:
-                    if not post_filter_query.get("is_admin"):
+                    if not post_filter_query.get(
+                        "is_admin"
+                    ) and not post_filter_query.get("index_mode"):
                         query2["post_filter"] = post_filter_query
                 else:
                     return "non valid token"
@@ -1071,9 +1073,32 @@ def search_index_using_search_after(
     page_size = search_omero_app.config.get("PAGE_SIZE")
     # add_user_permssion_query(query)
     # post_filter = {"term": {"group_id": "10"}
+    # post_filter_query = get_permission_query(data_source)
+    # query["post_filter"] = post_filter_query
+    if not is_datasource_public(data_source):
+        post_filter_query = get_permission_query(data_source)
+        if len(post_filter_query) > 0:
+            if not post_filter_query.get("is_admin") and not post_filter_query.get(
+                "index_mode"
+            ):
+                query["post_filter"] = post_filter_query
+        else:
+            return "Non valid token"
+    org_size = query.get("size")
+    org_track_total_hits = query.get("track_total_hits")
+    # set size = 0 to return the  total hits
+    query["size"] = 0
+    query["track_total_hits"] = True
 
-    res = es.count(index=e_index, body=query)
-    size = res["count"]
+    #
+    res = es.search(index=e_index, body=query)
+    # res = es.count(index=e_index, body=query)
+    # size = res["count"]
+    size = res["hits"]["total"]["value"]
+    print(size, "====@@@@@@@@@@@@@@@@@@@")
+
+    query["size"] = org_size
+    query["track_total_hits"] = org_track_total_hits
     search_omero_app.logger.info("Total: %s" % size)
     if random_results > 0:
         query["sort"] = [
@@ -1100,19 +1125,9 @@ def search_index_using_search_after(
 
     if not bookmark_ and pagination_dict:
         bookmark_ = get_bookmark(pagination_dict)
-    if not is_datasource_public(data_source):
-        post_filter_query = get_permission_query(data_source)
-        print(post_filter_query)
-        if len(post_filter_query) > 0:
-            if not post_filter_query.get("is_admin"):
-                print(post_filter_query)
-                query["post_filter"] = post_filter_query
-        else:
-            return "Non valid token"
     if not bookmark_:
-        result = es.search(
-            index=e_index, body=query
-        )  # ,post_filter = post_filter_query)
+        query["track_total_hits"] = True
+        result = es.search(index=e_index, body=query)
         if len(result["hits"]["hits"]) == 0:
             search_omero_app.logger.info("No result is found")
             return returned_results
@@ -2052,22 +2067,29 @@ def write_json_from_folder(container_name, container_type, data_source=None):
 
 def get_permission_query(datasource):
     token = getattr(g, "token", None)
+    run_mode = getattr(g, "run_mode", None)
+    if run_mode and run_mode.get("index_mode"):
+        return run_mode
     if type(datasource) is list:
         if len(datasource) > 1:
             print("Not supported")
             return {}
         else:
             datasource = datasource[0]
-    if not token:
+    if token:
+        token = token.get(datasource)
+    if not token or not token.get("is_valid"):
+
         return {}
-    token = token.get(datasource)
-    if not token or token.get("is_admin") is True:
+    if token and token.get("is_admin") is True:
         return {"is_admin": True}
     groups = list(token.get("user_groups").keys())
     user_id = token.get("user_id")
-    permisson_query = {
-        "bool": {
-            "filter": [{"terms": {"group_id": groups}}, {"term": {"owner_id": user_id}}]
-        }
-    }
-    return permisson_query
+    clauses = []
+    for gr in groups:
+        clauses.append({"term": {"group_id": gr}})
+    clauses.append({"term": {"owner_id": user_id}})
+
+    permission_query = {"bool": {"should": clauses}}
+
+    return permission_query

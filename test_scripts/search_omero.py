@@ -51,7 +51,7 @@ def search_omero(name, value, conn):
 
 
 if __name__ == "__main__":
-    conn = connect_omero("user-49", "omero", "idr")
+    conn = connect_omero("user-49", "omero", "omero")
     if conn and conn.connect():
         search_omero("Cell Line", "HeLa", conn)
         print("===========================================")

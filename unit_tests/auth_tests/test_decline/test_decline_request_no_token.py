@@ -95,7 +95,7 @@ class BasicTestCase(unittest.TestCase):
         )  # noqa
         self.assertEqual(response.status_code, 401)
         res_text = response.text
-        print (res_text)
+        print(res_text)
         self.assertTrue("please provide JWT token" in res_text)
 
     def test_not_found(self):

@@ -222,6 +222,7 @@ from omero_search_engine.api.auth import (  # noqa
 search_omero_app.register_blueprint(resources_auth, url_prefix="/auth")
 
 
+# 12439
 @search_omero_app.before_request
 def before_request():
     from omero_search_engine.api.auth.utils import (
@@ -248,13 +249,19 @@ def before_request():
     data_source = get_working_data_source(request.args.get("data_source"))
     if not is_datasource_public(data_source):
         token = get_jwt_from_request()
-        # token={"is_valid":True, "is_expired": False}
-        print("BOBO", token)
         if token:
             g.token = token
             # Store the token in storage accessible
             # to all methods in the current request
-        if not token:
+        if (
+            not token
+            or (not token.get(data_source) and not token.get("is_valid"))
+            or (
+                token
+                and token.get(data_source)
+                and not token.get(data_source).get("is_valid")
+            )
+        ):
             # Returning a value here immediately in case of private datasource
             # and there is no token is provided
             # aborts the request and responds to the user
