@@ -1096,9 +1096,14 @@ def search_index_using_search_after(
     # size = res["count"]
     size = res["hits"]["total"]["value"]
     print(size, "====@@@@@@@@@@@@@@@@@@@")
-
-    query["size"] = org_size
-    query["track_total_hits"] = org_track_total_hits
+    if org_size:
+        query["size"] = org_size
+    else:
+        del query["size"]
+    if org_track_total_hits:
+        query["track_total_hits"] = org_track_total_hits
+    else:
+        del query["track_total_hits"]
     search_omero_app.logger.info("Total: %s" % size)
     if random_results > 0:
         query["sort"] = [
