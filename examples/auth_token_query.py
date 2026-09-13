@@ -10,10 +10,14 @@ data = {"username": "user-49", "password": "omero", "data_source": "omero"}
 response = requests.post(auth_url, json=data)
 # extract the token from the response
 jwt_token = json.loads(response.text)
+
 print(jwt_token)
-# create the Authorization to be send with each request
+# create the Authorization to be sent with each request
 # to allow the user to search the data
-head = {"Authorization": "token {}".format(jwt_token.get("token"))}
+head = {
+    "Authorization": f"Bearer {jwt_token.get("token")}",
+    "Content-Type": "application/json",
+}
 response = requests.get(check_toke, headers=head)
 print(response.text)
 # search url
