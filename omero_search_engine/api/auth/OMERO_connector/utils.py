@@ -46,12 +46,15 @@ def connect_omero(datasource, omename, password, session_id):
 def get_user_groups(conn):
     groups = {}
     for g in conn.getGroupsMemberOf():
-        # if not g.isPrivate():
-        groups[g.getId()] = {"name": g.getName()}
-        # , "is_Private": g.isPrivate(), "is_Public": g.isPublic(),
-        # "owner":g.getOwner()})#,"owner_1":g.isOwned})
+        # If the group is private, it will not be added
+        owners, members = g.groupSummary()
+        print(owners)
+        if not g.isPrivate():
+            groups[g.getId()] = {"name": g.getName()}
 
     owned_groups = conn.listOwnedGroups()
+    # check for the user groups which they are owners
+    # if it is not added before (private group), it will be added
     for group in owned_groups:
         print(f"Name: {group.getName()} | ID: {group.getId()}")
         if group.getId() not in groups:
