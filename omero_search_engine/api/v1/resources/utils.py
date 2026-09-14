@@ -30,7 +30,10 @@ from string import Template
 from app_data.data_attrs import annotation_resource_link
 from flask import Response, g
 
-from omero_search_engine.api.auth.utils import is_datasource_public
+from omero_search_engine.api.auth.utils import (
+    is_datasource_public,
+    get_jwt_from_request,
+)
 
 contain_list = ["contains", "not_contains"]
 main_dir = os.path.abspath(os.path.dirname(__file__))
@@ -2098,3 +2101,12 @@ def get_permission_query(datasource):
     permission_query = {"bool": {"should": clauses}}
 
     return permission_query
+
+
+def is_authorized(data_source):
+    token = get_jwt_from_request()
+    print(token)
+    if token and data_source in token:
+        return True
+    else:
+        return False

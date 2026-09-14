@@ -30,6 +30,7 @@ from omero_search_engine.api.v1.resources.utils import (
     # check_empty_string,
     search_resource_annotation_return_containers_only,
     get_working_data_source,
+    is_authorized,
 )
 from omero_search_engine.api.v1.resources.resource_analyser import (
     search_value_for_resource,
@@ -72,6 +73,10 @@ def return_data_resources():
     for ds in data_sources:
         if not is_datasource_public(ds):
             public = False
+            if is_authorized(ds):
+                public = False
+            else:
+                continue
         else:
             public = True
         datasources[ds] = {"Public": public}
