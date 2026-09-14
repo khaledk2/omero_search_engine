@@ -660,9 +660,8 @@ def container_images():
         token = getattr(g, "token", None).get(data_source)
         if not token or not token["is_valid"] or not token["is_admin"]:
             return build_error_message(
-                "%s data source is private, "
+                "Data source is private, "
                 "Admin only can access this url, please provide an authorization token"
-                % data_source
             )
     return return_containers_images(data_source)
 
@@ -787,9 +786,8 @@ def get_container_data():
         token = getattr(g, "token", None).get("data_source")
         if not token or not token["is_valid"] or not token["is_admin"]:
             return build_error_message(
-                "%s data source is private, "
+                "Data source is private, "
                 "Admin only can access this url, please provide an authorization token"
-                % data_source
             )
     file_type = request.args.get("file_type")
     if not file_type:

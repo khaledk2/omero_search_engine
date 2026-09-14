@@ -249,6 +249,7 @@ def before_request():
     data_source = get_working_data_source(request.args.get("data_source"))
     if not is_datasource_public(data_source):
         token = get_jwt_from_request()
+
         if token:
             g.token = token
             # Store the token in storage accessible
@@ -269,8 +270,8 @@ def before_request():
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Data source %s is private, "
-                        "please provide JWT token." % data_source,
+                        "message": "Data source is private, "
+                        "please provide JWT token.",
                     }
                 ),
                 401,
