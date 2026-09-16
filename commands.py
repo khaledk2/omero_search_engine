@@ -234,9 +234,9 @@ def backup_elasticsearch_data():
 @click.option(
     "-o", "--ome_public_user_name", default=None, help="omero public username"
 )
-@click.option("-u", "--user_password", default=None, help="omero public username")
+@click.option("-m", "--me_user_password", default=None, help="omero public username")
 @click.option(
-    "-i", "--is_public", default=True, help="public datasource if set to true"
+    "-c", "--conf_is_public", default=True, help="public datasource if set to true"
 )
 def set_database_configuration(
     working_data_source,
@@ -249,9 +249,9 @@ def set_database_configuration(
     image_webclient_url,
     thumb_url,
     image_url,
-    is_public,
+    conf_is_public,
     ome_public_user_name,
-    user_password,
+    me_user_password,
 ):
     if not working_data_source:
         print("Data source is required to process")
@@ -277,11 +277,12 @@ def set_database_configuration(
         database_config["thumb_url"] = thumb_url
     if image_url:
         database_config["image_url"] = image_url
-    if ome_public_user_name and user_password:
+    if ome_public_user_name and me_user_password:
         database_config["public_username"] = ome_public_user_name
-        database_config["public_user_password"] = user_password
-    database_config["public"] = is_public
-    database_config["public"] = is_public
+        database_config["public_user_password"] = me_user_password
+    if type(conf_is_public) is bool:
+        print(conf_is_public)
+        database_config["public"] = conf_is_public
     if len(database_attrs) > 0 or len(database_config) > 2:
         update_config_file(database_config, data_source=True)
     else:
