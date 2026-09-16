@@ -47,7 +47,7 @@ def login():
             return "session id id or username and password and datasource are required"
 
         token = create_token(datasource, username, password, session_id)
-        return token
+        return jsonify(token)
     except Exception as e:
         print("Error is %s" % str(e))
         return jsonify({"Error": "%s" % e})

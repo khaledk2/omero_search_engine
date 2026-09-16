@@ -228,6 +228,7 @@ def before_request():
     from omero_search_engine.api.auth.utils import (
         get_jwt_from_request,
         is_datasource_public,
+        check_for_public_user,
     )
     from omero_search_engine.api.v1.resources.utils import get_working_data_source
 
@@ -249,6 +250,8 @@ def before_request():
     data_source = get_working_data_source(request.args.get("data_source"))
     if not is_datasource_public(data_source):
         token = get_jwt_from_request()
+        if not token:
+            token = check_for_public_user(data_source)
 
         if token:
             g.token = token
@@ -276,6 +279,7 @@ def before_request():
                 ),
                 401,
             )  # Unauthorized status code
+    return None
 
 
 # add it to account for CORS

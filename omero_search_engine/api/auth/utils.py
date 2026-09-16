@@ -1,5 +1,5 @@
 import jwt
-from flask import request, jsonify
+from flask import request
 from flask import current_app
 import datetime
 
@@ -9,19 +9,20 @@ from omero_search_engine.api.auth.OMERO_connector.utils import (
 )
 
 
-def create_token(datasource, omename, password, session_id):
-
+def create_token(datasource, omename, password, session_id, encode_token=True):
     data = connect_omero(datasource, omename, password, session_id)
+    print(data)
     if len(data) > 0:
-        return jsonify({"token": build_token(data, omename)})
+        if encode_token:
+            return {"token": build_token(data, omename)}
+        else:
+            return data
     else:
-        return jsonify(
-            {
-                "message": "could not verify",
-                "code": 401,
-                "Authentication": "login required",
-            }
-        )
+        return {
+            "message": "could not verify",
+            "code": 401,
+            "Authentication": "login required",
+        }
 
 
 def build_token(data, omename):
@@ -48,14 +49,17 @@ def build_token(data, omename):
     return token
 
 
-def check_token(token, check_session=True):
-    try:
-        token_data = jwt.decode(
-            token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
-        )
-    except Exception as e:
-        print("Error is %s" % str(e))
-        return {"is_valid": False, "error": str(e)}
+def check_token(token, check_session=False, decode=True):
+    if decode:
+        try:
+            token_data = jwt.decode(
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
+            )
+        except Exception as e:
+            print("Error is %s" % str(e))
+            return {"is_valid": False, "error": str(e)}
+    else:
+        token_data = token
 
     if check_session:
         if token_data.get("session_id"):
@@ -129,3 +133,24 @@ def get_data_source_server_url(datasource):
                 port = data_source.get("SERVER_PORT")
                 return host, port
     return None, None
+
+
+def check_for_public_user(datasource):
+    from omero_search_engine import search_omero_app
+
+    for data_source in search_omero_app.config.get("DATA_SOURCES"):
+        if data_source.get("name").lower() == datasource.lower():
+            public_username = data_source.get("public_username")
+            public_user_password = data_source.get("public_user_password")
+            if public_username and public_user_password:
+                # get a token
+                token = create_token(
+                    datasource,
+                    public_username,
+                    public_user_password,
+                    None,
+                    encode_token=False,
+                )
+                token_data = check_token(token, check_session=False, decode=False)
+                return token_data
+    return None
