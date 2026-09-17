@@ -135,7 +135,7 @@ def get_data_source_server_url(datasource):
     return None, None
 
 
-def check_for_public_user(datasource):
+def get_public_user_details(datasource):
     from omero_search_engine import search_omero_app
 
     for data_source in search_omero_app.config.get("DATA_SOURCES"):
@@ -143,14 +143,22 @@ def check_for_public_user(datasource):
             public_username = data_source.get("public_username")
             public_user_password = data_source.get("public_user_password")
             if public_username and public_user_password:
-                # get a token
-                token = create_token(
-                    datasource,
-                    public_username,
-                    public_user_password,
-                    None,
-                    encode_token=False,
-                )
-                token_data = check_token(token, check_session=False, decode=False)
-                return token_data
+                return public_username, public_user_password
+    return None, None
+
+
+def check_for_public_user(datasource):
+    public_username, public_user_password = get_public_user_details(datasource)
+    if public_username and public_user_password:
+        print(public_username, public_user_password)
+        # get a token
+        token = create_token(
+            datasource,
+            public_username,
+            public_user_password,
+            None,
+            encode_token=False,
+        )
+        token_data = check_token(token, check_session=False, decode=False)
+        return token_data
     return None

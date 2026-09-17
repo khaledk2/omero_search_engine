@@ -89,6 +89,8 @@ jobs:
           flask set_database_configuration -c false -w omero_train
           python3 -m unittest discover -s unit_tests/auth_tests/test_decline
           python3 -m unittest discover -s unit_tests/auth_tests/test_auth
+          flask set_database_configuration  -w omero_train -o trainer-1 -m omero
+          python3 -m unittest discover -s unit_tests/auth_tests/test_public_user/
           flask set_database_configuration -c true -w omero_train
           python3 -m unittest discover -s unit_tests/datasource_tests         
 
