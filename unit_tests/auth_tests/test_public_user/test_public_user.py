@@ -37,13 +37,17 @@ from omero_search_engine.validation.results_validator import (
     # check_number_images_sql_containers_using_ids,
 )
 
-from omero_search_engine.api.auth.utils import check_token, build_token, get_public_user_details
+from omero_search_engine.api.auth.utils import (
+    check_token,
+    build_token,
+    get_public_user_details,
+)
 
 from unit_tests.queries_tests.test_data import (
     simple_queries,
     data_source,
     public_user,
-    public_user_data
+    public_user_data,
 )
 
 from omero_search_engine import create_app
@@ -60,7 +64,9 @@ class BasicTestCase(unittest.TestCase):
         self.data_source = data_source
 
     def test_create_public_token(self):
-        public_username, public_user_password=get_public_user_details(self.data_source)
+        public_username, public_user_password = get_public_user_details(
+            self.data_source
+        )
         self.assertEqual(public_user, public_username)
         token = build_token(public_user_data, public_username)
         check = check_token(token, check_session=False)
@@ -70,7 +76,9 @@ class BasicTestCase(unittest.TestCase):
         """
         test user who has permission to access the images in the query results
         """
-        public_username, public_user_password = get_public_user_details(self.data_source)
+        public_username, public_user_password = get_public_user_details(
+            self.data_source
+        )
         token = build_token(public_user_data, public_username)
         check = check_token(token, check_session=False)
         g.token = check
@@ -97,7 +105,9 @@ class BasicTestCase(unittest.TestCase):
         """
         test user who does not have permission to access the images in the query results
         """
-        public_username, public_user_password = get_public_user_details(self.data_source)
+        public_username, public_user_password = get_public_user_details(
+            self.data_source
+        )
         token = build_token(public_user_data, public_username)
         check = check_token(token, check_session=False)
         g.token = check
