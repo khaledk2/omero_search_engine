@@ -111,7 +111,7 @@ csv_test_data = [
 
 expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvbWVuYW1lIjoidXNlci00OSIsImV4cCI6MTc4ODM2MzYyMCwiaXNfYWRtaW4iOmZhbHNlLCJzZXNzaW9uX2lkIjoiMjMxZTJjZGEtNzNhMC00YWNjLWExZmUtZGIxZDNjM2JlNzg5Iiwic2Vzc2lvbklkIjoxNzY4NTQsInVzZXJfaWQiOjgwOSwiZ3JvdXBzIjp7IjYiOnsibmFtZSI6IkxhYjMifSwiMyI6eyJuYW1lIjoiTGFiNCJ9LCI1Ijp7Im5hbWUiOiJMYWIxIn0sIjQiOnsibmFtZSI6IkxhYjIifX0sImRhdGFfc291cmNlIjoiaWRyIn0.pNmjqVXfga4hWUK7Qh5pHhkQmxCoqgUSBZcpAcdEmwI"  # noqa
 omename = "user-49"
-public_user = "trainer-1"
+public_user = "user-10"
 data_source = "omero_train"
 user_data = {
     "is_admin": False,
@@ -128,19 +128,13 @@ user_data = {
 }
 
 public_user_data = {
-    "data_source": "idr",
-    "is_admin": True,
-    "is_expired": False,
-    "is_valid": True,
-    "user_groups": {
-        "4": {"name": "Lab2"},
-        "5": {"name": "Lab1"},
-        "6": {"name": "Lab3"},
-        "1503": {"name": "PUBLIC"},
-    },
-    "user_id": 2,
+    "is_admin": False,
+    "session_id": "538d0482-3d6f-4691-873b-af654a740fe9",
+    "sessionId": 177794,
+    "user_id": 13,
+    "groups": {6: {"name": "Lab3"}, 5: {"name": "Lab1"}, 4: {"name": "Lab2"}},
+    "data_source": data_source,
 }
-
 
 user_2_data = {
     "is_admin": False,
