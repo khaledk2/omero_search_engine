@@ -229,6 +229,7 @@ def before_request():
         get_jwt_from_request,
         is_datasource_public,
         check_for_public_user,
+        combine_tokens,
     )
     from omero_search_engine.api.v1.resources.utils import get_working_data_source
 
@@ -250,21 +251,13 @@ def before_request():
     data_source = get_working_data_source(request.args.get("data_source"))
     if not is_datasource_public(data_source):
         token = get_jwt_from_request()
-        if not token:
-            token = check_for_public_user(data_source)
-
-        if token:
-            g.token = token
-            # Store the token in storage accessible
-            # to all methods in the current request
+        public_token = check_for_public_user(data_source)
+        token = combine_tokens(token, public_token, data_source)
+        g.token = token
         if (
             not token
-            or (not token.get(data_source) and not token.get("is_valid"))
-            or (
-                token
-                and token.get(data_source)
-                and not token.get(data_source).get("is_valid")
-            )
+            or not token.get(data_source)
+            or not token.get(data_source).get("is_valid")
         ):
             # Returning a value here immediately in case of private datasource
             # and there is no token is provided
@@ -278,7 +271,9 @@ def before_request():
                     }
                 ),
                 401,
-            )  # Unauthorized status code
+            )
+        # Unauthorized status code
+
     return None
 
 

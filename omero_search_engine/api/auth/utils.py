@@ -159,6 +159,45 @@ def check_for_public_user(datasource):
             None,
             encode_token=False,
         )
+        if not token.get("session_id"):
+            return {"is_valid": False}
         token_data = check_token(token, check_session=False, decode=False)
         return token_data
     return None
+
+
+def combine_tokens(token, public_token, data_ssource):
+    """
+    combine public and user logg in user in case of private data source
+    """
+    if token and not token.get(data_ssource) and not token.get("is_valid"):
+        if public_token:
+            return public_token
+    elif (
+        public_token
+        and not public_token.get(data_ssource)
+        and not public_token.get("is_valid")
+    ):
+        if token:
+            return token
+    elif not public_token and token:
+        return token
+    elif not token and public_token:
+        return public_token
+
+    if token and public_token:
+        for data_source in token:
+            new_groups = token.get(data_source).get("user_groups")
+            for group in public_token[data_source].get("user_groups"):
+                if str(group) not in new_groups:
+                    new_groups[group] = public_token[data_source].get("user_groups")[
+                        group
+                    ]
+            token[data_source]["user_groups"] = new_groups
+        return token
+    elif not public_token and token:
+        return token
+    elif not token and public_token:
+        return public_token
+    else:
+        return None
