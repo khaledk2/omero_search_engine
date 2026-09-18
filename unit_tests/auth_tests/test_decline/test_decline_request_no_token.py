@@ -45,7 +45,7 @@ from omero_search_engine.cache_functions.elasticsearch.transform_data import (
     get_all_indexes_from_elasticsearch,
 )
 
-from unit_tests.queries_tests.test_data import (
+from unit_tests.test_data import (
     sql,
     valid_and_filters,
     valid_or_filters,

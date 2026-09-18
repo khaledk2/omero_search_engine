@@ -39,7 +39,7 @@ from omero_search_engine.validation.results_validator import (
 
 from omero_search_engine.api.auth.utils import check_token, build_token
 
-from unit_tests.queries_tests.test_data import (
+from unit_tests.test_data import (
     simple_queries,
     expired_token,
     user_data,

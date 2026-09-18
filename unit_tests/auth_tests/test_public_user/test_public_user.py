@@ -43,7 +43,7 @@ from omero_search_engine.api.auth.utils import (
     get_public_user_details,
 )
 
-from unit_tests.queries_tests.test_data import (
+from unit_tests.test_data import (
     simple_queries,
     data_source,
     public_user,
