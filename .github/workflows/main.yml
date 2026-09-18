@@ -87,10 +87,10 @@ jobs:
           python3 -m unittest discover -s unit_tests/indexing_tests
           python3 -m unittest discover -s unit_tests/queries_tests     
           flask set_database_configuration -c false -w omero_train
-          python3 -m unittest discover -s unit_tests/auth_tests/test_decline
-          python3 -m unittest discover -s unit_tests/auth_tests/test_auth
+          python3 -m unittest discover -s unit_tests/auth_tests/decline_tests
+          python3 -m unittest discover -s unit_tests/auth_tests/auth_tests
           flask set_database_configuration  -w omero_train -o user-10 -m omero
-          python3 -m unittest discover -s unit_tests/auth_tests/test_public_user/
+          python3 -m unittest discover -s unit_tests/auth_tests/public_user_tests
           flask set_database_configuration -c true -w omero_train
           python3 -m unittest discover -s unit_tests/datasource_tests         
 
