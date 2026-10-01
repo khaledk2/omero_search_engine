@@ -928,13 +928,9 @@ def save_key_value_buckets(
         resource_keys = [res["key"] for res in res]
         name_results = None
         print("Check for res table.....", resource_table)
-        if resource_table in ["image", "dataset", "plate", "well"]:
-            continue
         if resource_table in ["project", "screen"]:
             # in case of private data it will throw private data source error
             name_result = get_all_index_data(resource_table, data_source)
-            print(len(name_result["results"]["results"]))
-            print("========= data source =====", data_source)
             try:
                 for res in name_result["results"]["results"]:
                     id = res.get("id")
