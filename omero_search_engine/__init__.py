@@ -242,6 +242,13 @@ def before_request():
         "/flasgger_static",
         "/apispec_1.json",
         "/check_query_job",
+        "/searchengine/auth/login",
+        "/searchengine/data_sources/",
+        "/searchengine/apidocs/",
+        "/searchengine/favicon.ico",
+        "/searchengine/flasgger_static",
+        "/searchengine/apispec_1.json",
+        "/searchengine/check_query_job",
     ]
     for path in exempt_path:
         if request.path.__contains__(path):
@@ -253,6 +260,7 @@ def before_request():
         token = get_jwt_from_request()
         public_token = check_for_public_user(data_source)
         token = combine_tokens(token, public_token, data_source)
+        print("TOKEN IS %s" % token)
         g.token = token
         if (
             not token
@@ -266,8 +274,8 @@ def before_request():
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Data source is private, "
-                        "please provide JWT token.",
+                        "message": "Data source is private, request.path is: %s"
+                        "please provide JWT token." % request.path,
                     }
                 ),
                 401,

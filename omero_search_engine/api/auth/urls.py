@@ -44,7 +44,7 @@ def login():
         if session_id:
             session_id = session_id.strip()
         if not session_id and (not username or not password) or not datasource:
-            return "session id id or username and password and datasource are required"
+            return "session id or username and password and datasource are required"
 
         token = create_token(datasource, username, password, session_id)
         return jsonify(token)

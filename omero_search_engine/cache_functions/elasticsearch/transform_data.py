@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from logging import exception
 
 # Copyright (C) 2022 University of Dundee & Open Microscopy Environment.
 # All rights reserved.
@@ -559,12 +560,29 @@ def get_insert_data_to_index(sql_st, resource, data_source, clean_index=True):
         counter_val = manager.Value("i", 0)
         func = partial(processor_work, lock, counter_val)
         # map the data which will be consumed by the processes inside the pool
-        res = pool.map(func, vals)  # noqa
+        from elasticsearch.helpers import BulkIndexError
+
+        try:
+            res = pool.map(func, vals)  # noqa
+        except BulkIndexError as e:
+            for item in e.errors:
+                action = next(iter(item))
+                result = item[action]
+                error = result.get("error", {})
+                search_omero_app.logger.info("STATUS:", result.get("status"))
+                search_omero_app.logger.info("TYPE:", error.get("type"))
+                search_omero_app.logger.info("REASON:", error.get("reason"))
+                if "caused_by" in error:
+                    cause = error["caused_by"]
+                    search_omero_app.logger.info("CAUSE:", cause.get("type"))
+                    search_omero_app.logger.info("CAUSE REASON:", cause.get("reason"))
+            search_omero_app.logger.info("Error is %s" % str(e))
+            raise
         search_omero_app.logger.info(cur_max_id)
         delta = str(datetime.now() - start_time)
         search_omero_app.logger.info("Total time=%s" % delta)
     except Exception as ex:
-        print("Error is : %s" % ex)
+        search_omero_app.logger.info("Error is : %s" % ex)
         raise ex
     finally:
         pool.close()
@@ -864,6 +882,8 @@ def save_key_value_buckets(
     from flask import g
 
     g.run_mode = {"index_mode": True}
+    # set to the maximum allowed value
+    search_omero_app.config["PAGE_SIZE"] = search_omero_app.config.get("MAX_PAGE_SIZE")
     if data_source is None:
         return "No data source provided"
     es_index = "key_value_buckets_information"
@@ -907,9 +927,14 @@ def save_key_value_buckets(
         res = get_resource_keys(resource_table, data_source)
         resource_keys = [res["key"] for res in res]
         name_results = None
+        print("Check for res table.....", resource_table)
+        if resource_table in ["image", "dataset", "plate", "well"]:
+            continue
         if resource_table in ["project", "screen"]:
             # in case of private data it will throw private data source error
             name_result = get_all_index_data(resource_table, data_source)
+            print(len(name_result["results"]["results"]))
+            print("========= data source =====", data_source)
             try:
                 for res in name_result["results"]["results"]:
                     id = res.get("id")
@@ -930,6 +955,7 @@ def save_key_value_buckets(
 
             except Exception as ex:
                 print(resource_table, "Error %s, Reslts: %s" % (str(ex), name_result))
+                raise exception(ex)
 
         push_keys_cache_index(
             resource_keys, resource_table, data_source, es_index_2, name_results
@@ -1050,20 +1076,24 @@ def get_keys(res_table, data_source):
 
 
 def push_keys_cache_index(results, resource, data_source, es_index, resourcename=None):
-    row = {}
-    row["name"] = results
-    row["doc_type"] = es_index
-    row["resource"] = resource
-    row["data_source"] = data_source
-    if resourcename:
-        row["resourcename"] = resourcename
+    try:
+        row = {}
+        row["name"] = results
+        row["doc_type"] = es_index
+        row["resource"] = resource
+        row["data_source"] = data_source
+        if resourcename:
+            row["resourcename"] = resourcename
 
-    search_omero_app.logger.info("data_to_be_pushed: %s" % len(row))
-    actions = []
-    actions.append({"_index": es_index, "_source": row})
-    es = search_omero_app.config.get("es_connector")
-    res = helpers.bulk(es, actions)
-    search_omero_app.logger.info("3. Results is %s" % str(res))
+        search_omero_app.logger.info("data_to_be_pushed: %s" % len(row))
+        actions = []
+        actions.append({"_index": es_index, "_source": row})
+        es = search_omero_app.config.get("es_connector")
+        res = helpers.bulk(es, actions)
+        search_omero_app.logger.info("3. Results is %s" % str(res))
+    except Exception as e:
+        search_omero_app.logger.info("Error is %s" % str(e))
+        raise
 
 
 def get_buckets(key, data_source, resource, es_index, lock=None):
