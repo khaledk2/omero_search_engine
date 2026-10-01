@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import exception
+# from logging import exception
 
 # Copyright (C) 2022 University of Dundee & Open Microscopy Environment.
 # All rights reserved.
@@ -932,26 +932,29 @@ def save_key_value_buckets(
             # in case of private data it will throw private data source error
             name_result = get_all_index_data(resource_table, data_source)
             try:
-                for res in name_result["results"]["results"]:
-                    id = res.get("id")
-                    no_images_co = get_number_image_inside_container(
-                        resource_table, id, data_source
-                    )
-                    res["no_images"] = no_images_co
-                name_results = [
-                    {
-                        "id": res["id"],
-                        # "data_source": data_source,
-                        "description": res["description"],
-                        "name": res["name"],
-                        "no_images": res["no_images"],
-                    }
-                    for res in name_result["results"]["results"]
-                ]
+                if name_result.get("results") and name_result.get("results").get(
+                    "results"
+                ):
+                    for res in name_result["results"]["results"]:
+                        id = res.get("id")
+                        no_images_co = get_number_image_inside_container(
+                            resource_table, id, data_source
+                        )
+                        res["no_images"] = no_images_co
+                    name_results = [
+                        {
+                            "id": res["id"],
+                            # "data_source": data_source,
+                            "description": res["description"],
+                            "name": res["name"],
+                            "no_images": res["no_images"],
+                        }
+                        for res in name_result["results"]["results"]
+                    ]
 
             except Exception as ex:
-                print(resource_table, "Error %s, Reslts: %s" % (str(ex), name_result))
-                raise exception(ex)
+                print(resource_table, "Error %s, Results: %s" % (str(ex), name_result))
+                raise
 
         push_keys_cache_index(
             resource_keys, resource_table, data_source, es_index_2, name_results
