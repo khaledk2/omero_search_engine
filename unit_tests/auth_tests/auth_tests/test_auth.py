@@ -42,6 +42,7 @@ from omero_search_engine.api.auth.utils import check_token, build_token
 from unit_tests.test_data import (
     simple_queries,
     expired_token,
+    expired_token_wrong_sign,
     user_data,
     user_2_data,
     omename,
@@ -66,11 +67,14 @@ class BasicTestCase(unittest.TestCase):
         self.assertFalse(check.get("is_valid"))
         self.assertEqual(check.get("error"), "Signature has expired")
 
+    def test_signature_failed_token(self):
+        check = check_token(expired_token_wrong_sign, check_session=False)
+        self.assertFalse(check.get("is_valid"))
+        self.assertEqual(check.get("error"), "Signature verification failed")
+
     def test_create_token(self):
         token = build_token(user_data, omename)
-        print(token, ":: is the token")
         check = check_token(token, check_session=False)
-        print(check, "::: is the check")
         self.assertTrue(check.get(self.data_source).get("is_valid"))
 
     def test_query_with_auth_user(self):
