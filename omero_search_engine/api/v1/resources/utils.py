@@ -1068,6 +1068,8 @@ def search_index_using_search_after(
             for ek in keys_counts:
                 idrs.append(ek["key"])
                 res_res = get_studies_titles(ek["key"], ret_type, data_s)
+                if len(res_res) == 0:
+                    continue
                 res_res["image count"] = ek["doc_count"]
                 if data_source:
                     res_res["data_source"] = data_s
@@ -1098,7 +1100,6 @@ def search_index_using_search_after(
     # res = es.count(index=e_index, body=query)
     # size = res["count"]
     size = res["hits"]["total"]["value"]
-    print(size, "====@@@@@@@@@@@@@@@@@@@")
     if org_size:
         query["size"] = org_size
     else:
