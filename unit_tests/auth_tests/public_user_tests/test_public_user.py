@@ -64,7 +64,7 @@ class BasicTestCase(unittest.TestCase):
         self.data_source = data_source
 
     def test_create_public_token(self):
-        public_username, public_user_password = get_public_user_details(
+        session_id, public_username, public_user_password = get_public_user_details(
             self.data_source
         )
         self.assertEqual(public_user, public_username)
@@ -76,7 +76,7 @@ class BasicTestCase(unittest.TestCase):
         """
         test user who has permission to access the images in the query results
         """
-        public_username, public_user_password = get_public_user_details(
+        session_id, public_username, public_user_password = get_public_user_details(
             self.data_source
         )
         token = build_token(public_user_data, public_username)
@@ -105,7 +105,7 @@ class BasicTestCase(unittest.TestCase):
         """
         test user who does not have permission to access the images in the query results
         """
-        public_username, public_user_password = get_public_user_details(
+        session_id, public_username, public_user_password = get_public_user_details(
             self.data_source
         )
         token = build_token(public_user_data, public_username)

@@ -142,25 +142,39 @@ def get_public_user_details(datasource):
         if data_source.get("name").lower() == datasource.lower():
             public_username = data_source.get("public_username")
             public_user_password = data_source.get("public_user_password")
-            if public_username and public_user_password:
-                return public_username, public_user_password
-    return None, None
+            session_id = data_source.get("session_id")
+            if (public_username and public_user_password) or session_id:
+                return session_id, public_username, public_user_password
+    return None, None, None
+
+
+def update_session_id(datasource, session_id):
+    database_config = {"DATABASE": {}, "session_id": session_id, "name": datasource}
+    from configurations.configuration import update_config_file
+
+    update_config_file(database_config, data_source=True)
 
 
 def check_for_public_user(datasource):
-    public_username, public_user_password = get_public_user_details(datasource)
-    if public_username and public_user_password:
+    session_id, public_username, public_user_password = get_public_user_details(
+        datasource
+    )
+
+    if (public_username and public_user_password) or session_id:
         print(public_username, public_user_password)
         # get a token
         token = create_token(
             datasource,
             public_username,
             public_user_password,
-            None,
+            session_id=session_id,
             encode_token=False,
         )
         if not token.get("session_id"):
             return {"is_valid": False}
+        if token.get("session_id") != session_id:
+            update_session_id(datasource, token.get("session_id"))
+            print("Not found or not valid, saved new one ", token.get("session_id"))
         token_data = check_token(token, check_session=False, decode=False)
         return token_data
     return None

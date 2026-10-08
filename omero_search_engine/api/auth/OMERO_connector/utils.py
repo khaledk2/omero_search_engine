@@ -20,8 +20,16 @@ def connect_omero(datasource, omename, password, session_id):
         )
     else:
         client = BaseClient(host=host, port=port)
-        client.joinSession(session_id)
-        conn = BlitzGateway(client_obj=client)
+        try:
+            client.joinSession(session_id)
+            conn = BlitzGateway(client_obj=client)
+        except Exception as e:
+            search_omero_app.logger.info(
+                "error is %s, will try to log in using username  and password" % str(e)
+            )
+            conn = BlitzGateway(
+                username=omename, passwd=password, host=host, port=port, secure=True
+            )
 
     is_connected = conn.connect()
     print(host, port, is_connected)
