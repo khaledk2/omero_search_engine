@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# from huggingface_hub.cli.datasets import dataset_sql
 
 # Copyright (C) 2022 University of Dundee & Open Microscopy Environment.
 # All rights reserved.
@@ -22,6 +23,9 @@ import pandas as pd
 import os
 from string import Template
 
+# from omero_search_engine.cache_functions.elasticsearch.utils.extract_BIA_data import (
+#    datasets,
+# )
 
 """
 originalfile.size as image_size,
@@ -75,7 +79,6 @@ images_sql_to_csv = (
     )
 )  # noqa
 
-
 plate_sql = Template(
     """
 select plate.id, plate.owner_id, plate.group_id,plate.description,
@@ -113,6 +116,29 @@ annotation_mapvalue.annotation_id=projectannotationlink.child
 left join annotation ON projectannotationlink.child = annotation.id
 $whereclause
 GROUP BY project.id, annotation_mapvalue.index,
+annotation_mapvalue.name, annotation_mapvalue.value,
+annotation.textvalue,
+annotation.discriminator,
+annotation.file,annotation.description"""
+)
+
+dataset_sql = Template(
+    """
+select dataset.id, dataset.owner_id, dataset.group_id, dataset.description,
+dataset.name as name, annotation_mapvalue.name as mapvalue_name,
+annotation_mapvalue.value as mapvalue_value,
+annotation_mapvalue.index as mapvalue_index,
+annotation.textvalue as annotation_text_value,
+annotation.discriminator as discriminator,
+annotation.file as annotation_file,
+annotation.description as annotation_description
+from dataset
+left join datasetannotationlink on dataset.id =datasetannotationlink.parent
+left join annotation_mapvalue on
+annotation_mapvalue.annotation_id=datasetannotationlink.child
+left join annotation ON datasetannotationlink.child = annotation.id
+$whereclause
+GROUP BY dataset.id, annotation_mapvalue.index,
 annotation_mapvalue.name, annotation_mapvalue.value,
 annotation.textvalue,
 annotation.discriminator,
@@ -261,6 +287,7 @@ def create_csv_for_non_images(resource, csv_file):
 sqls_resources = {
     "image": image_sql,
     "project": project_sql,
+    "dataset": dataset_sql,
     "well": well_sql,
     "plate": plate_sql,
     "screen": screen_sql,

@@ -100,6 +100,7 @@ def get_all_indexes():
     return [
         "project_keyvalue_pair_metadata",
         "screen_keyvalue_pair_metadata",
+        "dataset_keyvalue_pair_metadata",
         "plate_keyvalue_pair_metadata",
         "well_keyvalue_pair_metadata",
         "image_keyvalue_pair_metadata",
@@ -1176,7 +1177,7 @@ def index_container_from_database_(
     number_of_processors=2,
 ):
     resources_index = {
-        "project": ["image", "project"],
+        "project": ["image", "project", "dataset"],
         "screen": ["image", "screen", "well", "plate"],
     }
 

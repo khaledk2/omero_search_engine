@@ -69,6 +69,7 @@ def get_resource_annotation_table(resource_table):
 resource_elasticsearchindex = {
     "project": "project_keyvalue_pair_metadata",
     "screen": "screen_keyvalue_pair_metadata",
+    "dataset": "dataset_keyvalue_pair_metadata",
     "plate": "plate_keyvalue_pair_metadata",
     "well": "well_keyvalue_pair_metadata",
     "image": "image_keyvalue_pair_metadata",
