@@ -1725,7 +1725,7 @@ def delete_data_source_contents(data_source):
         return found
 
     st = datetime.datetime.now()
-    resources_index = ["image", "project", "dataset","screen", "well", "plate"]
+    resources_index = ["image", "project", "dataset", "screen", "well", "plate"]
     query = delete_datasource_query.substitute(data_source=data_source)
     es = search_omero_app.config.get("es_connector")
     for res in resources_index:
