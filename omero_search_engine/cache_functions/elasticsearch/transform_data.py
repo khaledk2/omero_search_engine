@@ -742,6 +742,8 @@ def index_containers_from_database(
         whereclause = well_screen_clause.substitute(screen_id=id)
     elif resource == "plate":
         whereclause = plate_screen_clause.substitute(screen_id=id)
+    elif resource == "dataset":
+        whereclause = "where project.id in (%s)" % id
     sql_st = sqls_resources.get(resource)
     conn = search_omero_app.config.database_connectors[data_source]
     if resource == "image":
