@@ -33,6 +33,11 @@ parameters:
     type: string
     required: false
     description: If a specific data source is provided, results will be retrieved from that source. Otherwise, the default data source will be used. If there is no default data source configured, results will be gathered from all available sources.
+  - name: user_data
+    description: Filter the search results to only include data owned by the user
+    in: query
+    type: boolean
+    required: false
 
 definitions:
  data:

@@ -50,6 +50,11 @@ parameters:
     in: query
     type: boolean
     required: false
+  - name: user_data
+    description: Filter the search results to only include data owned by the user
+    in: query
+    type: boolean
+    required: false
   - name: asynchronize_run
     description: query will be performed in asynchronous mode  when set to true
     in: query

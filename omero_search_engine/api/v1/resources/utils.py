@@ -1725,7 +1725,7 @@ def delete_data_source_contents(data_source):
         return found
 
     st = datetime.datetime.now()
-    resources_index = ["image", "project", "dataset","screen", "well", "plate"]
+    resources_index = ["image", "project", "dataset", "screen", "well", "plate"]
     query = delete_datasource_query.substitute(data_source=data_source)
     es = search_omero_app.config.get("es_connector")
     for res in resources_index:
@@ -2091,19 +2091,17 @@ def get_permission_query(datasource):
     if not token or not token.get("is_valid"):
 
         return {}
-    if token and token.get("is_admin") is True:
+    if token and token.get("is_admin") is True and not g.user_data:
         return {"is_admin": True}
     groups = list(token.get("user_groups").keys())
     user_id = token.get("user_id")
     clauses = []
-    for gr in groups:
-        clauses.append({"term": {"group_id": gr}})
+    if not g.user_data:
+        for gr in groups:
+            clauses.append({"term": {"group_id": gr}})
     clauses.append({"term": {"owner_id": user_id}})
-
     permission_query = {"bool": {"should": clauses}}
-
     return permission_query
-
 
 def is_authorized(data_source):
     token = get_jwt_from_request()

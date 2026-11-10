@@ -52,7 +52,6 @@ environment_config_name = "development"
 
 main_folder = os.path.dirname(os.path.realpath(__file__))
 
-
 search_omero_app = Flask(__name__)
 
 search_omero_app.json_encoder = LazyJSONEncoder
@@ -282,8 +281,9 @@ def before_request():
             )
         # Unauthorized status code
 
+    user_data=request.args.get("user_data")
+    g.user_data=user_data
     return None
-
 
 # add it to account for CORS
 @search_omero_app.after_request
