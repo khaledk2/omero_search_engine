@@ -2103,6 +2103,7 @@ def get_permission_query(datasource):
     permission_query = {"bool": {"should": clauses}}
     return permission_query
 
+
 def is_authorized(data_source):
     token = get_jwt_from_request()
     print(token)

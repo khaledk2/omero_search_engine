@@ -281,9 +281,10 @@ def before_request():
             )
         # Unauthorized status code
 
-    user_data=request.args.get("user_data")
-    g.user_data=user_data
+    user_data = request.args.get("user_data")
+    g.user_data = user_data
     return None
+
 
 # add it to account for CORS
 @search_omero_app.after_request
