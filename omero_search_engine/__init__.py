@@ -282,7 +282,10 @@ def before_request():
         # Unauthorized status code
 
     user_data = request.args.get("user_data")
-    g.user_data = user_data
+    if user_data:
+        g.user_data = user_data
+    else:
+        g.user_data = False
     return None
 
 
