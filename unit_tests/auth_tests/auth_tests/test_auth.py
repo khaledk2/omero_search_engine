@@ -84,6 +84,7 @@ class BasicTestCase(unittest.TestCase):
         token = build_token(user_data, omename)
         check = check_token(token, check_session=False)
         g.token = check
+        g.user_data = False
         resource = "image"
         name = simple_queries[resource][0][0]
         value = simple_queries["image"][0][0]
@@ -111,6 +112,7 @@ class BasicTestCase(unittest.TestCase):
         check = check_token(token, check_session=False)
         g.token = check
         resource = "image"
+        g.user_data = False
         name = simple_queries[resource][0][0]
         value = simple_queries["image"][0][0]
         validator = Validator(self.data_source, deep_check)

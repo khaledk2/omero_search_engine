@@ -37,7 +37,8 @@ def build_token(data, omename):
     exp = int(
         round(
             (
-                datetime.datetime.utcnow() + datetime.timedelta(minutes=jwt_exp)
+                datetime.datetime.now(datetime.UTC)
+                + datetime.timedelta(minutes=jwt_exp)
             ).timestamp()
         )
     )
