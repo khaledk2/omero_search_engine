@@ -1,13 +1,13 @@
 import requests
 import json
 
-'''
-The example illustrates how to log in using an OMERO session id'''
+"""
+The example illustrates how to log in using an OMERO session id"""
 
 jwt_token = "<token>"
 auth_url = "http://127.0.0.1:5577/auth/login"
 check_toke = "http://127.0.0.1:5577/auth/verify_token/"
-data = {"session_id": "user_session_id", "data_source":"omero"}
+data = {"session_id": "user_session_id", "data_source": "omero"}
 
 
 response = requests.post(auth_url, json=data)
