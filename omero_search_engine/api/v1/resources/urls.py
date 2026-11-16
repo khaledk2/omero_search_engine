@@ -31,6 +31,7 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation_return_containers_only,
     get_working_data_source,
     is_authorized,
+    search_using_id,
 )
 from omero_search_engine.api.v1.resources.resource_analyser import (
     search_value_for_resource,
@@ -881,3 +882,17 @@ def return_query_results():
         ),
         500,
     )
+
+
+@resources.route("/search_using_resource_id/", methods=["GET"])
+def search_using_resource_id():
+    """
+    file: swagger_docs/search_using_resource_id.yml
+    """
+    id = request.args.get("id")
+    resource = request.args.get("resource")
+    data_source = request.args.get("data_source")
+    if not resource:
+        resource = "all"
+    results = search_using_id(id, resource, data_source)
+    return results
