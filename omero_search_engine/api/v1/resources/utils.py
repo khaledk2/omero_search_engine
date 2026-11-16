@@ -2141,7 +2141,7 @@ def get_resource(attribute_name, id, resource, data_source):
     else:
         return []
 
+
 query_single_main_attribute = Template(
     """{"query_details": {"and_filters": []},"main_attributes": {"and_main_attributes": [{"name": "$attribute", "value": "$value", "operator": "equals"}]}}"""  # noqa
 )
-
