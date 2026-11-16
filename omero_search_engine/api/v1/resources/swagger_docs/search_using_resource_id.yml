@@ -1,0 +1,34 @@
+An endpoint to process a simple query to query resources using id
+---
+tags:
+ - Search using resource id
+
+security:
+    - bearerAuth: []  # Option 1: Send the JWT token
+    - {}
+parameters:
+  - name: resource_table
+    in: path
+    type: string
+    enum: ['image', 'project', 'dataset', 'screen', 'well', 'plate','all']
+    required: true
+  - name: id
+    description: the resource id
+    in: query
+    type: string
+    required: true
+  - name: user_data
+    description: Filter the search results to only include data owned by the user
+    in: query
+    type: boolean
+    required: false
+  - name: data_source
+    in: query
+    type: string
+    required: false
+    description: If a specific data source is provided, results will be retrieved from that source. Otherwise, the default data source will be used. If there is no default data source configured, results will be gathered from all available sources.
+responses:
+  200:
+    description: A JSON contains the search results
+    examples:
+      results: []

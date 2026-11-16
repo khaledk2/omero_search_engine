@@ -2111,3 +2111,37 @@ def is_authorized(data_source):
         return True
     else:
         return False
+
+
+def search_using_id(id, resource, data_source):
+    print(data_source)
+    all_results = {}
+    if not data_source:
+        data_source = search_omero_app.config.get("DEFAULT_DATASOURCE")
+    if not resource or resource.lower() == "all":
+        for res in list(resource_elasticsearchindex.keys()):
+            if res == "image1":
+                continue
+            results = get_resource("id", id, res, data_source)
+            if len(results) > 0:
+                all_results[res] = results
+    else:
+        results = get_resource("id", id, resource, data_source)
+        if len(results) > 0:
+            all_results[resource] = results
+    return all_results
+
+
+def get_resource(attribute_name, id, resource, data_source):
+    query = query_single_main_attribute.substitute(attribute=attribute_name, value=id)
+    query = json.loads(query)
+    resource_list = search_resource_annotation(resource, query, data_source=data_source)
+    if resource_list.get("results"):
+        return resource_list.get("results")
+    else:
+        return []
+
+query_single_main_attribute = Template(
+    """{"query_details": {"and_filters": []},"main_attributes": {"and_main_attributes": [{"name": "$attribute", "value": "$value", "operator": "equals"}]}}"""  # noqa
+)
+
