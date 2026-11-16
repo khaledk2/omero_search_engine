@@ -1,6 +1,8 @@
 import requests
 import json
 
+'''
+The example illustrates how to log in using an OMERO username and password.'''
 jwt_token = "<token>"
 auth_url = "http://127.0.0.1:5577/auth/login"
 check_toke = "http://127.0.0.1:5577/auth/verify_token/"

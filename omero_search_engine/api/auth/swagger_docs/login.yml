@@ -1,4 +1,15 @@
-Login and return JWT, login data is a JSON string, e.g. {"username": "user-name", "password": "omero", "data_source":"datasource"}
+To log in and obtain a JWT, you can provide login data as a JSON string. For example:
+{
+  "username": "user-name",
+  "password": "omero",
+  "data_source": "datasource"
+}
+
+Alternatively, you can log in using a session ID with the following JSON format:
+{
+  "session_id": "user_session_id",
+  "data_source": "datasource"
+}
 ---
 tags:
  - login
