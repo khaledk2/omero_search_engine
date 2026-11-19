@@ -83,7 +83,7 @@ class BasicTestCase(unittest.TestCase):
         """test url"""
         tester = search_omero_app.test_client(self)
         response = tester.get("/api/v1/resources/", content_type="html/text")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
 
     def test_searchannotation(self):
         """test url"""
@@ -96,7 +96,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         res_text = response.text
         print(res_text)
-        self.assertTrue("please provide JWT token" in res_text)
+        self.assertTrue("Data source not found or private" in res_text)
 
     def test_not_found(self):
         """
