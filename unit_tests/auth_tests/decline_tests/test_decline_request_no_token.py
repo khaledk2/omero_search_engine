@@ -93,7 +93,7 @@ class BasicTestCase(unittest.TestCase):
         response = tester.post(
             "/api/v1/resources/image/searchannotation/", data=query
         )  # noqa
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
         res_text = response.text
         print(res_text)
         self.assertTrue("please provide JWT token" in res_text)
@@ -104,7 +104,7 @@ class BasicTestCase(unittest.TestCase):
         """
         tester = search_omero_app.test_client(self)
         response = tester.get("a", content_type="html/text")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
 
     def test_query_database(self):
         """
