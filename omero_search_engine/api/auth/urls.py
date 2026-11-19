@@ -27,15 +27,17 @@ def login():
         password = data.get("password")
         session_id = data.get("session_id")
         datasource = data.get("data_source")
-        if (not username and not password) and not session_id:
-            raise Exception("Username and password are required")
+        if not datasource:
+            from omero_search_engine.api.v1.resources.utils import (
+                get_default_data_source,
+            )
+
+            datasource = get_default_data_source()
+            if not datasource:
+                raise Exception("datasource is required")
     except Exception as e:
         print("Error is: %s" % str(e))
-        return jsonify(
-            build_error_message(
-                "{error}".format(error="No proper user data is provided ")
-            )
-        )
+        return jsonify(build_error_message("{error}".format(error=str(e))))
     try:
         if username:
             username = username.strip()
@@ -43,8 +45,8 @@ def login():
             password = password.strip()
         if session_id:
             session_id = session_id.strip()
-        if not session_id and (not username or not password) or not datasource:
-            return "session id or username and password and datasource are required"
+        if not session_id and (not username or not password):
+            return "session id or username and password are required"
 
         token = create_token(datasource, username, password, session_id)
         return jsonify(token)

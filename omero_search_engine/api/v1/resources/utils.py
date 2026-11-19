@@ -1531,6 +1531,10 @@ def get_number_image_inside_container(resource, res_id, data_source):
     return searchengine_results
 
 
+def get_default_data_source():
+    return search_omero_app.config.get("DEFAULT_DATASOURCE")
+
+
 def get_working_data_source(requested_datasource):
     data_sources = get_data_sources()
     default_datasource = search_omero_app.config.get("DEFAULT_DATASOURCE")

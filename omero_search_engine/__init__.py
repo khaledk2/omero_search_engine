@@ -255,6 +255,7 @@ def before_request():
 
     # Extract the token from the Authorization header
     data_source = get_working_data_source(request.args.get("data_source"))
+    # is_exist, is_public = is_datasource_public(data_source)
     if not is_datasource_public(data_source):
         token = get_jwt_from_request()
         public_token = check_for_public_user(data_source)
@@ -273,11 +274,13 @@ def before_request():
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Data source is private, request.path is: %s"
-                        "please provide JWT token." % request.path,
+                        "message": "Data source not found or private, "
+                        "request.path is: %s, "
+                        "please check the data source name or provide a valid token."
+                        % request.path,
                     }
                 ),
-                401,
+                404,
             )
         # Unauthorized status code
 
