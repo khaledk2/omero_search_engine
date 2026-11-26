@@ -41,6 +41,7 @@ from omero_search_engine.api.v1.resources.resource_analyser import (
     get_key_values_return_contents,
     query_cached_bucket_part_value_keys,
     return_containers_images,
+    search_keys_for_resource,
 )
 from omero_search_engine.api.v1.resources.utils import (
     get_resource_annotation_table,
@@ -215,6 +216,20 @@ def search_resource(resource_table):
         return jsonify(build_error_message(validation_results))
 
 
+@resources.route("/<resource_table>/searchkeys/", methods=["GET"])
+def search_keys(resource_table):
+    """
+    file: swagger_docs/search_for_keys.yml
+    """
+    key = request.args.get("key")
+    data_source = get_working_data_source(request.args.get("data_source"))
+    if not key:
+        return jsonify(
+            build_error_message("Error: {error}".format(error="No key is provided "))
+        )
+    return jsonify(search_keys_for_resource(resource_table, key, data_source))
+
+
 @resources.route("/<resource_table>/searchvalues/", methods=["GET"])
 def get_values_using_value(resource_table):
     """
@@ -226,7 +241,7 @@ def get_values_using_value(resource_table):
         return jsonify(
             build_error_message("Error: {error}".format(error="No value is provided "))
         )
-    # check if resource_table is vaild
+    # check if resource_table is valid
     if not (get_resource_annotation_table(resource_table)):
         # If the resource does not exist, it will return a 404 with a message.
         resp_message = "No data for table {table}".format(table=resource_table)

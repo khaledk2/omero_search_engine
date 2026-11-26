@@ -525,6 +525,34 @@ def query_cashed_bucket_value(value, es_index="key_value_buckets_information"):
     return prepare_search_results(res)
 
 
+def search_keys_for_resource(
+    table_, key, data_source, es_index="key_value_buckets_information"
+):
+    if data_source and data_source.lower() != "all":
+        data_source = [itm.strip().lower() for itm in data_source.split(",")]
+    returned_results = {}
+    for table in resource_elasticsearchindex:
+        # ignore image1 as it is used for testing
+        if table == "image1" or (table_ != "all" and table_ != table):
+            continue
+
+        # res = es.count(index=e_index, body=query)
+        query = resource_key_only_buckets_template.substitute(
+            key=key, resource=table, data_source=json.dumps(data_source)
+        )
+        size_query = resource_key_keys_buckets_size_template.substitute(
+            key=key, resource=table, data_source=json.dumps(data_source)
+        )
+        # Get the total number of the results.
+        res = search_index_for_value(es_index, size_query, True)
+        size = res["count"]
+        if size == 0:
+            continue
+        res = search_index_for_value(es_index, query)
+        returned_results[table] = prepare_search_results(res, size)
+    return returned_results
+
+
 def search_value_for_resource(
     table_, value, data_source, bookmarks=None, es_index="key_value_buckets_information"
 ):
@@ -644,6 +672,16 @@ resource_key_values_buckets_size_template = Template(
 "bool": {"must": {"match":{"resource.keyresource": "$resource"}}}}]}}}"""
 )
 
+
+resource_key_keys_buckets_size_template = Template(
+    """
+{"query":{"bool":{"must":[{"bool":{
+"must":{"wildcard":{"Attribute.keynamenormalize":"*$key*"}}}},{"bool":{
+"must":{"terms":{"data_source.keyvalue":$data_source}}}},{
+"bool": {"must": {"match":{"resource.keyresource": "$resource"}}}}]}}}"""
+)
+
+
 resource_key_values_buckets_template = Template(  # noqa
     """
 {"query":{"bool":{"must":[{"bool":{
@@ -651,6 +689,15 @@ resource_key_values_buckets_template = Template(  # noqa
 "bool": {"must": {"match":{"resource.keyresource": "$resource"}}}},{"bool":{
 "must":{"terms":{ "data_source.keyvalue":$data_source}}}}]}},
 "size": 9999, "sort":[{ "_script": {"script": "doc['Value.keyvaluenormalize'].value.length()","type": "number","order": "asc"}},{"items_in_the_bucket": "desc"}, {"id": "asc"}]}"""  # noqa
+)
+
+resource_key_only_buckets_template = Template(  # noqa
+    """
+{"query":{"bool":{"must":[{"bool":{
+"must":{"wildcard":{"Attribute.keynamenormalize":"*$key*"}}}},{
+"bool": {"must": {"match":{"resource.keyresource": "$resource"}}}},{"bool":{
+"must":{"terms":{ "data_source.keyvalue":$data_source}}}}]}},
+"size": 9999, "sort":[{ "_script": {"script": "doc['Attribute.keynamenormalize'].value.length()","type": "number","order": "asc"}},{"items_in_the_bucket": "desc"}, {"id": "asc"}]}"""  # noqa
 )
 
 key_values_buckets_template_2 = Template(
