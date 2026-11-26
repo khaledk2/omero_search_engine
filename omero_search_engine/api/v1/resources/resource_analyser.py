@@ -326,7 +326,7 @@ def get_values_for_a_key(table_, key, data_source):
     }
 
 
-def prepare_search_results(results, size=0):
+def prepare_search_results(results, size=0, ignore_organism_in_image=True):
     returned_results = []
     total_number = 0
     number_of_buckets = 0
@@ -339,12 +339,13 @@ def prepare_search_results(results, size=0):
         # please see (https://github.com/ome/omero_search_engine/issues/45)
         #
         # This will be checked later.
-        if (
-            resource == "image"
-            and res["Attribute"]
-            and res["Attribute"].lower() == "organism"
-        ):
-            continue
+        if ignore_organism_in_image:
+            if (
+                resource == "image"
+                and res["Attribute"]
+                and res["Attribute"].lower() == "organism"
+            ):
+                continue
         row = {}
         returned_results.append(row)
         row["data_source"] = res["data_source"]
@@ -549,7 +550,9 @@ def search_keys_for_resource(
         if size == 0:
             continue
         res = search_index_for_value(es_index, query)
-        returned_results[table] = prepare_search_results(res, size)
+        returned_results[table] = prepare_search_results(
+            res, size, ignore_organism_in_image=False
+        )
     return returned_results
 
 
