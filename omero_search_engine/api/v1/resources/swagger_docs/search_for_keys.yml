@@ -1,0 +1,60 @@
+Search the available values for a key or part of the key name
+It returns a JSON string containing the results.
+---
+tags:
+ - Search for any Keys
+security:
+    - bearerAuth: []  # Option 1: Send the JWT token
+    - {}
+parameters:
+  - name: resource_table
+    in: path
+    type: string
+    enum: ['image', 'project', 'dataset', 'screen', 'well', 'plate', 'all']
+    required: true
+  - name: key
+    description: search term
+    in: query
+    type: string
+    required: true
+  - name: bookmark
+    description: search term (should not be used with "all" or key is present), a comma-delimited string, e.g. 4,9, 44a90c1a-3271-448a-ba60-c391f885bc34
+    in: query
+    type: string
+    required: false
+  - name: data_source
+    in: query
+    type: string
+    required: false
+    description: If a specific data source is provided, results will be retrieved from that source. Otherwise, the default data source will be used. If there is no default data source configured, results will be gathered from all available sources.
+
+definitions:
+ data:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/result_item'
+ result_item:
+     type: object
+     properties:
+        Attribute:
+            type: string
+        'Number of images':
+            type: number
+        Value:
+            type: string
+responses:
+  200:
+    description: A JSON contains the resource attributes, values and the number of items for each matching value.
+    schema:
+       $ref: '#/definitions/data'
+    examples:
+      "data": [
+        {
+          "Attribute": "GO Molecular Function",
+          "Number of images": 14,
+          "Value": "helicase activity, hydrolase activity"
+        }
+        ]
