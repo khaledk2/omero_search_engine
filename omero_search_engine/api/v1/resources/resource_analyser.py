@@ -531,7 +531,7 @@ def search_keys_for_resource(
     table_, key, data_source, es_index="key_value_buckets_information"
 ):
     if not data_source:
-        data_source=get_default_data_source()
+        data_source = get_default_data_source()
     if data_source and data_source.lower() != "all":
         data_source = [itm.strip().lower() for itm in data_source.split(",")]
     returned_results = {}
