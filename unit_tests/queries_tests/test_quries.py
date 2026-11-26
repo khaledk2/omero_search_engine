@@ -29,6 +29,9 @@ from omero_search_engine.api.v1.resources.utils import (
     search_resource_annotation,
     get_data_sources,
 )
+from omero_search_engine.api.v1.resources.resource_analyser import (
+    search_keys_for_resource,
+)
 
 from omero_search_engine.cache_functions.elasticsearch.elasticsearch_templates import (  # noqa
     image_template,
@@ -65,6 +68,7 @@ from unit_tests.test_data import (
     image_owner,
     image_group,
     image_owner_group,
+    images_key_parts,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -283,7 +287,7 @@ class BasicTestCase(unittest.TestCase):
                     )
                     self.assertTrue(validator.identical)
 
-    def test_seach_for_any_value(self):
+    def test_search_for_any_value(self):
         for data_source in search_omero_app.config.database_connectors.keys():
             for part in images_value_parts:
                 validator = Validator(data_source, deep_check)
@@ -294,6 +298,15 @@ class BasicTestCase(unittest.TestCase):
                     len(validator.postgres_results),
                     validator.searchengine_results.get("total_number_of_buckets"),
                 )
+
+    def test_search_for_any_key(self):
+        for key in images_key_parts:
+            searchengine_results = search_keys_for_resource("image", key, None)
+
+            self.assertEqual(
+                images_key_parts[key],
+                searchengine_results.get("total_number_of_buckets"),
+            )
 
     def test_available_values_for_key(self):
         for data_source in search_omero_app.config.database_connectors.keys():

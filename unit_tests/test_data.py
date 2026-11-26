@@ -104,6 +104,8 @@ images_keys = ["cell line", "gene symbol"]
 
 images_value_parts = ["hel", "prost"]
 
+images_key_parts = {"cell": 2, "organ": 1}
+
 csv_test_data = [
     {"key": "organism", "value": "homo sapiens", "no_results": 15756},
     {"key": "gene symbol", "value": "pcnt", "no_results": 1484},
