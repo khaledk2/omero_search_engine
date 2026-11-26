@@ -301,8 +301,7 @@ class BasicTestCase(unittest.TestCase):
 
     def test_search_for_any_key(self):
         for key in images_key_parts:
-            searchengine_results = search_keys_for_resource("image", key, None)
-
+            searchengine_results = search_keys_for_resource("image", key, "omero_train")
             self.assertEqual(
                 images_key_parts[key],
                 searchengine_results.get("total_number_of_buckets"),

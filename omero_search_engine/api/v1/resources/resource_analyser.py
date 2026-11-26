@@ -26,6 +26,7 @@ from omero_search_engine.api.v1.resources.utils import (
     build_error_message,
     adjust_value,
     get_data_sources,
+    get_default_data_source,
 )
 import math
 from flask import jsonify, Response
@@ -529,6 +530,8 @@ def query_cashed_bucket_value(value, es_index="key_value_buckets_information"):
 def search_keys_for_resource(
     table_, key, data_source, es_index="key_value_buckets_information"
 ):
+    if not data_source:
+        data_source = get_default_data_source()
     if data_source and data_source.lower() != "all":
         data_source = [itm.strip().lower() for itm in data_source.split(",")]
     returned_results = {}
