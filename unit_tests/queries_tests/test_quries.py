@@ -317,7 +317,7 @@ class BasicTestCase(unittest.TestCase):
             results = search_using_id(res_id, "all", "omero_train")
             self.assertTrue(expected_results["resource"] in results.keys())
             self.assertEqual(
-                results.get("results")[0].get("name"), expected_results["name"]
+                results[expected_results["resource"]]["results"][0]["name"], expected_results["name"]
             )
 
     def test_available_values_for_key(self):
