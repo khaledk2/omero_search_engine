@@ -1,8 +1,9 @@
-a Simple query method uses search term, if the search term is an integer, it will search all the resources and returns the resources which have this id.
-Otherwise, it will search all the key/value pairs where the search terms is a part of the key or value.
+The endpoint accepts a search term to query resources. If the search term is an integer, the endpoint retrieves and returns all resources that have this integer as their ID. If the search term is not an integer, the endpoint searches through all key-value pairs within the resources, returning those where the search term appears in either the key or the value.
+For example, this query "/api/v1/resources/query/1597" will return the resources, e.g. image, project, which its ide is 1597.
+Another example, "/api/v1/resources/query/cell" will return all key or value which cell is part of their names.
 ---
 tags:
- - Main query method
+ - Resource Search by ID or Substring
 security:
     - bearerAuth: []  # Option 1: Send the JWT token
     - {}
@@ -25,7 +26,7 @@ parameters:
 
 responses:
   200:
-    description: A JSON contains resource attribute values only.
+    description: A JSON contains the results.
     schema:
       $ref: '#/definitions/names'
     examples:
