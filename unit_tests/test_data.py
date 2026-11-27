@@ -106,6 +106,14 @@ images_value_parts = ["hel", "prost"]
 
 images_key_parts = {"cell": 5, "organ": 1}
 
+id_test_data = {
+    9550: {
+        "name": "Cep215_PCNT_gtub_20110506_Fri-1701_0_SIR_PRJ.dv",
+        "resource": "image",
+    },
+    1597: {"name": "matlab-project", "resource": "project"},
+}
+
 csv_test_data = [
     {"key": "organism", "value": "homo sapiens", "no_results": 15756},
     {"key": "gene symbol", "value": "pcnt", "no_results": 1484},
