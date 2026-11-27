@@ -28,6 +28,7 @@ from omero_search_engine.api.v1.resources.utils import (
     elasticsearch_query_builder,
     search_resource_annotation,
     get_data_sources,
+    search_using_id,
 )
 from omero_search_engine.api.v1.resources.resource_analyser import (
     search_keys_for_resource,
@@ -69,6 +70,7 @@ from unit_tests.test_data import (
     image_group,
     image_owner_group,
     images_key_parts,
+    id_test_data,
 )
 
 from omero_search_engine import search_omero_app, create_app
@@ -306,6 +308,16 @@ class BasicTestCase(unittest.TestCase):
             self.assertEqual(
                 images_key_parts[key],
                 searchengine_results.get("image").get("total_number_of_all_buckets"),
+            )
+
+    def test_resource_id(self):
+        # {"name":"matlab-project", "resource":"project"}
+        for res_id in id_test_data:
+            expected_results = id_test_data[res_id]
+            results = search_using_id(res_id)
+            self.assertTrue(expected_results["resource"] in results.keys())
+            self.assertEqual(
+                results.get("results")[0].get("name"), expected_results["name"]
             )
 
     def test_available_values_for_key(self):
