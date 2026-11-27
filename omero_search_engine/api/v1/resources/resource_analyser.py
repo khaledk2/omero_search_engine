@@ -527,6 +527,42 @@ def query_cashed_bucket_value(value, es_index="key_value_buckets_information"):
     return prepare_search_results(res)
 
 
+def search_keys_values_for_resource(
+    table_, search_term, data_source, es_index="key_value_buckets_information"
+):
+    if not data_source:
+        data_source = get_default_data_source()
+    if data_source and data_source.lower() != "all":
+        data_source = [itm.strip().lower() for itm in data_source.split(",")]
+    returned_results = {}
+    for resource in resource_elasticsearchindex:
+        # ignore image1 as it is used for testing
+        if resource == "image1" or (table_ != "all" and table_ != resource):
+            continue
+
+        # res = es.count(index=e_index, body=query)
+        query = resource_key_value_buckets_template.substitute(
+            search_term=search_term,
+            resource=resource,
+            data_source=json.dumps(data_source),
+        )
+        size_query = resource_key_keys_value_buckets_size_template.substitute(
+            search_term=search_term,
+            resource=resource,
+            data_source=json.dumps(data_source),
+        )
+        # Get the total number of the results.
+        res = search_index_for_value(es_index, size_query, True)
+        size = res["count"]
+        if size == 0:
+            continue
+        res = search_index_for_value(es_index, query)
+        returned_results[resource] = prepare_search_results(
+            res, size, ignore_organism_in_image=False
+        )
+    return returned_results
+
+
 def search_keys_for_resource(
     table_, key, data_source, es_index="key_value_buckets_information"
 ):
@@ -679,6 +715,16 @@ resource_key_values_buckets_size_template = Template(
 )
 
 
+resource_key_keys_value_buckets_size_template = Template(
+    """
+{"query": {"bool": {"must": [{"bool": {
+"should": [
+{"bool": {"must":{"wildcard":{"Attribute.keynamenormalize":"*$search_term*" } } } },
+{"bool": {"must":{"wildcard":{"Value.keyvaluenormalize":"*$search_term*" } } } }]}},
+{"bool": {"must":{"terms":{"data_source.keyvalue":$data_source } } } },
+{"bool": {"must":{"match":{"resource.keyresource":"$resource" } } } }]}}}
+"""
+)
 resource_key_keys_buckets_size_template = Template(
     """
 {"query":{"bool":{"must":[{"bool":{
@@ -686,7 +732,6 @@ resource_key_keys_buckets_size_template = Template(
 "must":{"terms":{"data_source.keyvalue":$data_source}}}},{
 "bool": {"must": {"match":{"resource.keyresource": "$resource"}}}}]}}}"""
 )
-
 
 resource_key_values_buckets_template = Template(  # noqa
     """
@@ -696,6 +741,19 @@ resource_key_values_buckets_template = Template(  # noqa
 "must":{"terms":{ "data_source.keyvalue":$data_source}}}}]}},
 "size": 9999, "sort":[{ "_script": {"script": "doc['Value.keyvaluenormalize'].value.length()","type": "number","order": "asc"}},{"items_in_the_bucket": "desc"}, {"id": "asc"}]}"""  # noqa
 )
+
+
+resource_key_value_buckets_template = Template(  # noqa
+    """{"query": {"bool": {"must": [{"bool": {"should": [
+        { "bool": { "must": { "wildcard": { "Attribute.keynamenormalize": "*$search_term*" }}}},
+        { "bool": { "must": { "wildcard": { "Value.keyvaluenormalize": "*$search_term*" }}}}]}},
+        { "bool": { "must": { "match": { "resource.keyresource": "$resource" } } } },
+        { "bool": { "must": { "terms": { "data_source.keyvalue": $data_source } } } } ]}},
+  "size": 9999,"sort": [
+    { "_script": { "script": "doc['Attribute.keynamenormalize'].value.length()", "type": "number", "order": "asc" } },
+    { "items_in_the_bucket": "desc" },{ "id": "asc" }]}"""  # noqa
+)
+
 
 resource_key_only_buckets_template = Template(  # noqa
     """

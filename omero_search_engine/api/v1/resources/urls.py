@@ -42,6 +42,7 @@ from omero_search_engine.api.v1.resources.resource_analyser import (
     query_cached_bucket_part_value_keys,
     return_containers_images,
     search_keys_for_resource,
+    search_keys_values_for_resource,
 )
 from omero_search_engine.api.v1.resources.utils import (
     get_resource_annotation_table,
@@ -290,6 +291,24 @@ def get_values_using_value(resource_table):
     return jsonify(
         search_value_for_resource(resource_table, value, data_source, bookmark)
     )
+
+
+@resources.route("/query/<search_term>", methods=["GET"])
+def query(search_term):
+    """
+    file: swagger_docs/query.yml
+    """
+    resource = request.args.get("resource")
+    data_source = request.args.get("data_source")
+    if not resource:
+        resource = "all"
+    if search_term.isdigit():
+        results = search_using_id(search_term, resource, data_source)
+        return jsonify(results)
+    else:
+        return jsonify(
+            search_keys_values_for_resource(resource, search_term, data_source)
+        )
 
 
 @resources.route("/<resource_table>/searchvaluesusingkey/", methods=["GET"])
