@@ -315,7 +315,9 @@ class BasicTestCase(unittest.TestCase):
                 validator.compare_results()
                 self.assertEqual(
                     len(validator.postgres_results),
-                    validator.searchengine_results.get("total_number_of_buckets"),
+                    validator.searchengine_results.get("image").get(
+                        "total_number_of_buckets"
+                    ),
                 )
 
     def test_contains_not_contains_queries(self):
