@@ -302,9 +302,10 @@ class BasicTestCase(unittest.TestCase):
     def test_search_for_any_key(self):
         for key in images_key_parts:
             searchengine_results = search_keys_for_resource("image", key, "omero_train")
+
             self.assertEqual(
                 images_key_parts[key],
-                searchengine_results.get("total_number_of_all_buckets"),
+                searchengine_results.get("image").get("total_number_of_all_buckets"),
             )
 
     def test_available_values_for_key(self):
@@ -315,9 +316,7 @@ class BasicTestCase(unittest.TestCase):
                 validator.compare_results()
                 self.assertEqual(
                     len(validator.postgres_results),
-                    validator.searchengine_results.get("image").get(
-                        "total_number_of_buckets"
-                    ),
+                    validator.searchengine_results.get("total_number_of_buckets"),
                 )
 
     def test_contains_not_contains_queries(self):
