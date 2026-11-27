@@ -314,10 +314,11 @@ class BasicTestCase(unittest.TestCase):
         # {"name":"matlab-project", "resource":"project"}
         for res_id in id_test_data:
             expected_results = id_test_data[res_id]
-            results = search_using_id(res_id)
+            results = search_using_id(res_id, "all", "omero_train")
             self.assertTrue(expected_results["resource"] in results.keys())
             self.assertEqual(
-                results.get("results")[0].get("name"), expected_results["name"]
+                results[expected_results["resource"]]["results"][0]["name"],
+                expected_results["name"],
             )
 
     def test_available_values_for_key(self):
